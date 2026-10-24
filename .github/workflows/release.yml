@@ -1,0 +1,45 @@
+name: Release Winnie for macOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate Icon and Build macOS .app Bundle
+        run: |
+          bash build_app.sh
+
+      - name: Create ZIP Archive of Winnie.app
+        run: |
+          cd dist
+          zip -r -y Winnie-macOS.zip Winnie.app
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Winnie-macOS.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
