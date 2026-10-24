@@ -88,6 +88,19 @@ open dist
 
 The resulting `dist/Winnie.app` can be deployed directly to `/Applications`.
 
+### First Launch Notice (macOS Gatekeeper)
+
+Winnie is free, open-source software built from source on GitHub Actions. Because it is not signed with an Apple Developer ID certificate ($99/year), macOS Gatekeeper displays a standard verification prompt on initial launch after downloading from GitHub Releases:
+
+> *"Apple could not verify 'Winnie' is free of malware..."*
+
+To launch the application:
+1. **Via Terminal (Recommended)**: Remove the quarantine flag attached by the browser:
+   ```bash
+   xattr -cr /Applications/Winnie.app
+   ```
+2. **Via System Settings**: Go to **System Settings** > **Privacy & Security**, scroll to the **Security** section, and click **Open Anyway**.
+
 ---
 
 ## Continuous Integration and Automated Releases
