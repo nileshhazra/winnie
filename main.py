@@ -111,8 +111,10 @@ class WinnieIDE(QMainWindow):
         self.assistant_view.jump_to_line_requested.connect(self.jump_to_line)
 
         self.right_tabs = QTabWidget()
-        self.right_tabs.addTab(self.variables_view, "✦ Variables")
-        self.right_tabs.addTab(self.assistant_view, "💡 Assistant")
+        self.right_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideNone)
+        self.right_tabs.setMinimumWidth(260)
+        self.right_tabs.addTab(self.variables_view, "Variables")
+        self.right_tabs.addTab(self.assistant_view, "Assistant")
 
         # 4. Master Horizontal Splitter
         self.main_splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -120,6 +122,7 @@ class WinnieIDE(QMainWindow):
         self.main_splitter.addWidget(self.right_tabs)
         self.main_splitter.setStretchFactor(0, 7)
         self.main_splitter.setStretchFactor(1, 3)
+        self.main_splitter.setSizes([720, 340])
         main_layout.addWidget(self.main_splitter, 1)  # Takes 100% of remaining vertical space!
 
         # Background Process Runner & Stderr Tracking
@@ -568,11 +571,15 @@ class WinnieIDE(QMainWindow):
                 background-color: {theme['table_bg']};
                 border-radius: 8px;
             }}
+            QTabBar {{
+                qproperty-drawBase: 0;
+            }}
             QTabBar::tab {{
                 background-color: transparent;
                 color: {theme['table_header_text']};
-                padding: 6px 14px;
-                font-size: 11px;
+                padding: 6px 12px;
+                margin-right: 4px;
+                font-size: 12px;
                 font-weight: bold;
                 border: none;
                 border-bottom: 2px solid transparent;

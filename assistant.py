@@ -146,10 +146,12 @@ def parse_traceback(stderr_text: str):
     if line_matches:
         line_number = int(line_matches[-1].group(1))
 
-    # Find the code line right above the error
+    # Find the code line right above the error (skipping Python 3.11+ caret markers like ~~~~~^^^)
     for i in range(len(lines) - 2, -1, -1):
         stripped = lines[i].strip()
         if stripped and not stripped.startswith("File "):
+            if set(stripped).issubset({"~", "^", " ", "|"}):
+                continue
             code_snippet = stripped
             break
 
