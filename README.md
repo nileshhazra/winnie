@@ -19,6 +19,7 @@ Winnie implements a dual-process execution model inspired by educational environ
 ## Architectural Highlights
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
+- **Beginner Error Assistant**: Automatic traceback analysis engine. Intercepts runtime exceptions, highlights offending source lines, and translates technical errors into plain-English explanations with actionable fix suggestions.
 - **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.
 - **Interactive Standard Streams**: Bidirectional, unbuffered communication channel between the GUI shell and the running process. Fully supports interactive `input()` calls with input boundary protection.
 - **Runtime Scope Inspector**: Real-time inspection table displaying variable identifiers, dynamic types, and serialized string representations after each statement or script execution.

@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QFileDialog,
     QMessageBox,
+    QTabWidget,
 )
 from PySide6.QtGui import QFont, QIcon, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, QProcess, QSize
@@ -22,6 +23,7 @@ from PySide6.QtCore import Qt, QProcess, QSize
 from editor import CodeEditor
 from console import InteractiveConsole
 from variables_view import VariablesView
+from assistant import AssistantView, parse_traceback
 from theme import DARK_THEME, LIGHT_THEME
 from icons import (
     render_svg_icon,
@@ -103,22 +105,29 @@ class WinnieIDE(QMainWindow):
         self.left_splitter.setStretchFactor(0, 7)
         self.left_splitter.setStretchFactor(1, 3)
 
-        # 3. Variables Inspector (Right)
+        # 3. Right-Side Inspector Tabs (Variables & Error Assistant)
         self.variables_view = VariablesView(theme=self.current_theme)
+        self.assistant_view = AssistantView(theme=self.current_theme)
+        self.assistant_view.jump_to_line_requested.connect(self.jump_to_line)
+
+        self.right_tabs = QTabWidget()
+        self.right_tabs.addTab(self.variables_view, "✦ Variables")
+        self.right_tabs.addTab(self.assistant_view, "💡 Assistant")
 
         # 4. Master Horizontal Splitter
         self.main_splitter = QSplitter(Qt.Orientation.Horizontal)
         self.main_splitter.addWidget(self.left_splitter)
-        self.main_splitter.addWidget(self.variables_view)
+        self.main_splitter.addWidget(self.right_tabs)
         self.main_splitter.setStretchFactor(0, 7)
         self.main_splitter.setStretchFactor(1, 3)
         main_layout.addWidget(self.main_splitter, 1)  # Takes 100% of remaining vertical space!
 
-        # Background Process Runner
+        # Background Process Runner & Stderr Tracking
         self.process = QProcess(self)
         self.process.readyReadStandardOutput.connect(self.handle_stdout)
         self.process.readyReadStandardError.connect(self.handle_stderr)
         self.process.finished.connect(self.handle_finished)
+        self.stderr_buffer = []
 
         # Debugger Stepping State
         self.is_stepping = False
@@ -351,16 +360,20 @@ class WinnieIDE(QMainWindow):
                 self.left_splitter.setSizes([int(total * 0.7), int(total * 0.3)])
 
     def toggle_variables(self):
-        """Toggles the right variables inspector visibility (Cmd + L)."""
-        if self.variables_view.isVisible():
-            self.variables_view.hide()
+        """Toggles the right inspector panel visibility (Cmd + L)."""
+        if self.right_tabs.isVisible():
+            self.right_tabs.hide()
         else:
-            self.variables_view.show()
+            self.right_tabs.show()
             sizes = self.main_splitter.sizes()
             # If collapsed to 0, restore default proportions
             if len(sizes) > 1 and sizes[1] == 0:
                 total = sum(sizes) if sum(sizes) > 0 else 900
                 self.main_splitter.setSizes([int(total * 0.75), int(total * 0.25)])
+
+    def jump_to_line(self, line_num: int):
+        """Scrolls editor to line and highlights it."""
+        self.editor.set_debug_line(line_num)
 
     def create_action_bar(self):
         """Creates a modern top bar with sleek monochromatic icons."""
@@ -548,14 +561,42 @@ class WinnieIDE(QMainWindow):
             }}
         """)
 
+        # Tab styling
+        self.right_tabs.setStyleSheet(f"""
+            QTabWidget::pane {{
+                border: 1px solid {theme['border_color']};
+                background-color: {theme['table_bg']};
+                border-radius: 8px;
+            }}
+            QTabBar::tab {{
+                background-color: transparent;
+                color: {theme['table_header_text']};
+                padding: 6px 14px;
+                font-size: 11px;
+                font-weight: bold;
+                border: none;
+                border-bottom: 2px solid transparent;
+            }}
+            QTabBar::tab:selected {{
+                color: {theme['brand_color']};
+                border-bottom: 2px solid #10b981;
+            }}
+            QTabBar::tab:hover {{
+                color: {theme['brand_color']};
+            }}
+        """)
+
         # Propagate to child widgets
         self.editor.apply_theme(theme)
         self.console.apply_theme(theme)
         self.variables_view.apply_theme(theme)
+        self.assistant_view.apply_theme(theme)
 
     def clear_all(self):
         self.console.clear()
         self.variables_view.clear()
+        self.assistant_view.show_success_state()
+        self.stderr_buffer = []
 
     def run_code(self):
         # If currently paused in step mode, clicking Run resumes normal full-speed execution!
@@ -589,6 +630,7 @@ class WinnieIDE(QMainWindow):
 
         self.editor.clear_debug_line()
         self.variables_view.clear()
+        self.stderr_buffer = []
         filename_display = os.path.basename(target_path)
         self.console.append_output(f">>> Running {filename_display}...\n")
         self.console.set_running_state(True)
@@ -630,6 +672,7 @@ class WinnieIDE(QMainWindow):
 
         self.editor.clear_debug_line()
         self.variables_view.clear()
+        self.stderr_buffer = []
         filename_display = os.path.basename(target_path)
         self.console.append_output(f">>> Debugging {filename_display} (Step mode)...\n")
         self.console.set_running_state(True)
@@ -690,17 +733,29 @@ class WinnieIDE(QMainWindow):
 
     def handle_stderr(self):
         data = self.process.readAllStandardError().data().decode("utf-8", errors="replace")
+        self.stderr_buffer.append(data)
         self.console.append_output(data)
 
     def handle_finished(self, exit_code, exit_status):
         self.console.append_output(f"\n[Program finished with exit code {exit_code}]\n")
         self.console.set_running_state(False)
-        self.editor.clear_debug_line()
         self.is_stepping = False
         self.is_paused_at_step = False
         self.run_btn.setEnabled(True)
         self.step_btn.setEnabled(True)
         self.stop_btn.setEnabled(False)
+
+        # Parse stderr for beginner error assistance
+        full_stderr = "".join(self.stderr_buffer)
+        error_info = parse_traceback(full_stderr)
+        if error_info:
+            self.assistant_view.show_error(error_info)
+            self.right_tabs.setCurrentWidget(self.assistant_view)
+            if error_info.get("line_number"):
+                self.editor.set_debug_line(error_info["line_number"])
+        elif exit_code == 0:
+            self.editor.clear_debug_line()
+            self.assistant_view.show_success_state()
 
         if hasattr(self, "temp_file") and self.temp_file and os.path.exists(self.temp_file.name):
             try:
