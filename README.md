@@ -20,6 +20,7 @@ Winnie implements a dual-process execution model inspired by educational environ
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
 - **Beginner Error Assistant**: Automatic traceback analysis engine. Intercepts runtime exceptions, highlights offending source lines, and translates technical errors into plain-English explanations with actionable fix suggestions.
+- **Graphical Package Manager**: Integrated pip GUI dialog for searching, installing, and uninstalling PyPI packages directly into the active Python environment with real-time log streaming.
 - **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.
 - **Interactive Standard Streams**: Bidirectional, unbuffered communication channel between the GUI shell and the running process. Fully supports interactive `input()` calls with input boundary protection.
 - **Runtime Scope Inspector**: Real-time inspection table displaying variable identifiers, dynamic types, and serialized string representations after each statement or script execution.
@@ -36,6 +37,7 @@ Winnie implements a dual-process execution model inspired by educational environ
 | `F7` / `Cmd + Option + S` | Step to next line (Visual Debugger) |
 | `Cmd + .` / `Escape` | Terminate running process |
 | `Cmd + K` | Clear console output and scope table |
+| `Cmd + Shift + P` | Open graphical Package Manager (pip) |
 | `Cmd + T` / `Cmd + Shift + T` | Toggle Dark / Light theme |
 | `Cmd + J` | Toggle console terminal visibility |
 | `Cmd + L` | Toggle variables inspector visibility |

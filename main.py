@@ -24,12 +24,14 @@ from editor import CodeEditor
 from console import InteractiveConsole
 from variables_view import VariablesView
 from assistant import AssistantView, parse_traceback
+from package_manager import PackageManagerDialog
 from theme import DARK_THEME, LIGHT_THEME
 from icons import (
     render_svg_icon,
     RUN_SVG,
     STOP_SVG,
     STEP_SVG,
+    PACKAGE_SVG,
     CLEAR_SVG,
     MOON_SVG,
     SUN_SVG,
@@ -220,6 +222,18 @@ class WinnieIDE(QMainWindow):
         save_as_action = file_menu.addAction("Save As...")
         save_as_action.setShortcut(QKeySequence("Ctrl+Shift+S"))
         save_as_action.triggered.connect(self.save_file_as)
+
+        # Tools Menu
+        tools_menu = menubar.addMenu("Tools")
+        pkg_action = tools_menu.addAction("Manage Packages...")
+        pkg_action.setShortcut(QKeySequence("Ctrl+Shift+P"))
+        pkg_action.triggered.connect(self.open_package_manager)
+
+    def open_package_manager(self):
+        """Opens the graphical pip package manager dialog."""
+        python_bin = get_python_interpreter()
+        dlg = PackageManagerDialog(self, python_executable=python_bin, theme=self.current_theme)
+        dlg.exec()
 
     def on_text_changed(self):
         """Called whenever code in the editor is modified."""
@@ -480,7 +494,7 @@ class WinnieIDE(QMainWindow):
         self.stop_btn.clicked.connect(self.stop_code)
         layout.addWidget(self.stop_btn)
 
-        # 4. Clear Button (Monochromatic Sparkle SVG Icon)
+        # 5. Clear Button (Monochromatic Trash SVG Icon)
         self.clear_btn = QPushButton(" Clear")
         self.clear_btn.setToolTip("Clear Console & Variables (⌘K)")
         self.clear_btn.setFont(QFont("SF Pro Text", 12))
@@ -488,6 +502,15 @@ class WinnieIDE(QMainWindow):
         self.clear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.clear_btn.clicked.connect(self.clear_all)
         layout.addWidget(self.clear_btn)
+
+        # 6. Packages Button (Manage pip packages)
+        self.packages_btn = QPushButton(" Packages")
+        self.packages_btn.setToolTip("Manage Python Packages (⌘⇧P)")
+        self.packages_btn.setFont(QFont("SF Pro Text", 12))
+        self.packages_btn.setIconSize(QSize(14, 14))
+        self.packages_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.packages_btn.clicked.connect(self.open_package_manager)
+        layout.addWidget(self.packages_btn)
 
         layout.addStretch()  # Spacer
 
@@ -531,6 +554,21 @@ class WinnieIDE(QMainWindow):
         # Clear button styling & icon
         self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=14, color=theme["btn_clear_text"]))
         self.clear_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 8px;
+                padding: 6px 14px;
+            }}
+            QPushButton:hover {{
+                background-color: {theme['btn_clear_hover']};
+            }}
+        """)
+
+        # Packages button styling & icon
+        self.packages_btn.setIcon(render_svg_icon(PACKAGE_SVG, size=13, color=theme["btn_clear_text"]))
+        self.packages_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
