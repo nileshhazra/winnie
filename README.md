@@ -1,59 +1,67 @@
-# 🐻 Winnie — Python for Everyone
+# Winnie
 
-A modern, lightweight, beginner-friendly Python IDE for macOS inspired by [Thonny](https://github.com/thonny/thonny). Built from scratch with **PySide6 (Qt for Python)**.
+A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS, built with PySide6 (Qt for Python). 
 
-![macOS](https://img.shields.io/badge/platform-macOS-blue.svg)
-![Python](https://img.shields.io/badge/python-3.10+-brightgreen.svg)
-![License](https://img.shields.io/badge/license-MIT-purple.svg)
+Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, and an interactive shell within a clean, modern macOS interface.
 
 ---
 
-## ✨ Features
+## Interface
 
-- **🐾 Step-by-Step Visual Debugger**: Step through code line-by-line (`F7` / `⌘⌥S`). Watch an amber execution highlight and line pointer advance as you trace logic.
-- **✦ Live Variables Inspector**: Real-time table tracking variable names, types, and values as code executes.
-- **⚡ Safe Execution Engine**: Runs user code in an isolated subprocess (`QProcess`). Infinite loops or crashes never freeze the IDE.
-- **💬 Interactive Terminal**: Supports user `input()` with real-time streaming standard I/O.
-- **🎨 Dark & Light Modes**: Beautiful themes with modern monochromatic vector icons.
-- **⌨️ Python Auto-Indentation**: Automatic 4-space indentation after colons (`:`), PEP 8 tab key, and smart backspacing.
-- **🍎 Native macOS Integration**:
-  - Unsaved dot (`●`) in the red close button and title bar.
-  - Native macOS Menu Bar (`File` menu).
-  - High-DPI Liquid Glass icon.
+### Dark Mode
+![Winnie Dark Mode](assets/winnie-dark.png)
+
+### Light Mode
+![Winnie Light Mode](assets/winnie-light.png)
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## Architectural Highlights
 
-| Shortcut | Action |
+- **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
+- **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.
+- **Interactive Standard Streams**: Bidirectional, unbuffered communication channel between the GUI shell and the running process. Fully supports interactive `input()` calls with input boundary protection.
+- **Runtime Scope Inspector**: Real-time inspection table displaying variable identifiers, dynamic types, and serialized string representations after each statement or script execution.
+- **Editor & Formatting**: Custom code editor featuring line numbers, active line indicators, syntax highlighting, and PEP 8 automatic indentation (auto-indent after colons, soft-tabs, and block un-indentation).
+- **macOS System Integration**: Native macOS menu bar, file lifecycle management (New, Open, Save, Save As), document dirty state tracking (`setWindowModified`), and custom high-DPI application icons.
+
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Description |
 | :--- | :--- |
-| `⌘ ⏎` | **Run Script** |
-| `F7` / `⌘ ⌥ S` | **Step Line-by-Line** (Debugger) |
-| `⌘ .` or `⎋` | **Stop Execution** |
-| `⌘ K` | **Clear Terminal & Variables** |
-| `⌘ T` | **Toggle Dark / Light Theme** |
-| `⌘ J` | **Toggle Bottom Terminal** |
-| `⌘ L` | **Toggle Variables Panel** |
-| `⌘ +` / `⌘ -` | **Zoom In / Out** (Fonts) |
-| `⌘ 0` | **Reset Font Zoom** |
-| `⌘ S` / `⌘ ⇧ S` | **Save / Save As** |
-| `⌘ O` / `⌘ N` | **Open / New File** |
+| `Cmd + Return` | Execute current script |
+| `F7` / `Cmd + Option + S` | Step to next line (Visual Debugger) |
+| `Cmd + .` / `Escape` | Terminate running process |
+| `Cmd + K` | Clear console output and scope table |
+| `Cmd + T` / `Cmd + Shift + T` | Toggle Dark / Light theme |
+| `Cmd + J` | Toggle console terminal visibility |
+| `Cmd + L` | Toggle variables inspector visibility |
+| `Cmd + +` | Increase font size across all panes |
+| `Cmd + -` | Decrease font size across all panes |
+| `Cmd + 0` | Reset font size to default (13pt) |
+| `Cmd + S` | Save current file |
+| `Cmd + Shift + S` | Save current file as |
+| `Cmd + O` | Open existing Python file |
+| `Cmd + N` | Create new file |
 
 ---
 
-## 🛠️ Running from Source
+## Installation and Execution
 
-### Prerequisites
-- macOS (Apple Silicon or Intel)
-- Python 3.10+
+### System Requirements
+- macOS 12.0 (Monterey) or later (Apple Silicon or Intel)
+- Python 3.10 or higher
 
-### Setup
+### Running from Source
+
 ```bash
 # 1. Clone the repository
 git clone https://github.com/YOUR_USERNAME/winnie.git
 cd winnie
 
-# 2. Create and activate virtual environment
+# 2. Create and activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
@@ -66,17 +74,40 @@ python main.py
 
 ---
 
-## 📦 Building Standalone `Winnie.app`
+## Building the Standalone macOS Application
+
+Winnie can be packaged into a native macOS `.app` bundle containing high-DPI application icons and bundled runner scripts:
 
 ```bash
-# Build standalone macOS .app bundle
+# Compile Winnie.app using the automated build script
 bash build_app.sh
 
-# Open the compiled app in Finder
+# Reveal the compiled bundle in Finder
 open dist
+```
+
+The resulting `dist/Winnie.app` can be deployed directly to `/Applications`.
+
+---
+
+## Continuous Integration and Automated Releases
+
+The repository includes a GitHub Actions workflow (`.github/workflows/release.yml`) configured for automated macOS application builds and distribution:
+
+1. When a version tag matching `v*` (e.g., `v1.0.0`) is pushed to GitHub, a macOS runner automatically checks out the codebase.
+2. Dependencies are provisioned and `build_app.sh` compiles the standalone `Winnie.app` bundle.
+3. The bundle is compressed into a `.zip` archive and published as an asset under GitHub Releases with generated changelogs.
+
+### Creating a Release
+
+```bash
+# Tag the current commit and push to trigger automated deployment
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ---
 
-## 📄 License
-This project is open-source under the [MIT License](LICENSE).
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for complete details.
