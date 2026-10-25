@@ -25,6 +25,7 @@ from console import InteractiveConsole
 from variables_view import VariablesView
 from assistant import AssistantView, parse_traceback
 from package_manager import PackageManagerDialog
+from problems import ProblemsListDialog, ProblemDescriptionWidget, ProblemSolutionWidget
 from theme import DARK_THEME, LIGHT_THEME
 from icons import (
     render_svg_icon,
@@ -32,6 +33,7 @@ from icons import (
     STOP_SVG,
     STEP_SVG,
     PACKAGE_SVG,
+    PROBLEMS_SVG,
     CLEAR_SVG,
     MOON_SVG,
     SUN_SVG,
@@ -111,6 +113,19 @@ class WinnieIDE(QMainWindow):
         self.variables_view = VariablesView(theme=self.current_theme)
         self.assistant_view = AssistantView(theme=self.current_theme)
         self.assistant_view.jump_to_line_requested.connect(self.jump_to_line)
+
+        # Practice Problems views & state
+        self.active_problem_title = None
+        self.is_problem_mode = False
+        self.problem_desc_widget = ProblemDescriptionWidget(theme=self.current_theme)
+        self.problem_sol_widget = ProblemSolutionWidget(theme=self.current_theme)
+        self.problem_sol_widget.copy_to_editor_requested.connect(self.load_solution_to_editor)
+
+        self.exit_problem_btn = QPushButton("✕ Exit Problem")
+        self.exit_problem_btn.setFont(QFont("SF Pro Text", 11))
+        self.exit_problem_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.exit_problem_btn.setToolTip("Return to Variables & Assistant")
+        self.exit_problem_btn.clicked.connect(self.exit_problem_mode)
 
         self.right_tabs = QTabWidget()
         self.right_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideNone)
@@ -229,11 +244,63 @@ class WinnieIDE(QMainWindow):
         pkg_action.setShortcut(QKeySequence("Ctrl+Shift+P"))
         pkg_action.triggered.connect(self.open_package_manager)
 
+        problems_action = tools_menu.addAction("Practice Problems...")
+        problems_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
+        problems_action.triggered.connect(self.open_problems_dialog)
+
     def open_package_manager(self):
         """Opens the graphical pip package manager dialog."""
         python_bin = get_python_interpreter()
         dlg = PackageManagerDialog(self, python_executable=python_bin, theme=self.current_theme)
         dlg.exec()
+
+    def open_problems_dialog(self):
+        """Opens the practice problems selection dialog."""
+        dlg = ProblemsListDialog(self, theme=self.current_theme)
+        dlg.problem_selected.connect(self.load_problem)
+        dlg.exec()
+
+    def load_problem(self, problem: dict):
+        """Loads a practice problem into the editor and sets right panel to Description/Solution."""
+        if not self.maybe_save():
+            return
+
+        starter_code = problem.get("starter_code", "")
+        self.editor.setPlainText(starter_code)
+        self.current_file_path = None
+        self.is_modified = False
+        self.active_problem_title = problem.get("raw_title", problem.get("title"))
+        self.update_window_title()
+
+        self.problem_desc_widget.set_problem(problem)
+        self.problem_sol_widget.set_problem(problem)
+
+        self.is_problem_mode = True
+        self.right_tabs.clear()
+        self.right_tabs.addTab(self.problem_desc_widget, "Description")
+        self.right_tabs.addTab(self.problem_sol_widget, "Solution")
+        self.right_tabs.setCornerWidget(self.exit_problem_btn, Qt.Corner.TopRightCorner)
+        self.right_tabs.setCurrentWidget(self.problem_desc_widget)
+
+        if not self.right_tabs.isVisible():
+            self.right_tabs.show()
+
+    def exit_problem_mode(self):
+        """Exits problem mode and restores the standard Variables & Assistant tabs."""
+        self.is_problem_mode = False
+        self.active_problem_title = None
+        self.right_tabs.setCornerWidget(None)
+        self.right_tabs.clear()
+        self.right_tabs.addTab(self.variables_view, "Variables")
+        self.right_tabs.addTab(self.assistant_view, "Assistant")
+        self.update_window_title()
+
+    def load_solution_to_editor(self, solution_code: str):
+        """Loads reference solution code into editor upon request."""
+        self.editor.setPlainText(solution_code)
+        self.is_modified = True
+        self.update_window_title()
+        self.console.append_output("\n[Solution copied to editor]\n")
 
     def on_text_changed(self):
         """Called whenever code in the editor is modified."""
@@ -243,7 +310,10 @@ class WinnieIDE(QMainWindow):
 
     def update_window_title(self):
         """Updates the macOS window title and native unsaved indicator."""
-        filename = os.path.basename(self.current_file_path) if self.current_file_path else "Untitled"
+        if self.active_problem_title:
+            filename = self.active_problem_title
+        else:
+            filename = os.path.basename(self.current_file_path) if self.current_file_path else "Untitled"
         self.setWindowModified(self.is_modified)
         mod_marker = " ●" if self.is_modified else ""
         self.setWindowTitle(f"{filename}{mod_marker} — Winnie")
@@ -253,7 +323,7 @@ class WinnieIDE(QMainWindow):
         if not self.is_modified:
             return True
 
-        filename = os.path.basename(self.current_file_path) if self.current_file_path else "Untitled"
+        filename = self.active_problem_title if self.active_problem_title else (os.path.basename(self.current_file_path) if self.current_file_path else "Untitled")
         reply = QMessageBox.question(
             self,
             "Unsaved Changes",
@@ -272,6 +342,8 @@ class WinnieIDE(QMainWindow):
         """Creates a new empty file (Cmd + N)."""
         if not self.maybe_save():
             return
+        if self.is_problem_mode:
+            self.exit_problem_mode()
         self.current_file_path = None
         self.editor.setPlainText("")
         self.is_modified = False
@@ -289,6 +361,8 @@ class WinnieIDE(QMainWindow):
         try:
             with open(path, "r", encoding="utf-8") as f:
                 content = f.read()
+            if self.is_problem_mode:
+                self.exit_problem_mode()
             self.current_file_path = path
             self.editor.setPlainText(content)
             self.is_modified = False
@@ -512,6 +586,15 @@ class WinnieIDE(QMainWindow):
         self.packages_btn.clicked.connect(self.open_package_manager)
         layout.addWidget(self.packages_btn)
 
+        # 7. Problems Button (Practice Problems)
+        self.problems_btn = QPushButton(" Problems")
+        self.problems_btn.setToolTip("Explore Practice Problems (⌘⇧R)")
+        self.problems_btn.setFont(QFont("SF Pro Text", 12))
+        self.problems_btn.setIconSize(QSize(14, 14))
+        self.problems_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.problems_btn.clicked.connect(self.open_problems_dialog)
+        layout.addWidget(self.problems_btn)
+
         layout.addStretch()  # Spacer
 
         # 5. Monochromatic Theme Toggle Button (Moon / Sun SVG)
@@ -581,6 +664,37 @@ class WinnieIDE(QMainWindow):
             }}
         """)
 
+        # Problems button styling & icon
+        self.problems_btn.setIcon(render_svg_icon(PROBLEMS_SVG, size=13, color=theme["btn_clear_text"]))
+        self.problems_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 8px;
+                padding: 6px 14px;
+            }}
+            QPushButton:hover {{
+                background-color: {theme['btn_clear_hover']};
+            }}
+        """)
+
+        # Exit problem button styling
+        self.exit_problem_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 5px;
+                padding: 3px 8px;
+                margin-right: 6px;
+                margin-top: 4px;
+            }}
+            QPushButton:hover {{
+                background-color: {theme['btn_clear_hover']};
+            }}
+        """)
+
         # Theme toggle button styling & monochromatic icon
         if theme["name"] == "dark":
             self.theme_btn.setText(" Light")
@@ -636,6 +750,8 @@ class WinnieIDE(QMainWindow):
         self.console.apply_theme(theme)
         self.variables_view.apply_theme(theme)
         self.assistant_view.apply_theme(theme)
+        self.problem_desc_widget.apply_theme(theme)
+        self.problem_sol_widget.apply_theme(theme)
 
     def clear_all(self):
         self.console.clear()
@@ -795,7 +911,8 @@ class WinnieIDE(QMainWindow):
         error_info = parse_traceback(full_stderr)
         if error_info:
             self.assistant_view.show_error(error_info)
-            self.right_tabs.setCurrentWidget(self.assistant_view)
+            if self.right_tabs.indexOf(self.assistant_view) != -1:
+                self.right_tabs.setCurrentWidget(self.assistant_view)
             if error_info.get("line_number"):
                 self.editor.set_debug_line(error_info["line_number"])
         elif exit_code == 0:
