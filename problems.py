@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QLineEdit,
 )
-from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush
+from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush, QLinearGradient
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF
 from theme import DARK_THEME
 from highlighter import PythonHighlighter
@@ -601,7 +601,9 @@ class BigOGraphWidget(QWidget):
         super().__init__(parent)
         self.highlight_id = highlight_id
         self.current_theme = theme
-        self.setMinimumHeight(280)
+        self.setMinimumHeight(290)
+        self.setMaximumHeight(330)
+        self.setMaximumWidth(700)
 
         # Standard complexity curves definition
         self.curves = [
@@ -673,58 +675,86 @@ class BigOGraphWidget(QWidget):
         h = self.height()
         is_dark = self.current_theme.get("name", "dark") == "dark"
 
-        # 1. Background fill
+        # 1. Background card fill with rounded rect & subtle border
+        card_rect = QRectF(0.5, 0.5, w - 1.0, h - 1.0)
         bg_color = QColor(self.current_theme.get("table_bg", "#141416"))
-        painter.fillRect(self.rect(), bg_color)
+        border_color = QColor(self.current_theme.get("border_color", "#27272a"))
+        painter.setPen(QPen(border_color, 1))
+        painter.setBrush(QBrush(bg_color))
+        painter.drawRoundedRect(card_rect, 8, 8)
 
         # Plot boundaries
         x0 = 55
-        y0 = h - 35
+        y0 = h - 36
         plot_w = w - 165
-        plot_h = h - 65
+        plot_h = h - 68
 
-        # 2. Subtle Grid Lines
-        grid_pen = QPen(QColor(255, 255, 255, 18) if is_dark else QColor(0, 0, 0, 18), 1, Qt.PenStyle.DashLine)
+        # 2. Horizontal Complexity Tier Zones (Subtle heat map backdrop)
+        # Zone 1: Safe / Optimal (0 - 30% of height)
+        opt_y = y0 - 0.30 * plot_h
+        opt_h = 0.30 * plot_h
+        painter.fillRect(QRectF(x0, opt_y, plot_w, opt_h), QColor(16, 185, 129, 12 if is_dark else 18))
+
+        # Zone 2: Fair / Moderate (30% - 65% of height)
+        fair_y = y0 - 0.65 * plot_h
+        fair_h = 0.35 * plot_h
+        painter.fillRect(QRectF(x0, fair_y, plot_w, fair_h), QColor(234, 179, 8, 10 if is_dark else 15))
+
+        # Zone 3: Danger / Horrible (65% - 100% of height)
+        bad_y = y0 - plot_h
+        bad_h = 0.35 * plot_h
+        painter.fillRect(QRectF(x0, bad_y, plot_w, bad_h), QColor(239, 68, 68, 12 if is_dark else 18))
+
+        # Zone faint watermark labels inside the plot
+        painter.setFont(QFont("SF Pro Text", 8, QFont.Weight.Bold))
+        painter.setPen(QPen(QColor(239, 68, 68, 65 if is_dark else 85)))
+        painter.drawText(x0 + 14, int(bad_y + 16), "HIGH COMPLEXITY ZONE")
+
+        painter.setPen(QPen(QColor(234, 179, 8, 60 if is_dark else 80)))
+        painter.drawText(x0 + 14, int(fair_y + 16), "MODERATE COMPLEXITY ZONE")
+
+        painter.setPen(QPen(QColor(16, 185, 129, 65 if is_dark else 85)))
+        painter.drawText(x0 + 14, int(opt_y + 16), "OPTIMAL / SCALABLE ZONE")
+
+        # 3. Subtle Grid Lines (Zone boundaries and vertical partitions)
+        grid_pen = QPen(QColor(255, 255, 255, 20) if is_dark else QColor(0, 0, 0, 20), 1, Qt.PenStyle.DashLine)
         painter.setPen(grid_pen)
+        painter.drawLine(x0, int(opt_y), x0 + plot_w, int(opt_y))
+        painter.drawLine(x0, int(fair_y), x0 + plot_w, int(fair_y))
         for step in (0.25, 0.5, 0.75):
-            gy = int(y0 - step * plot_h)
-            painter.drawLine(x0, gy, x0 + plot_w, gy)
             gx = int(x0 + step * plot_w)
             painter.drawLine(gx, y0, gx, y0 - plot_h)
 
-        # 3. Axes
-        axis_pen = QPen(QColor(self.current_theme.get("border_color", "#27272a")), 1.5)
+        # 4. Axes
+        axis_pen = QPen(border_color, 1.5)
         painter.setPen(axis_pen)
         painter.drawLine(x0, y0, x0 + plot_w + 10, y0)
         painter.drawLine(x0, y0, x0, y0 - plot_h - 10)
 
         # Arrowheads
-        painter.setBrush(QBrush(QColor(self.current_theme.get("border_color", "#27272a"))))
-        # X-arrow
+        painter.setBrush(QBrush(border_color))
         arrow_x = [QPointF(x0 + plot_w + 15, y0), QPointF(x0 + plot_w + 8, y0 - 4), QPointF(x0 + plot_w + 8, y0 + 4)]
         painter.drawPolygon(arrow_x)
-        # Y-arrow
         arrow_y = [QPointF(x0, y0 - plot_h - 15), QPointF(x0 - 4, y0 - plot_h - 8), QPointF(x0 + 4, y0 - plot_h - 8)]
         painter.drawPolygon(arrow_y)
 
         # Axis Labels
-        painter.setFont(QFont("SF Pro Text", 10, QFont.Weight.Medium))
+        painter.setFont(QFont("SF Pro Text", 9, QFont.Weight.Medium))
         painter.setPen(QPen(QColor(self.current_theme.get("table_header_text", "#71717a"))))
-        painter.drawText(x0 + plot_w - 70, y0 + 24, "Elements (n) →")
+        painter.drawText(x0 + plot_w - 70, y0 + 22, "Elements (n) →")
 
         painter.save()
-        painter.translate(x0 - 35, y0 - plot_h // 2 + 30)
+        painter.translate(x0 - 32, y0 - plot_h // 2 + 30)
         painter.rotate(-90)
         painter.drawText(0, 0, "Operations (Time) →")
         painter.restore()
 
-        # 4. Draw Curves (Draw non-highlighted curves first, then highlighted curve on top)
+        # 5. Draw Curves (Store endpoints for collision-free label placement)
         highlighted_curve = None
-        highlighted_point = None
+        end_labels = []
 
         for curve in self.curves:
-            is_active = (curve["id"] == self.highlight_id)
-            if is_active:
+            if curve["id"] == self.highlight_id:
                 highlighted_curve = curve
                 continue
 
@@ -740,23 +770,29 @@ class BigOGraphWidget(QWidget):
                 path.lineTo(px, py)
                 last_pt = QPointF(px, py)
 
-            # Subdued curve stroke
             c_color = QColor(curve["color"])
-            c_color.setAlpha(65 if is_dark else 85)
-            painter.setPen(QPen(c_color, 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            c_color.setAlpha(60 if is_dark else 80)
+            painter.setPen(QPen(c_color, 1.6, Qt.PenStyle.DashLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
             painter.drawPath(path)
 
-            # Subdued end label
-            painter.setFont(QFont("SF Pro Text", 9))
             lbl_color = QColor(curve["color"])
-            lbl_color.setAlpha(120 if is_dark else 150)
-            painter.setPen(QPen(lbl_color))
-            painter.drawText(int(last_pt.x() + 8), int(last_pt.y() + 4), curve["label"].split(" - ")[0])
+            lbl_color.setAlpha(125 if is_dark else 155)
+            end_labels.append({
+                "y": last_pt.y() + 4,
+                "x": last_pt.x() + 8,
+                "color": lbl_color,
+                "text": curve["label"].split(" - ")[0],
+                "font": QFont("SF Pro Text", 9),
+                "is_active": False,
+            })
 
-        # 5. Draw the Active / Highlighted Curve
+        # 6. Draw Active / Highlighted Curve with Neon Glow & Gradient Fill
         if highlighted_curve:
             h_path = QPainterPath()
             h_path.moveTo(x0, y0)
+            fill_path = QPainterPath()
+            fill_path.moveTo(x0, y0)
+
             steps = 60
             last_pt = QPointF(x0, y0)
             marker_pt = QPointF(x0, y0)
@@ -767,50 +803,94 @@ class BigOGraphWidget(QWidget):
                 px = x0 + t * plot_w
                 py = y0 - min(1.0, val) * plot_h
                 h_path.lineTo(px, py)
+                fill_path.lineTo(px, py)
                 last_pt = QPointF(px, py)
-                if i == int(steps * 0.72):
+                if i == int(steps * 0.70):
                     marker_pt = QPointF(px, py)
 
-            # Glow line behind
-            glow_color = QColor(highlighted_curve["color"])
-            glow_color.setAlpha(45 if is_dark else 60)
-            painter.setPen(QPen(glow_color, 8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            fill_path.lineTo(last_pt.x(), y0)
+            fill_path.lineTo(x0, y0)
+            fill_path.closeSubpath()
+
+            # Luminous Area Fill under curve
+            fill_grad = QLinearGradient(x0, y0 - plot_h, x0, y0)
+            c_top = QColor(highlighted_curve["color"])
+            c_top.setAlpha(60 if is_dark else 75)
+            c_bot = QColor(highlighted_curve["color"])
+            c_bot.setAlpha(4)
+            fill_grad.setColorAt(0.0, c_top)
+            fill_grad.setColorAt(1.0, c_bot)
+            painter.fillPath(fill_path, fill_grad)
+
+            # Glow Layer 1 (Wide diffuse neon glow)
+            glow1 = QColor(highlighted_curve["color"])
+            glow1.setAlpha(32 if is_dark else 45)
+            painter.setPen(QPen(glow1, 10, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
             painter.drawPath(h_path)
 
-            # Vibrant main line
-            pen_color = QColor(highlighted_curve["color"])
-            painter.setPen(QPen(pen_color, 3.4, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            # Glow Layer 2 (Medium neon glow)
+            glow2 = QColor(highlighted_curve["color"])
+            glow2.setAlpha(70 if is_dark else 85)
+            painter.setPen(QPen(glow2, 5, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
             painter.drawPath(h_path)
 
-            # End label with badge style
-            painter.setFont(QFont("SF Pro Text", 10, QFont.Weight.Bold))
-            painter.setPen(QPen(pen_color))
-            painter.drawText(int(last_pt.x() + 8), int(last_pt.y() + 4), highlighted_curve["label"])
+            # Layer 3 (Vibrant crisp core stroke)
+            core_pen = QColor(highlighted_curve["color"])
+            painter.setPen(QPen(core_pen, 2.8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            painter.drawPath(h_path)
 
-            # Highlight Marker Dot on Curve
-            painter.setBrush(QBrush(glow_color))
+            end_labels.append({
+                "y": last_pt.y() + 4,
+                "x": last_pt.x() + 8,
+                "color": core_pen,
+                "text": highlighted_curve["label"],
+                "font": QFont("SF Pro Text", 10, QFont.Weight.Bold),
+                "is_active": True,
+            })
+
+            # Beacon Target Point
+            halo_color = QColor(highlighted_curve["color"])
+            halo_color.setAlpha(60 if is_dark else 80)
+            painter.setBrush(QBrush(halo_color))
             painter.setPen(Qt.PenStyle.NoPen)
-            painter.drawEllipse(marker_pt, 8, 8)
-            painter.setBrush(QBrush(QColor("#ffffff")))
-            painter.drawEllipse(marker_pt, 4, 4)
+            painter.drawEllipse(marker_pt, 10, 10)
 
-            # Callout Bubble: "★ Your Solution"
-            callout_text = f"★ Your Solution: {highlighted_curve['label'].split(' - ')[0]}"
+            painter.setBrush(QBrush(core_pen))
+            painter.drawEllipse(marker_pt, 6, 6)
+
+            painter.setBrush(QBrush(QColor("#ffffff")))
+            painter.drawEllipse(marker_pt, 3, 3)
+
+            # Floating Callout Pill Badge: "★ Current: O(...)"
+            callout_text = f"★ Current: {highlighted_curve['label'].split(' - ')[0]}"
             painter.setFont(QFont("SF Pro Text", 9, QFont.Weight.Bold))
             fm = painter.fontMetrics()
-            tw = fm.horizontalAdvance(callout_text) + 16
+            tw = fm.horizontalAdvance(callout_text) + 18
             th = 22
 
-            # Position callout slightly above marker
-            cx = max(x0 + 10, min(w - tw - 20, marker_pt.x() - tw // 2))
-            cy = max(10.0, marker_pt.y() - 32)
+            cx = max(x0 + 8.0, min(float(w - tw - 20), marker_pt.x() - tw / 2.0))
+            cy = max(10.0, marker_pt.y() - 34.0)
 
             bubble_rect = QRectF(cx, cy, tw, th)
-            painter.setBrush(QBrush(pen_color))
+            painter.setBrush(QBrush(core_pen))
+            painter.setPen(QPen(QColor(255, 255, 255, 120), 1))
             painter.drawRoundedRect(bubble_rect, 6, 6)
 
-            painter.setPen(QPen(QColor("#ffffff" if is_dark or highlighted_curve["id"] != "O(n)" else "#18181b")))
+            text_color = QColor("#ffffff" if is_dark or highlighted_curve["id"] != "O(n)" else "#18181b")
+            painter.setPen(QPen(text_color))
             painter.drawText(bubble_rect, Qt.AlignmentFlag.AlignCenter, callout_text)
+
+        # 7. Render Collision-Free End Labels
+        end_labels.sort(key=lambda item: item["y"])
+        min_spacing = 15
+        for i in range(1, len(end_labels)):
+            if end_labels[i]["y"] - end_labels[i-1]["y"] < min_spacing:
+                end_labels[i]["y"] = end_labels[i-1]["y"] + min_spacing
+
+        for lbl in end_labels:
+            painter.setFont(lbl["font"])
+            painter.setPen(QPen(lbl["color"]))
+            painter.drawText(int(lbl["x"]), int(lbl["y"]), lbl["text"])
 
         painter.end()
 
@@ -828,53 +908,79 @@ class BigOComplexityDialog(QDialog):
         self.problem = problem or {}
         self.current_theme = theme
         self.setWindowTitle("Big-O Complexity Guide")
-        self.resize(650, 520)
+        self.resize(720, 560)
+        self.setMinimumSize(620, 480)
 
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(18, 18, 18, 18)
+        # Outer root layout: centers content if maximized or expanded
+        root_layout = QVBoxLayout(self)
+        root_layout.setContentsMargins(18, 18, 18, 18)
+        root_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+
+        # Centered container with max width constraint
+        self.container = QWidget()
+        self.container.setMaximumWidth(700)
+        layout = QVBoxLayout(self.container)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(14)
+        root_layout.addWidget(self.container)
 
         # 1. Header Card with Problem Complexity Info
-        header_card = QFrame()
-        header_card.setObjectName("headerCard")
-        card_layout = QVBoxLayout(header_card)
-        card_layout.setContentsMargins(14, 12, 14, 12)
-        card_layout.setSpacing(8)
+        self.header_card = QFrame()
+        self.header_card.setObjectName("headerCard")
+        card_layout = QVBoxLayout(self.header_card)
+        card_layout.setContentsMargins(16, 14, 16, 14)
+        card_layout.setSpacing(10)
 
         # Title row
         title_row = QHBoxLayout()
+        title_row.setSpacing(10)
         prob_name = self.problem.get("title", "Practice Problem")
         self.title_label = QLabel(f"Complexity Analysis • {prob_name}")
         self.title_label.setFont(QFont("SF Pro Display", 13, QFont.Weight.Bold))
         title_row.addWidget(self.title_label)
         title_row.addStretch()
 
-        # Badges
+        # Badges with Monotone Vector Icons
         t_comp = self.problem.get("time_complexity", "O(n)")
         s_comp = self.problem.get("space_complexity", "O(1)")
 
-        self.t_badge = QLabel(f"Time: {t_comp}")
-        self.t_badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        self.t_badge.setStyleSheet("""
-            background-color: #0284c7;
-            color: #ffffff;
-            border-radius: 6px;
-            padding: 4px 10px;
-        """)
-        title_row.addWidget(self.t_badge)
+        # Time Pill
+        self.time_pill = QFrame()
+        self.time_pill.setObjectName("dialogTimePill")
+        time_pill_l = QHBoxLayout(self.time_pill)
+        time_pill_l.setContentsMargins(10, 5, 12, 5)
+        time_pill_l.setSpacing(6)
 
-        self.s_badge = QLabel(f"Space: {s_comp}")
-        self.s_badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        self.s_badge.setStyleSheet("""
-            background-color: #10b981;
-            color: #ffffff;
-            border-radius: 6px;
-            padding: 4px 10px;
-        """)
-        title_row.addWidget(self.s_badge)
+        self.time_icon = QLabel()
+        self.time_icon.setFixedSize(14, 14)
+        self.time_icon.setScaledContents(True)
+        time_pill_l.addWidget(self.time_icon)
+
+        self.time_label = QLabel(f"Time: {t_comp}")
+        self.time_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        time_pill_l.addWidget(self.time_label)
+        title_row.addWidget(self.time_pill)
+
+        # Space Pill
+        self.space_pill = QFrame()
+        self.space_pill.setObjectName("dialogSpacePill")
+        space_pill_l = QHBoxLayout(self.space_pill)
+        space_pill_l.setContentsMargins(10, 5, 12, 5)
+        space_pill_l.setSpacing(6)
+
+        self.space_icon = QLabel()
+        self.space_icon.setFixedSize(14, 14)
+        self.space_icon.setScaledContents(True)
+        space_pill_l.addWidget(self.space_icon)
+
+        self.space_label = QLabel(f"Space: {s_comp}")
+        self.space_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        space_pill_l.addWidget(self.space_label)
+        title_row.addWidget(self.space_pill)
+
         card_layout.addLayout(title_row)
 
-        # Explanation text
+        # Explanation text with comfortable line spacing and padding
         expl = self.problem.get(
             "complexity_explanation",
             "Calculates the asymptotic growth rate of execution time and auxiliary memory."
@@ -884,14 +990,14 @@ class BigOComplexityDialog(QDialog):
         self.expl_label.setWordWrap(True)
         card_layout.addWidget(self.expl_label)
 
-        layout.addWidget(header_card)
+        layout.addWidget(self.header_card)
 
-        # 2. Graph Vector Canvas
+        # 2. Graph Vector Canvas (Centered, max width 700px)
         highlight_key = self.problem.get("complexity_type", "O(n)")
         self.graph = BigOGraphWidget(highlight_id=highlight_key, theme=self.current_theme)
         layout.addWidget(self.graph)
 
-        # 3. Legend Rating Chips
+        # 3. Legend Rating Spectrum Chips
         legend_row = QHBoxLayout()
         legend_row.setSpacing(8)
 
@@ -905,27 +1011,29 @@ class BigOComplexityDialog(QDialog):
         ]
 
         active_id = self.problem.get("complexity_type", "O(n)")
+        self.legend_chips = []
         for cid, cname, col in chips_data:
             is_active = (cid == active_id) or (cid == "O(n²)" and active_id == "O(n^2)") or (cid == "O(2ⁿ)" and active_id == "O(2^n)")
             chip = QLabel(f"● {cid}\n{cname}")
             chip.setFont(QFont("SF Pro Text", 9, QFont.Weight.Bold if is_active else QFont.Weight.Normal))
             chip.setAlignment(Qt.AlignmentFlag.AlignCenter)
             border_style = f"2px solid {col}" if is_active else "1px solid rgba(120, 120, 120, 0.25)"
-            bg_style = "rgba(255, 255, 255, 0.08)" if is_active else "transparent"
+            bg_style = "rgba(255, 255, 255, 0.09)" if is_active else "transparent"
             chip.setStyleSheet(f"""
                 QLabel {{
                     border: {border_style};
                     background-color: {bg_style};
                     border-radius: 6px;
-                    padding: 5px 6px;
+                    padding: 6px 6px;
                     color: {col};
                 }}
             """)
             legend_row.addWidget(chip)
+            self.legend_chips.append(chip)
 
         layout.addLayout(legend_row)
 
-        # 4. Close Button
+        # 4. Bottom Controls: Close Button
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         self.close_btn = QPushButton("Got it")
@@ -937,7 +1045,7 @@ class BigOComplexityDialog(QDialog):
                 color: #ffffff;
                 border: none;
                 border-radius: 6px;
-                padding: 6px 18px;
+                padding: 7px 22px;
             }
             QPushButton:hover {
                 background-color: #1d4ed8;
@@ -952,6 +1060,22 @@ class BigOComplexityDialog(QDialog):
     def apply_theme(self, theme):
         self.current_theme = theme
         self.graph.apply_theme(theme)
+
+        # High quality monotone SVG icons
+        icon_color = theme.get("btn_clear_text", "#d4d4d8")
+        self.time_icon.setPixmap(render_svg_pixmap(TIME_SVG, size=14, color=icon_color))
+        self.space_icon.setPixmap(render_svg_pixmap(SPACE_SVG, size=14, color=icon_color))
+
+        pill_style = f"""
+            background-color: {theme['btn_clear_bg']};
+            border: 1px solid {theme['btn_clear_border']};
+            border-radius: 6px;
+        """
+        self.time_pill.setStyleSheet(pill_style)
+        self.space_pill.setStyleSheet(pill_style)
+        self.time_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600;")
+        self.space_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600;")
+
         self.setStyleSheet(f"""
             QDialog {{
                 background-color: {theme['window_bg']};

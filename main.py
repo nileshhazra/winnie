@@ -278,9 +278,6 @@ class WinnieIDE(QMainWindow):
 
     def load_problem(self, problem: dict):
         """Loads a practice problem into the editor and sets right panel to Description/Solution."""
-        if not self.maybe_save():
-            return
-
         starter_code = problem.get("starter_code", "")
         self.editor.setPlainText(starter_code)
         self.current_file_path = None
@@ -369,29 +366,11 @@ class WinnieIDE(QMainWindow):
         self.setWindowTitle(f"{filename}{mod_marker} — Winnie")
 
     def maybe_save(self) -> bool:
-        """Prompts to save if there are unsaved changes. Returns False if cancelled."""
-        if not self.is_modified:
-            return True
-
-        filename = self.active_problem_title if self.active_problem_title else (os.path.basename(self.current_file_path) if self.current_file_path else "Untitled")
-        reply = QMessageBox.question(
-            self,
-            "Unsaved Changes",
-            f"Do you want to save changes to '{filename}'?",
-            QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel,
-            QMessageBox.StandardButton.Save
-        )
-
-        if reply == QMessageBox.StandardButton.Save:
-            return self.save_file()
-        elif reply == QMessageBox.StandardButton.Cancel:
-            return False
-        return True  # Discard changes
+        """By default do not prompt to save; user can save via Cmd+S or File menu."""
+        return True
 
     def new_file(self):
         """Creates a new empty file (Cmd + N)."""
-        if not self.maybe_save():
-            return
         if self.is_problem_mode:
             self.exit_problem_mode()
         self.current_file_path = None
@@ -401,8 +380,6 @@ class WinnieIDE(QMainWindow):
 
     def open_file(self):
         """Opens an existing Python file from disk (Cmd + O)."""
-        if not self.maybe_save():
-            return
         path, _ = QFileDialog.getOpenFileName(
             self, "Open Python File", "", "Python Files (*.py);;All Files (*)"
         )
