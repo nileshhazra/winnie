@@ -121,17 +121,32 @@ class WinnieIDE(QMainWindow):
         self.problem_sol_widget = ProblemSolutionWidget(theme=self.current_theme)
         self.problem_sol_widget.copy_to_editor_requested.connect(self.load_solution_to_editor)
 
-        self.exit_problem_btn = QPushButton("✕ Exit Problem")
+        # Tab Corner Controls (Toggle Variables / Problem + Exit)
+        self.corner_widget = QWidget()
+        corner_layout = QHBoxLayout(self.corner_widget)
+        corner_layout.setContentsMargins(0, 0, 6, 0)
+        corner_layout.setSpacing(4)
+
+        self.tab_toggle_btn = QPushButton("✦ Variables")
+        self.tab_toggle_btn.setFont(QFont("SF Pro Text", 11))
+        self.tab_toggle_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.tab_toggle_btn.setToolTip("Switch to Variables Inspector")
+        self.tab_toggle_btn.clicked.connect(self.toggle_problem_variables_tab)
+        corner_layout.addWidget(self.tab_toggle_btn)
+
+        self.exit_problem_btn = QPushButton("✕")
         self.exit_problem_btn.setFont(QFont("SF Pro Text", 11))
         self.exit_problem_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.exit_problem_btn.setToolTip("Return to Variables & Assistant")
+        self.exit_problem_btn.setToolTip("Exit Problem Mode")
         self.exit_problem_btn.clicked.connect(self.exit_problem_mode)
+        corner_layout.addWidget(self.exit_problem_btn)
 
         self.right_tabs = QTabWidget()
         self.right_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideNone)
         self.right_tabs.setMinimumWidth(260)
         self.right_tabs.addTab(self.variables_view, "Variables")
         self.right_tabs.addTab(self.assistant_view, "Assistant")
+        self.right_tabs.currentChanged.connect(self.on_right_tab_changed)
 
         # 4. Master Horizontal Splitter
         self.main_splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -282,11 +297,21 @@ class WinnieIDE(QMainWindow):
         self.right_tabs.clear()
         self.right_tabs.addTab(self.problem_desc_widget, "Description")
         self.right_tabs.addTab(self.problem_sol_widget, "Solution")
-        self.right_tabs.setCornerWidget(self.exit_problem_btn, Qt.Corner.TopRightCorner)
+        self.right_tabs.addTab(self.variables_view, "Variables")
+        self.right_tabs.addTab(self.assistant_view, "Assistant")
+        self.right_tabs.setCornerWidget(self.corner_widget, Qt.Corner.TopRightCorner)
         self.right_tabs.setCurrentWidget(self.problem_desc_widget)
+        self.tab_toggle_btn.setText("✦ Variables")
+        self.tab_toggle_btn.setToolTip("Switch to Variables Inspector")
 
         if not self.right_tabs.isVisible():
             self.right_tabs.show()
+
+        # Ensure right panel has ample room for all 4 tabs + corner controls
+        sizes = self.main_splitter.sizes()
+        if len(sizes) == 2 and sizes[1] < 420:
+            total = sum(sizes) if sum(sizes) > 0 else 1060
+            self.main_splitter.setSizes([max(500, total - 420), 420])
 
     def exit_problem_mode(self):
         """Exits problem mode and restores the standard Variables & Assistant tabs."""
@@ -298,12 +323,34 @@ class WinnieIDE(QMainWindow):
         self.right_tabs.addTab(self.assistant_view, "Assistant")
         self.update_window_title()
 
+    def on_right_tab_changed(self, index: int):
+        """Updates the corner toggle button label based on which tab is active."""
+        if not self.is_problem_mode:
+            return
+        current = self.right_tabs.currentWidget()
+        if current in (self.problem_desc_widget, self.problem_sol_widget):
+            self.tab_toggle_btn.setText("✦ Variables")
+            self.tab_toggle_btn.setToolTip("Switch to Variables Inspector")
+        else:
+            self.tab_toggle_btn.setText("📝 Problem")
+            self.tab_toggle_btn.setToolTip("Switch to Problem Description")
+
+    def toggle_problem_variables_tab(self):
+        """One-click toggle between Problem View and Variables Inspector."""
+        if not self.is_problem_mode:
+            return
+        current = self.right_tabs.currentWidget()
+        if current in (self.problem_desc_widget, self.problem_sol_widget):
+            self.right_tabs.setCurrentWidget(self.variables_view)
+        else:
+            self.right_tabs.setCurrentWidget(self.problem_desc_widget)
+
     def load_solution_to_editor(self, solution_code: str):
         """Loads reference solution code into editor upon request."""
         self.editor.setPlainText(solution_code)
         self.is_modified = True
         self.update_window_title()
-        self.console.append_output("\n[Solution copied to editor]\n")
+        self.console.append_output("\n[Solution copied to editor — click Step or Variables tab to inspect live]\n")
 
     def on_text_changed(self):
         """Called whenever code in the editor is modified."""
@@ -686,19 +733,36 @@ class WinnieIDE(QMainWindow):
             }}
         """)
 
-        # Exit problem button styling
-        self.exit_problem_btn.setStyleSheet(f"""
+        # Tab corner controls (Toggle Variables / Problem + Exit button)
+        self.tab_toggle_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
                 border-radius: 5px;
                 padding: 3px 8px;
-                margin-right: 6px;
-                margin-top: 4px;
+                font-size: 11px;
+                font-weight: 500;
             }}
             QPushButton:hover {{
                 background-color: {theme['btn_clear_hover']};
+            }}
+        """)
+
+        self.exit_problem_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 5px;
+                padding: 3px 7px;
+                font-size: 11px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{
+                background-color: #ef4444;
+                color: #ffffff;
+                border-color: #dc2626;
             }}
         """)
 
@@ -850,6 +914,12 @@ class WinnieIDE(QMainWindow):
         self.step_btn.setEnabled(True)
         self.stop_btn.setEnabled(True)
 
+        # Auto-switch right tabs to Variables view when stepping
+        if self.right_tabs.indexOf(self.variables_view) != -1:
+            self.right_tabs.setCurrentWidget(self.variables_view)
+        if not self.right_tabs.isVisible():
+            self.right_tabs.show()
+
         runner_path = get_resource_path("runner.py")
         python_bin = get_python_interpreter()
         self.process.start(python_bin, ["-u", runner_path, "--step", target_path])
@@ -881,6 +951,8 @@ class WinnieIDE(QMainWindow):
                     vars_list = step_data.get("vars", [])
                     self.editor.set_debug_line(line_num)
                     self.variables_view.update_variables(vars_list)
+                    if self.right_tabs.indexOf(self.variables_view) != -1 and self.right_tabs.currentWidget() not in (self.variables_view, self.assistant_view):
+                        self.right_tabs.setCurrentWidget(self.variables_view)
                     self.is_paused_at_step = True
                     self.step_btn.setEnabled(True)
                     self.run_btn.setEnabled(True)
