@@ -1,3 +1,4 @@
+import math
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
@@ -12,14 +13,14 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QLineEdit,
 )
-from PySide6.QtGui import QFont, QColor
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush
+from PySide6.QtCore import Qt, Signal, QPointF, QRectF
 from theme import DARK_THEME
 from highlighter import PythonHighlighter
 
 
 # ==========================================================
-# Problems Database (Add new problems here)
+# Problems Database (All 14 Practice Problems)
 # ==========================================================
 PROBLEMS_DATA = [
     {
@@ -49,6 +50,12 @@ PROBLEMS_DATA = [
             "print(max_value([4, 7, 2, 8, 10, 9])) # -> 10\n"
             "print(max_value([10, 5, 40, 40.3]))   # -> 40.3\n"
             "print(max_value([-5, -2, -1, -11]))   # -> -1\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Iterates through the list of n numbers once, maintaining a maximum variable with constant O(1) auxiliary space."
         ),
     },
     {
@@ -80,6 +87,12 @@ PROBLEMS_DATA = [
             'print(longest_word("where there is a will there is a way")) # -> "there"\n'
             'print(longest_word("hello world")) # -> "world"\n'
         ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Splits the sentence into words in linear time O(n) and loops once through all words to find the longest."
+        ),
     },
     {
         "id": "all_even",
@@ -106,6 +119,12 @@ PROBLEMS_DATA = [
             "print(all_even([2, 4, 6, 8])) # -> True\n"
             "print(all_even([2, 3, 4, 6])) # -> False\n"
             "print(all_even([12]))         # -> True\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Iterates through the list of n numbers once, returning False immediately if any odd number is found."
         ),
     },
     {
@@ -144,6 +163,12 @@ PROBLEMS_DATA = [
             "print(is_prime(1))  # -> False\n"
             "print(is_prime(25)) # -> False\n"
         ),
+        "time_complexity": "O(√n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(sqrt(n))",
+        "complexity_explanation": (
+            "Tests factors up to floor(sqrt(n)) because if a number n has a factor larger than sqrt(n), its pair factor must be smaller than sqrt(n)."
+        ),
     },
     {
         "id": "fizz_buzz",
@@ -180,6 +205,12 @@ PROBLEMS_DATA = [
             "print(fizz_buzz(11))\n"
             "print(fizz_buzz(16))\n"
         ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Loops from 1 to n with constant-time modulo checks and appends each element to the result list."
+        ),
     },
     {
         "id": "pairs",
@@ -210,8 +241,715 @@ PROBLEMS_DATA = [
             "print(pairs([\"a\", \"b\", \"c\"]))\n"
             "print(pairs([\"red\", \"silver\", \"green\", \"blue\"]))\n"
         ),
+        "time_complexity": "O(n²)",
+        "space_complexity": "O(n²)",
+        "complexity_type": "O(n^2)",
+        "complexity_explanation": (
+            "Nested loop iterates over all pairs, resulting in n(n - 1)/2 iterations and quadratic storage space."
+        ),
+    },
+    {
+        "id": "anagrams",
+        "title": "7. anagrams",
+        "raw_title": "anagrams",
+        "description": (
+            "Write a function, anagrams, that takes in two strings as arguments. "
+            "The function should return a boolean indicating whether or not the strings are anagrams. "
+            "Anagrams are strings that contain the same characters, but in any order."
+        ),
+        "examples": (
+            "anagrams('restful', 'fluster') # -> True\n"
+            "anagrams('cats', 'tocs')       # -> False\n"
+            "anagrams('monkeyswrite', 'newyorktimes') # -> True\n"
+            "anagrams('paper', 'reapa')     # -> False"
+        ),
+        "starter_code": "def anagrams(s1, s2):\n  pass # todo\n",
+        "solution_code": (
+            "def anagrams(s1, s2):\n"
+            "    return char_count(s1) == char_count(s2)\n\n"
+            "def char_count(s):\n"
+            "    count = {}\n"
+            "    for char in s:\n"
+            "        if char not in count:\n"
+            "            count[char] = 0\n"
+            "        count[char] += 1\n"
+            "    return count\n\n"
+            "# Alternative using Counter:\n"
+            "# from collections import Counter\n"
+            "# def anagrams(s1, s2):\n"
+            "#     return Counter(s1) == Counter(s2)\n\n"
+            "# Example test cases:\n"
+            "print(anagrams('restful', 'fluster'))           # -> True\n"
+            "print(anagrams('cats', 'tocs'))                 # -> False\n"
+            "print(anagrams('monkeyswrite', 'newyorktimes')) # -> True\n"
+            "print(anagrams('paper', 'reapa'))               # -> False\n"
+        ),
+        "time_complexity": "O(n + m)",
+        "space_complexity": "O(n + m)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Counts character occurrences in both strings of lengths n and m, requiring linear time and space proportional to the distinct characters."
+        ),
+    },
+    {
+        "id": "most_frequent_char",
+        "title": "8. most frequent char",
+        "raw_title": "most frequent char",
+        "description": (
+            "Write a function, most_frequent_char, that takes in a string as an argument. "
+            "The function should return the most frequent character of the string. "
+            "If there are ties, return the character that appears earlier in the string.\n\n"
+            "You can assume that the input string is non-empty."
+        ),
+        "examples": (
+            "most_frequent_char('bookeeper')   # -> 'e'\n"
+            "most_frequent_char('david')       # -> 'd'\n"
+            "most_frequent_char('abby')        # -> 'b'\n"
+            "most_frequent_char('mississippi') # -> 'i'"
+        ),
+        "starter_code": "def most_frequent_char(s):\n  pass # todo\n",
+        "solution_code": (
+            "def most_frequent_char(s):\n"
+            "    count = {}\n"
+            "    for char in s:\n"
+            "        if char not in count:\n"
+            "            count[char] = 0\n"
+            "        count[char] += 1\n\n"
+            "    best = None\n"
+            "    for char in s:\n"
+            "        if best is None or count[char] > count[best]:\n"
+            "            best = char\n"
+            "    return best\n\n"
+            "# Alternative using Counter:\n"
+            "# from collections import Counter\n"
+            "# def most_frequent_char(s):\n"
+            "#     count = Counter(s)\n"
+            "#     best = None\n"
+            "#     for char in s:\n"
+            "#         if best is None or count[char] > count[best]:\n"
+            "#             best = char\n"
+            "#     return best\n\n"
+            "# Example test cases:\n"
+            "print(most_frequent_char('bookeeper'))   # -> 'e'\n"
+            "print(most_frequent_char('david'))       # -> 'd'\n"
+            "print(most_frequent_char('abby'))        # -> 'b'\n"
+            "print(most_frequent_char('mississippi')) # -> 'i'\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Constructs a frequency map in O(n) time, then iterates through the string once more to find the earliest most-frequent character."
+        ),
+    },
+    {
+        "id": "pair_sum",
+        "title": "9. pair sum",
+        "raw_title": "pair sum",
+        "description": (
+            "Write a function, pair_sum, that takes in a list and a target sum as arguments. "
+            "The function should return a tuple containing a pair of indices whose elements sum to the given target. "
+            "The indices returned must be unique.\n\n"
+            "Be sure to return the indices, not the elements themselves.\n\n"
+            "There is guaranteed to be one such pair that sums to the target."
+        ),
+        "examples": (
+            "pair_sum([3, 2, 5, 4, 1], 8)    # -> (0, 2) or (2, 0)\n"
+            "pair_sum([4, 7, 9, 2, 5, 1], 5)  # -> (0, 5) or (5, 0)\n"
+            "pair_sum([4, 7, 9, 2, 5, 1], 3)  # -> (3, 5) or (5, 3)\n"
+            "pair_sum([1, 6, 7, 2], 13)       # -> (1, 2) or (2, 1)"
+        ),
+        "starter_code": "def pair_sum(numbers, target_sum):\n  pass # todo\n",
+        "solution_code": (
+            "def pair_sum(numbers, target_sum):\n"
+            "    previous_numbers = {}\n\n"
+            "    for index, num in enumerate(numbers):\n"
+            "        complement = target_sum - num\n\n"
+            "        if complement in previous_numbers:\n"
+            "            return (index, previous_numbers[complement])\n\n"
+            "        previous_numbers[num] = index\n\n"
+            "# Example test cases:\n"
+            "print(pair_sum([3, 2, 5, 4, 1], 8))    # -> (0, 2) or (2, 0)\n"
+            "print(pair_sum([4, 7, 9, 2, 5, 1], 5))  # -> (0, 5) or (5, 0)\n"
+            "print(pair_sum([4, 7, 9, 2, 5, 1], 3))  # -> (3, 5) or (5, 3)\n"
+            "print(pair_sum([1, 6, 7, 2], 13))       # -> (1, 2) or (2, 1)\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Single pass through the list using a hash map to achieve instant O(1) average lookup for the required complement."
+        ),
+    },
+    {
+        "id": "pair_product",
+        "title": "10. pair product",
+        "raw_title": "pair product",
+        "description": (
+            "Write a function, pair_product, that takes in a list and a target product as arguments. "
+            "The function should return a tuple containing a pair of indices whose elements multiply to the given target. "
+            "The indices returned must be unique.\n\n"
+            "Be sure to return the indices, not the elements themselves.\n\n"
+            "There is guaranteed to be one such pair whose product is the target."
+        ),
+        "examples": (
+            "pair_product([3, 2, 5, 4, 1], 8)     # -> (1, 3) or (3, 1)\n"
+            "pair_product([3, 2, 5, 4, 1], 10)    # -> (1, 2) or (2, 1)\n"
+            "pair_product([4, 7, 9, 2, 5, 1], 35) # -> (1, 4) or (4, 1)\n"
+            "pair_product([4, 6, 8, 2], 16)       # -> (2, 3) or (3, 2)"
+        ),
+        "starter_code": "def pair_product(numbers, target_product):\n  pass # todo\n",
+        "solution_code": (
+            "def pair_product(numbers, target_product):\n"
+            "    previous_nums = {}\n\n"
+            "    for index, num in enumerate(numbers):\n"
+            "        complement = target_product / num\n\n"
+            "        if complement in previous_nums:\n"
+            "            return (index, previous_nums[complement])\n\n"
+            "        previous_nums[num] = index\n\n"
+            "# Example test cases:\n"
+            "print(pair_product([3, 2, 5, 4, 1], 8))     # -> (1, 3) or (3, 1)\n"
+            "print(pair_product([3, 2, 5, 4, 1], 10))    # -> (1, 2) or (2, 1)\n"
+            "print(pair_product([4, 7, 9, 2, 5, 1], 35)) # -> (1, 4) or (4, 1)\n"
+            "print(pair_product([4, 6, 8, 2], 16))       # -> (2, 3) or (3, 2)\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Single pass through the list using a hash map to achieve O(1) lookup for the target quotient complement."
+        ),
+    },
+    {
+        "id": "intersection",
+        "title": "11. intersection",
+        "raw_title": "intersection",
+        "description": (
+            "Write a function, intersection, that takes in two lists, a, b, as arguments. "
+            "The function should return a new list containing elements that are in both of the two lists.\n\n"
+            "You may assume that each input list does not contain duplicate elements."
+        ),
+        "examples": (
+            "intersection([4, 2, 1, 6], [3, 6, 9, 2, 10]) # -> [6, 2]\n"
+            "intersection([2, 4, 6], [4, 2])               # -> [4, 2]\n"
+            "intersection([4, 2, 1], [1, 2, 4, 6])         # -> [1, 2, 4]\n"
+            "intersection([0, 1, 2], [10, 11])             # -> []"
+        ),
+        "starter_code": "def intersection(a, b):\n  pass # todo\n",
+        "solution_code": (
+            "def intersection(a, b):\n"
+            "    set_a = set(a)\n"
+            "    return [item for item in b if item in set_a]\n\n"
+            "# Brute force alternative O(n * m):\n"
+            "# def intersection(a, b):\n"
+            "#     result = []\n"
+            "#     for item in b:\n"
+            "#         if item in a:\n"
+            "#             result.append(item)\n"
+            "#     return result\n\n"
+            "# Example test cases:\n"
+            "print(intersection([4, 2, 1, 6], [3, 6, 9, 2, 10])) # -> [6, 2]\n"
+            "print(intersection([2, 4, 6], [4, 2]))               # -> [4, 2]\n"
+            "print(intersection([4, 2, 1], [1, 2, 4, 6]))         # -> [1, 2, 4]\n"
+            "print(intersection([0, 1, 2], [10, 11]))             # -> []\n"
+        ),
+        "time_complexity": "O(n + m)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Converting list a into a set takes O(n) time and O(n) space; iterating through list b with O(1) set lookups takes O(m) time."
+        ),
+    },
+    {
+        "id": "exclusive_items",
+        "title": "12. exclusive items",
+        "raw_title": "exclusive items",
+        "description": (
+            "Write a function, exclusive_items, that takes in two lists, a, b, as arguments. "
+            "The function should return a new list containing elements that are in either list but not both lists.\n\n"
+            "You may assume that each input list does not contain duplicate elements."
+        ),
+        "examples": (
+            "exclusive_items([4, 2, 1, 6], [3, 6, 9, 2, 10]) # -> [4, 1, 3, 9, 10]\n"
+            "exclusive_items([2, 4, 6], [4, 2])               # -> [6]\n"
+            "exclusive_items([1, 2, 3], [1, 2, 3])            # -> []\n"
+            "exclusive_items([1, 2], [3, 4])                  # -> [1, 2, 3, 4]"
+        ),
+        "starter_code": "def exclusive_items(a, b):\n  pass # todo\n",
+        "solution_code": (
+            "def exclusive_items(a, b):\n"
+            "    difference = []\n"
+            "    set_a = set(a)\n"
+            "    set_b = set(b)\n\n"
+            "    for item in a:\n"
+            "        if item not in set_b:\n"
+            "            difference.append(item)\n\n"
+            "    for item in b:\n"
+            "        if item not in set_a:\n"
+            "            difference.append(item)\n\n"
+            "    return difference\n\n"
+            "# Example test cases:\n"
+            "print(exclusive_items([4, 2, 1, 6], [3, 6, 9, 2, 10])) # -> [4, 1, 3, 9, 10]\n"
+            "print(exclusive_items([2, 4, 6], [4, 2]))               # -> [6]\n"
+            "print(exclusive_items([1, 2, 3], [1, 2, 3]))            # -> []\n"
+            "print(exclusive_items([1, 2], [3, 4]))                  # -> [1, 2, 3, 4]\n"
+        ),
+        "time_complexity": "O(n + m)",
+        "space_complexity": "O(n + m)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Converting both lists into sets enables linear-time symmetric difference checking with constant-time set lookups."
+        ),
+    },
+    {
+        "id": "all_unique",
+        "title": "13. all unique",
+        "raw_title": "all unique",
+        "description": (
+            "Write a function, all_unique, that takes in a list. "
+            "The function should return a boolean indicating whether or not the list contains unique items."
+        ),
+        "examples": (
+            "all_unique([\"q\", \"r\", \"s\", \"a\"]) # -> True\n"
+            "all_unique([\"q\", \"r\", \"s\", \"q\"]) # -> False\n"
+            "all_unique([1, 2, 3, 4, 5])      # -> True\n"
+            "all_unique([])                   # -> True"
+        ),
+        "starter_code": "def all_unique(items):\n  pass # todo\n",
+        "solution_code": (
+            "def all_unique(items):\n"
+            "    unique_items = set(items)\n"
+            "    return len(unique_items) == len(items)\n\n"
+            "# Example test cases:\n"
+            "print(all_unique([\"q\", \"r\", \"s\", \"a\"])) # -> True\n"
+            "print(all_unique([\"q\", \"r\", \"s\", \"q\"])) # -> False\n"
+            "print(all_unique([1, 2, 3, 4, 5]))      # -> True\n"
+            "print(all_unique([]))                   # -> True\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Building a set from list of length n takes O(n) average time and space; comparing set length to list length is O(1)."
+        ),
+    },
+    {
+        "id": "intersection_with_dupes",
+        "title": "14. intersection with dupes",
+        "raw_title": "intersection with dupes",
+        "description": (
+            "Write a function, intersection_with_dupes, that takes in two lists, a, b, as arguments. "
+            "The function should return a new list containing elements that are common to both input lists. "
+            "The elements in the result should appear as many times as they occur in both input lists.\n\n"
+            "You can return the result in any order."
+        ),
+        "examples": (
+            "intersection_with_dupes([1, 2, 2, 1], [2, 2])         # -> [2, 2]\n"
+            "intersection_with_dupes([4, 9, 5], [9, 4, 9, 8, 4])   # -> [4, 9] (any order)\n"
+            "intersection_with_dupes(['a', 'b', 'c'], ['x', 'y']) # -> []"
+        ),
+        "starter_code": "def intersection_with_dupes(a, b):\n  pass # todo\n",
+        "solution_code": (
+            "from collections import Counter\n\n"
+            "def intersection_with_dupes(a, b):\n"
+            "    count_a = Counter(a)\n"
+            "    count_b = Counter(b)\n"
+            "    result = []\n\n"
+            "    for ele in count_a:\n"
+            "        for i in range(0, min(count_a[ele], count_b[ele])):\n"
+            "            result.append(ele)\n\n"
+            "    return result\n\n"
+            "# Example test cases:\n"
+            "print(intersection_with_dupes([1, 2, 2, 1], [2, 2]))         # -> [2, 2]\n"
+            "print(intersection_with_dupes([4, 9, 5], [9, 4, 9, 8, 4]))   # -> [4, 9]\n"
+            "print(intersection_with_dupes(['a', 'b', 'c'], ['x', 'y'])) # -> []\n"
+        ),
+        "time_complexity": "O(n + m)",
+        "space_complexity": "O(n + m)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Counting frequencies with Counter takes O(n + m) time; finding minimum occurrences and building the result takes linear time."
+        ),
     },
 ]
+
+
+# ==========================================================
+# Aesthetic Big-O Complexity Graph Widget
+# ==========================================================
+class BigOGraphWidget(QWidget):
+    """
+    Renders an aesthetic vector comparison chart of standard Big-O curves,
+    highlighting the active problem's time complexity.
+    """
+    def __init__(self, highlight_id="O(n)", theme=DARK_THEME, parent=None):
+        super().__init__(parent)
+        self.highlight_id = highlight_id
+        self.current_theme = theme
+        self.setMinimumHeight(280)
+
+        # Standard complexity curves definition
+        self.curves = [
+            {
+                "id": "O(1)",
+                "label": "O(1) - Constant",
+                "tag": "Excellent",
+                "color": QColor("#10b981"),  # Emerald Green
+                "fn": lambda t: 0.05,
+            },
+            {
+                "id": "O(log n)",
+                "label": "O(log n) - Logarithmic",
+                "tag": "Good",
+                "color": QColor("#06b6d4"),  # Cyan
+                "fn": lambda t: 0.22 * (math.log(1 + 15 * t) / math.log(16)),
+            },
+            {
+                "id": "O(sqrt(n))",
+                "label": "O(√n) - Sublinear",
+                "tag": "Good",
+                "color": QColor("#38bdf8"),  # Sky Blue
+                "fn": lambda t: 0.36 * math.sqrt(t),
+            },
+            {
+                "id": "O(n)",
+                "label": "O(n) - Linear",
+                "tag": "Fair",
+                "color": QColor("#eab308"),  # Amber / Yellow
+                "fn": lambda t: 0.54 * t,
+            },
+            {
+                "id": "O(n log n)",
+                "label": "O(n log n) - Linearithmic",
+                "tag": "Moderate",
+                "color": QColor("#f97316"),  # Orange
+                "fn": lambda t: 0.76 * t * (math.log(1 + 7 * t) / math.log(8)),
+            },
+            {
+                "id": "O(n^2)",
+                "label": "O(n²) - Quadratic",
+                "tag": "Horrible",
+                "color": QColor("#ef4444"),  # Red
+                "fn": lambda t: 0.96 * (t ** 2),
+            },
+            {
+                "id": "O(2^n)",
+                "label": "O(2ⁿ) - Exponential",
+                "tag": "Infeasible",
+                "color": QColor("#dc2626"),  # Crimson
+                "fn": lambda t: min(1.0, 0.06 * (2 ** (4.5 * t) - 1)),
+            },
+        ]
+
+    def set_highlight(self, highlight_id):
+        self.highlight_id = highlight_id
+        self.update()
+
+    def apply_theme(self, theme):
+        self.current_theme = theme
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+
+        w = self.width()
+        h = self.height()
+        is_dark = self.current_theme.get("name", "dark") == "dark"
+
+        # 1. Background fill
+        bg_color = QColor(self.current_theme.get("table_bg", "#141416"))
+        painter.fillRect(self.rect(), bg_color)
+
+        # Plot boundaries
+        x0 = 55
+        y0 = h - 35
+        plot_w = w - 165
+        plot_h = h - 65
+
+        # 2. Subtle Grid Lines
+        grid_pen = QPen(QColor(255, 255, 255, 18) if is_dark else QColor(0, 0, 0, 18), 1, Qt.PenStyle.DashLine)
+        painter.setPen(grid_pen)
+        for step in (0.25, 0.5, 0.75):
+            gy = int(y0 - step * plot_h)
+            painter.drawLine(x0, gy, x0 + plot_w, gy)
+            gx = int(x0 + step * plot_w)
+            painter.drawLine(gx, y0, gx, y0 - plot_h)
+
+        # 3. Axes
+        axis_pen = QPen(QColor(self.current_theme.get("border_color", "#27272a")), 1.5)
+        painter.setPen(axis_pen)
+        painter.drawLine(x0, y0, x0 + plot_w + 10, y0)
+        painter.drawLine(x0, y0, x0, y0 - plot_h - 10)
+
+        # Arrowheads
+        painter.setBrush(QBrush(QColor(self.current_theme.get("border_color", "#27272a"))))
+        # X-arrow
+        arrow_x = [QPointF(x0 + plot_w + 15, y0), QPointF(x0 + plot_w + 8, y0 - 4), QPointF(x0 + plot_w + 8, y0 + 4)]
+        painter.drawPolygon(arrow_x)
+        # Y-arrow
+        arrow_y = [QPointF(x0, y0 - plot_h - 15), QPointF(x0 - 4, y0 - plot_h - 8), QPointF(x0 + 4, y0 - plot_h - 8)]
+        painter.drawPolygon(arrow_y)
+
+        # Axis Labels
+        painter.setFont(QFont("SF Pro Text", 10, QFont.Weight.Medium))
+        painter.setPen(QPen(QColor(self.current_theme.get("table_header_text", "#71717a"))))
+        painter.drawText(x0 + plot_w - 70, y0 + 24, "Elements (n) →")
+
+        painter.save()
+        painter.translate(x0 - 35, y0 - plot_h // 2 + 30)
+        painter.rotate(-90)
+        painter.drawText(0, 0, "Operations (Time) →")
+        painter.restore()
+
+        # 4. Draw Curves (Draw non-highlighted curves first, then highlighted curve on top)
+        highlighted_curve = None
+        highlighted_point = None
+
+        for curve in self.curves:
+            is_active = (curve["id"] == self.highlight_id)
+            if is_active:
+                highlighted_curve = curve
+                continue
+
+            path = QPainterPath()
+            path.moveTo(x0, y0)
+            steps = 50
+            last_pt = QPointF(x0, y0)
+            for i in range(1, steps + 1):
+                t = i / float(steps)
+                val = curve["fn"](t)
+                px = x0 + t * plot_w
+                py = y0 - min(1.0, val) * plot_h
+                path.lineTo(px, py)
+                last_pt = QPointF(px, py)
+
+            # Subdued curve stroke
+            c_color = QColor(curve["color"])
+            c_color.setAlpha(65 if is_dark else 85)
+            painter.setPen(QPen(c_color, 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            painter.drawPath(path)
+
+            # Subdued end label
+            painter.setFont(QFont("SF Pro Text", 9))
+            lbl_color = QColor(curve["color"])
+            lbl_color.setAlpha(120 if is_dark else 150)
+            painter.setPen(QPen(lbl_color))
+            painter.drawText(int(last_pt.x() + 8), int(last_pt.y() + 4), curve["label"].split(" - ")[0])
+
+        # 5. Draw the Active / Highlighted Curve
+        if highlighted_curve:
+            h_path = QPainterPath()
+            h_path.moveTo(x0, y0)
+            steps = 60
+            last_pt = QPointF(x0, y0)
+            marker_pt = QPointF(x0, y0)
+
+            for i in range(1, steps + 1):
+                t = i / float(steps)
+                val = highlighted_curve["fn"](t)
+                px = x0 + t * plot_w
+                py = y0 - min(1.0, val) * plot_h
+                h_path.lineTo(px, py)
+                last_pt = QPointF(px, py)
+                if i == int(steps * 0.72):
+                    marker_pt = QPointF(px, py)
+
+            # Glow line behind
+            glow_color = QColor(highlighted_curve["color"])
+            glow_color.setAlpha(45 if is_dark else 60)
+            painter.setPen(QPen(glow_color, 8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            painter.drawPath(h_path)
+
+            # Vibrant main line
+            pen_color = QColor(highlighted_curve["color"])
+            painter.setPen(QPen(pen_color, 3.4, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            painter.drawPath(h_path)
+
+            # End label with badge style
+            painter.setFont(QFont("SF Pro Text", 10, QFont.Weight.Bold))
+            painter.setPen(QPen(pen_color))
+            painter.drawText(int(last_pt.x() + 8), int(last_pt.y() + 4), highlighted_curve["label"])
+
+            # Highlight Marker Dot on Curve
+            painter.setBrush(QBrush(glow_color))
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.drawEllipse(marker_pt, 8, 8)
+            painter.setBrush(QBrush(QColor("#ffffff")))
+            painter.drawEllipse(marker_pt, 4, 4)
+
+            # Callout Bubble: "★ Your Solution"
+            callout_text = f"★ Your Solution: {highlighted_curve['label'].split(' - ')[0]}"
+            painter.setFont(QFont("SF Pro Text", 9, QFont.Weight.Bold))
+            fm = painter.fontMetrics()
+            tw = fm.horizontalAdvance(callout_text) + 16
+            th = 22
+
+            # Position callout slightly above marker
+            cx = max(x0 + 10, min(w - tw - 20, marker_pt.x() - tw // 2))
+            cy = max(10.0, marker_pt.y() - 32)
+
+            bubble_rect = QRectF(cx, cy, tw, th)
+            painter.setBrush(QBrush(pen_color))
+            painter.drawRoundedRect(bubble_rect, 6, 6)
+
+            painter.setPen(QPen(QColor("#ffffff" if is_dark or highlighted_curve["id"] != "O(n)" else "#18181b")))
+            painter.drawText(bubble_rect, Qt.AlignmentFlag.AlignCenter, callout_text)
+
+        painter.end()
+
+
+# ==========================================================
+# Big-O Complexity Dialog Window
+# ==========================================================
+class BigOComplexityDialog(QDialog):
+    """
+    Modal dialog illustrating where the current problem's time complexity
+    falls on the Big-O scale with an intuitive vector graph and color legend.
+    """
+    def __init__(self, parent=None, problem=None, theme=DARK_THEME):
+        super().__init__(parent)
+        self.problem = problem or {}
+        self.current_theme = theme
+        self.setWindowTitle("Big-O Complexity Guide")
+        self.resize(650, 520)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setSpacing(14)
+
+        # 1. Header Card with Problem Complexity Info
+        header_card = QFrame()
+        header_card.setObjectName("headerCard")
+        card_layout = QVBoxLayout(header_card)
+        card_layout.setContentsMargins(14, 12, 14, 12)
+        card_layout.setSpacing(8)
+
+        # Title row
+        title_row = QHBoxLayout()
+        prob_name = self.problem.get("title", "Practice Problem")
+        self.title_label = QLabel(f"Complexity Analysis • {prob_name}")
+        self.title_label.setFont(QFont("SF Pro Display", 13, QFont.Weight.Bold))
+        title_row.addWidget(self.title_label)
+        title_row.addStretch()
+
+        # Badges
+        t_comp = self.problem.get("time_complexity", "O(n)")
+        s_comp = self.problem.get("space_complexity", "O(1)")
+
+        self.t_badge = QLabel(f"⏱ Time: {t_comp}")
+        self.t_badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        self.t_badge.setStyleSheet("""
+            background-color: #0284c7;
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 3px 8px;
+        """)
+        title_row.addWidget(self.t_badge)
+
+        self.s_badge = QLabel(f"💾 Space: {s_comp}")
+        self.s_badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        self.s_badge.setStyleSheet("""
+            background-color: #10b981;
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 3px 8px;
+        """)
+        title_row.addWidget(self.s_badge)
+        card_layout.addLayout(title_row)
+
+        # Explanation text
+        expl = self.problem.get(
+            "complexity_explanation",
+            "Calculates the asymptotic growth rate of execution time and auxiliary memory."
+        )
+        self.expl_label = QLabel(expl)
+        self.expl_label.setFont(QFont("SF Pro Text", 11))
+        self.expl_label.setWordWrap(True)
+        card_layout.addWidget(self.expl_label)
+
+        layout.addWidget(header_card)
+
+        # 2. Graph Vector Canvas
+        highlight_key = self.problem.get("complexity_type", "O(n)")
+        self.graph = BigOGraphWidget(highlight_id=highlight_key, theme=self.current_theme)
+        layout.addWidget(self.graph)
+
+        # 3. Legend Rating Chips
+        legend_row = QHBoxLayout()
+        legend_row.setSpacing(8)
+
+        chips_data = [
+            ("O(1)", "Constant", "#10b981"),
+            ("O(log n)", "Logarithmic", "#06b6d4"),
+            ("O(n)", "Linear", "#eab308"),
+            ("O(n log n)", "Linearithmic", "#f97316"),
+            ("O(n²)", "Quadratic", "#ef4444"),
+            ("O(2ⁿ)", "Exponential", "#dc2626"),
+        ]
+
+        active_id = self.problem.get("complexity_type", "O(n)")
+        for cid, cname, col in chips_data:
+            is_active = (cid == active_id) or (cid == "O(n²)" and active_id == "O(n^2)") or (cid == "O(2ⁿ)" and active_id == "O(2^n)")
+            chip = QLabel(f"● {cid}\n{cname}")
+            chip.setFont(QFont("SF Pro Text", 9, QFont.Weight.Bold if is_active else QFont.Weight.Normal))
+            chip.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            border_style = f"2px solid {col}" if is_active else "1px solid rgba(120, 120, 120, 0.25)"
+            bg_style = "rgba(255, 255, 255, 0.08)" if is_active else "transparent"
+            chip.setStyleSheet(f"""
+                QLabel {{
+                    border: {border_style};
+                    background-color: {bg_style};
+                    border-radius: 6px;
+                    padding: 5px 6px;
+                    color: {col};
+                }}
+            """)
+            legend_row.addWidget(chip)
+
+        layout.addLayout(legend_row)
+
+        # 4. Close Button
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+        self.close_btn = QPushButton("Got it")
+        self.close_btn.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        self.close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.close_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2563eb;
+                color: #ffffff;
+                border: none;
+                border-radius: 6px;
+                padding: 6px 18px;
+            }
+            QPushButton:hover {
+                background-color: #1d4ed8;
+            }
+        """)
+        self.close_btn.clicked.connect(self.accept)
+        btn_layout.addWidget(self.close_btn)
+        layout.addLayout(btn_layout)
+
+        self.apply_theme(self.current_theme)
+
+    def apply_theme(self, theme):
+        self.current_theme = theme
+        self.graph.apply_theme(theme)
+        self.setStyleSheet(f"""
+            QDialog {{
+                background-color: {theme['window_bg']};
+                color: {theme['brand_color']};
+            }}
+            QFrame#headerCard {{
+                background-color: {theme['table_bg']};
+                border: 1px solid {theme['border_color']};
+                border-radius: 8px;
+            }}
+        """)
+        self.title_label.setStyleSheet(f"color: {theme['brand_color']};")
+        self.expl_label.setStyleSheet(f"color: {theme['table_text']};")
 
 
 # ==========================================================
@@ -224,7 +962,7 @@ class ProblemDescriptionWidget(QWidget):
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(12)
+        layout.setSpacing(10)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -318,12 +1056,14 @@ class ProblemSolutionWidget(QWidget):
     def __init__(self, parent=None, theme=DARK_THEME):
         super().__init__(parent)
         self.current_theme = theme
+        self.current_problem = {}
         self.current_solution = ""
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(12, 12, 12, 12)
         layout.setSpacing(10)
 
+        # 1. Top Header Row: "Solution Code" + "Copy to Editor"
         header_layout = QHBoxLayout()
         self.header_label = QLabel("Solution Code")
         self.header_label.setFont(QFont("SF Pro Display", 13, QFont.Weight.Bold))
@@ -335,11 +1075,37 @@ class ProblemSolutionWidget(QWidget):
         self.copy_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.copy_btn.clicked.connect(self.on_copy_clicked)
         header_layout.addWidget(self.copy_btn)
-
         layout.addLayout(header_layout)
 
+        # 2. Complexity Banner: Time, Space & Question Mark Button
+        self.complexity_bar = QFrame()
+        self.complexity_bar.setObjectName("complexityBar")
+        comp_layout = QHBoxLayout(self.complexity_bar)
+        comp_layout.setContentsMargins(10, 6, 10, 6)
+        comp_layout.setSpacing(10)
+
+        self.time_label = QLabel("⏱ Time: O(n)")
+        self.time_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        comp_layout.addWidget(self.time_label)
+
+        self.space_label = QLabel("💾 Space: O(1)")
+        self.space_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        comp_layout.addWidget(self.space_label)
+
+        comp_layout.addStretch()
+
+        self.complexity_btn = QPushButton("? Big-O Chart")
+        self.complexity_btn.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        self.complexity_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.complexity_btn.setToolTip("Click to view Big-O Complexity Graph comparison")
+        self.complexity_btn.clicked.connect(self.open_complexity_dialog)
+        comp_layout.addWidget(self.complexity_btn)
+
+        layout.addWidget(self.complexity_bar)
+
+        # 3. Code View
         self.solution_view = QPlainTextEdit()
-        self.solution_view.setFont(QFont("Dank Mono", 12))
+        self.solution_view.setFont(QFont("Dank Mono", 13))
         self.solution_view.setReadOnly(True)
         self.highlighter = PythonHighlighter(self.solution_view.document(), theme=self.current_theme)
         layout.addWidget(self.solution_view)
@@ -347,8 +1113,15 @@ class ProblemSolutionWidget(QWidget):
         self.apply_theme(self.current_theme)
 
     def set_problem(self, problem):
+        self.current_problem = problem
         self.current_solution = problem.get("solution_code", "")
         self.solution_view.setPlainText(self.current_solution)
+
+        # Update Complexity labels
+        t_comp = problem.get("time_complexity", "O(n)")
+        s_comp = problem.get("space_complexity", "O(1)")
+        self.time_label.setText(f"⏱ Time: {t_comp}")
+        self.space_label.setText(f"💾 Space: {s_comp}")
 
     def apply_font_size(self, size: int):
         sol_font = self.solution_view.font()
@@ -359,10 +1132,46 @@ class ProblemSolutionWidget(QWidget):
         if self.current_solution:
             self.copy_to_editor_requested.emit(self.current_solution)
 
+    def open_complexity_dialog(self):
+        """Opens the Big-O Complexity vector comparison dialog."""
+        dlg = BigOComplexityDialog(
+            parent=self.window(),
+            problem=self.current_problem,
+            theme=self.current_theme
+        )
+        dlg.exec()
+
     def apply_theme(self, theme):
         self.current_theme = theme
         self.header_label.setStyleSheet(f"color: {theme['brand_color']};")
         self.highlighter.apply_theme(theme)
+
+        # Complexity Bar styling
+        self.complexity_bar.setStyleSheet(f"""
+            QFrame#complexityBar {{
+                background-color: {theme['console_bg']};
+                border: 1px solid {theme['border_color']};
+                border-radius: 6px;
+            }}
+        """)
+        self.time_label.setStyleSheet("color: #10b981; font-weight: bold;")
+        self.space_label.setStyleSheet("color: #38bdf8; font-weight: bold;")
+
+        self.complexity_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 5px;
+                padding: 3px 10px;
+                font-size: 11px;
+            }}
+            QPushButton:hover {{
+                background-color: {theme['btn_clear_hover']};
+                color: {theme['brand_color']};
+            }}
+        """)
+
         self.copy_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
@@ -396,7 +1205,7 @@ class ProblemsListDialog(QDialog):
         super().__init__(parent)
         self.current_theme = theme
         self.setWindowTitle("Practice Problems")
-        self.resize(480, 360)
+        self.resize(500, 400)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 14, 14, 14)
@@ -447,7 +1256,9 @@ class ProblemsListDialog(QDialog):
     def populate_list(self, problems):
         self.list_widget.clear()
         for p in problems:
-            item = QListWidgetItem(p["title"])
+            t_badge = p.get("time_complexity", "O(n)")
+            item_text = f"{p['title']}  •  {t_badge}"
+            item = QListWidgetItem(item_text)
             item.setData(Qt.ItemDataRole.UserRole, p)
             self.list_widget.addItem(item)
         if self.list_widget.count() > 0:
@@ -455,7 +1266,7 @@ class ProblemsListDialog(QDialog):
 
     def filter_problems(self, text):
         query = text.strip().lower()
-        filtered = [p for p in PROBLEMS_DATA if query in p["title"].lower()]
+        filtered = [p for p in PROBLEMS_DATA if query in p["title"].lower() or query in p["raw_title"].lower()]
         self.populate_list(filtered)
 
     def on_item_double_clicked(self, item):
