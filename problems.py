@@ -586,6 +586,513 @@ PROBLEMS_DATA = [
             "Counting frequencies with Counter takes O(n + m) time; finding minimum occurrences and building the result takes linear time."
         ),
     },
+    {
+        "id": "sum_numbers_recursive",
+        "title": "15. sum numbers recursive",
+        "raw_title": "sum numbers recursive",
+        "category": "Recursion",
+        "description": (
+            "Watch the Approach video first!\n\n"
+            "Write a function sum_numbers_recursive that takes in an array of numbers and returns the sum of all the numbers in the array. "
+            "All elements will be integers. Solve this recursively."
+        ),
+        "examples": (
+            "sum_numbers_recursive([5, 2, 9, 10])     # -> 26\n"
+            "sum_numbers_recursive([1, -1, 1, -1, 1]) # -> 1\n"
+            "sum_numbers_recursive([])                # -> 0\n"
+            "sum_numbers_recursive([1000, 50])        # -> 1050"
+        ),
+        "starter_code": "def sum_numbers_recursive(numbers):\n  pass # todo\n",
+        "solution_code": (
+            "def sum_numbers_recursive(numbers):\n"
+            "    if len(numbers) == 0:\n"
+            "        return 0\n"
+            "    return numbers[0] + sum_numbers_recursive(numbers[1:])\n\n"
+            "# Example test cases:\n"
+            "print(sum_numbers_recursive([5, 2, 9, 10]))     # -> 26\n"
+            "print(sum_numbers_recursive([1, -1, 1, -1, 1])) # -> 1\n"
+            "print(sum_numbers_recursive([]))                # -> 0\n"
+            "print(sum_numbers_recursive([1000, 50]))        # -> 1050\n"
+        ),
+        "time_complexity": "O(n²)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n^2)",
+        "complexity_explanation": (
+            "Each recursive call creates an O(n) slice of the remaining list numbers[1:], resulting in O(n²) total time and O(n) recursive call stack frames."
+        ),
+    },
+    {
+        "id": "factorial",
+        "title": "16. factorial",
+        "raw_title": "factorial",
+        "category": "Recursion",
+        "description": (
+            "Write a function, factorial, that takes in a number n and returns the factorial of that number. "
+            "The factorial of n is the product of all the positive numbers less than or equal to n. "
+            "You must solve this recursively. You can assume that n is a non-negative integer. "
+            "Note that the factorial of 0 is defined to be 1."
+        ),
+        "examples": (
+            "factorial(3)  # -> 6\n"
+            "factorial(6)  # -> 720\n"
+            "factorial(18) # -> 6402373705728000\n"
+            "factorial(1)  # -> 1\n"
+            "factorial(0)  # -> 1"
+        ),
+        "starter_code": "def factorial(n):\n  pass # todo\n",
+        "solution_code": (
+            "def factorial(n):\n"
+            "    if n == 0:\n"
+            "        return 1\n"
+            "    return n * factorial(n - 1)\n\n"
+            "# Example test cases:\n"
+            "print(factorial(3))  # -> 6\n"
+            "print(factorial(6))  # -> 720\n"
+            "print(factorial(18)) # -> 6402373705728000\n"
+            "print(factorial(1))  # -> 1\n"
+            "print(factorial(0))  # -> 1\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Recurses n times performing constant-time multiplications, using O(n) space on the recursive call stack."
+        ),
+    },
+    {
+        "id": "sum_of_lengths",
+        "title": "17. sum of lengths",
+        "raw_title": "sum of lengths",
+        "category": "Recursion",
+        "description": (
+            "Write a function sum_of_lengths that takes in a list of strings and returns the total length of the strings.\n\n"
+            "You must solve this recursively."
+        ),
+        "examples": (
+            "sum_of_lengths(['goat', 'cat', 'purple'])               # -> 13\n"
+            "sum_of_lengths(['bike', 'at', 'pencils', 'phone'])       # -> 19\n"
+            "sum_of_lengths([])                                      # -> 0\n"
+            "sum_of_lengths(['', ' ', '  ', '   ', '    ', '     ']) # -> 15"
+        ),
+        "starter_code": "def sum_of_lengths(strings):\n  pass # todo\n",
+        "solution_code": (
+            "def sum_of_lengths(strings):\n"
+            "    if len(strings) == 0:\n"
+            "        return 0\n"
+            "    return len(strings[0]) + sum_of_lengths(strings[1:])\n\n"
+            "# Example test cases:\n"
+            "print(sum_of_lengths(['goat', 'cat', 'purple']))               # -> 13\n"
+            "print(sum_of_lengths(['bike', 'at', 'pencils', 'phone']))       # -> 19\n"
+            "print(sum_of_lengths([]))                                      # -> 0\n"
+            "print(sum_of_lengths(['', ' ', '  ', '   ', '    ', '     '])) # -> 15\n"
+        ),
+        "time_complexity": "O(n²)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n^2)",
+        "complexity_explanation": (
+            "Recurses through n strings with list slicing taking O(n) per recursive step, resulting in O(n²) total time and O(n) call stack space."
+        ),
+    },
+    {
+        "id": "reverse_string_recursive",
+        "title": "18. reverse string recursive",
+        "raw_title": "reverse string recursive",
+        "category": "Recursion",
+        "description": (
+            "Write a function, reverse_string, that takes in a string as an argument. "
+            "The function should return the string with its characters in reverse order. You must do this recursively."
+        ),
+        "examples": (
+            "reverse_string('hello')    # -> 'olleh'\n"
+            "reverse_string('xyz')      # -> 'zyx'\n"
+            "reverse_string('bootcamp') # -> 'pmactoob'\n"
+            "reverse_string('')         # -> ''"
+        ),
+        "starter_code": "def reverse_string(s):\n  pass # todo\n",
+        "solution_code": (
+            "def reverse_string(s):\n"
+            "    if len(s) == 0:\n"
+            "        return \"\"\n"
+            "    return reverse_string(s[1:]) + s[0]\n\n"
+            "# Example test cases:\n"
+            "print(reverse_string('hello'))    # -> 'olleh'\n"
+            "print(reverse_string('xyz'))      # -> 'zyx'\n"
+            "print(reverse_string('bootcamp')) # -> 'pmactoob'\n"
+            "print(reverse_string(''))         # -> ''\n"
+        ),
+        "time_complexity": "O(n²)",
+        "space_complexity": "O(n²)",
+        "complexity_type": "O(n^2)",
+        "complexity_explanation": (
+            "Each recursive call slices the string s[1:], taking O(n) time and allocating new string memory across n stack frames."
+        ),
+    },
+    {
+        "id": "palindrome_recursive",
+        "title": "19. palindrome recursive",
+        "raw_title": "palindrome recursive",
+        "category": "Recursion",
+        "description": (
+            "Write a function, palindrome, that takes in a string and returns a boolean indicating whether or not the string is the same forwards and backwards.\n\n"
+            "You must solve this recursively."
+        ),
+        "examples": (
+            "palindrome('pop')      # -> True\n"
+            "palindrome('kayak')    # -> True\n"
+            "palindrome('bootcamp') # -> False\n"
+            "palindrome('rotator')  # -> True\n"
+            "palindrome('cb')       # -> False\n"
+            "palindrome('')         # -> True"
+        ),
+        "starter_code": "def palindrome(s):\n  pass # todo\n",
+        "solution_code": (
+            "def palindrome(s):\n"
+            "    if len(s) == 0 or len(s) == 1:\n"
+            "        return True\n"
+            "    if s[0] != s[-1]:\n"
+            "        return False\n"
+            "    return palindrome(s[1:-1])\n\n"
+            "# Example test cases:\n"
+            "print(palindrome('pop'))      # -> True\n"
+            "print(palindrome('kayak'))    # -> True\n"
+            "print(palindrome('bootcamp')) # -> False\n"
+            "print(palindrome('rotator'))  # -> True\n"
+            "print(palindrome('cb'))       # -> False\n"
+            "print(palindrome(''))         # -> True\n"
+        ),
+        "time_complexity": "O(n²)",
+        "space_complexity": "O(n²)",
+        "complexity_type": "O(n^2)",
+        "complexity_explanation": (
+            "Compares outer characters and creates an O(n) slice s[1:-1] at each recursive step, taking O(n²) time and O(n²) total space."
+        ),
+    },
+    {
+        "id": "fibonacci",
+        "title": "20. fibonacci",
+        "raw_title": "fibonacci",
+        "category": "Recursion",
+        "description": (
+            "Write a function, fibonacci, that takes in a number argument, n, and returns the n-th number of the Fibonacci sequence.\n\n"
+            "The 0-th number of the sequence is 0.\n"
+            "The 1-st number of the sequence is 1.\n\n"
+            "To generate further numbers of the sequence, calculate the sum of previous two numbers.\n\n"
+            "You must solve this recursively."
+        ),
+        "examples": (
+            "fibonacci(0) # -> 0\n"
+            "fibonacci(1) # -> 1\n"
+            "fibonacci(2) # -> 1\n"
+            "fibonacci(3) # -> 2\n"
+            "fibonacci(4) # -> 3\n"
+            "fibonacci(5) # -> 5\n"
+            "fibonacci(8) # -> 21"
+        ),
+        "starter_code": "def fibonacci(n):\n  pass # todo\n",
+        "solution_code": (
+            "def fibonacci(n):\n"
+            "    if n == 0 or n == 1:\n"
+            "        return n\n"
+            "    return fibonacci(n - 1) + fibonacci(n - 2)\n\n"
+            "# Example test cases:\n"
+            "print(fibonacci(0)) # -> 0\n"
+            "print(fibonacci(1)) # -> 1\n"
+            "print(fibonacci(2)) # -> 1\n"
+            "print(fibonacci(3)) # -> 2\n"
+            "print(fibonacci(4)) # -> 3\n"
+            "print(fibonacci(5)) # -> 5\n"
+            "print(fibonacci(8)) # -> 21\n"
+        ),
+        "time_complexity": "O(2ⁿ)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(2^n)",
+        "complexity_explanation": (
+            "Each recursive call branches into two subproblems forming a recursion tree of height n, taking O(2ⁿ) operations with O(n) maximum call stack depth."
+        ),
+    },
+    {
+        "id": "linked_list_values",
+        "title": "21. linked list values",
+        "raw_title": "linked list values",
+        "category": "Linked List",
+        "description": (
+            "Write a function, linked_list_values, that takes in the head of a linked list as an argument. "
+            "The function should return a list containing all values of the nodes in the linked list."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "linked_list_values(a) # -> ['a', 'b', 'c', 'd']\n\n"
+            "x = Node('x')\n"
+            "linked_list_values(x) # -> ['x']\n\n"
+            "linked_list_values(None) # -> []"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def linked_list_values(head):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def linked_list_values(head):\n"
+            "    values = []\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        values.append(current.val)\n"
+            "        current = current.next\n"
+            "    return values\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def linked_list_values(head):\n"
+            "    values = []\n"
+            "    _linked_list_values(head, values)\n"
+            "    return values\n\n"
+            "def _linked_list_values(head, values):\n"
+            "    if head is None:\n"
+            "        return\n"
+            "    values.append(head.val)\n"
+            "    _linked_list_values(head.next, values)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "print(linked_list_values(a)) # -> ['a', 'b', 'c', 'd']\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses through all n nodes in the linked list, building an array of n elements in linear time and auxiliary space."
+        ),
+    },
+    {
+        "id": "sum_list",
+        "title": "22. sum list",
+        "raw_title": "sum list",
+        "category": "Linked List",
+        "description": (
+            "Write a function, sum_list, that takes in the head of a linked list containing numbers as an argument. "
+            "The function should return the total sum of all values in the linked list."
+        ),
+        "examples": (
+            "a = Node(2)\n"
+            "b = Node(8)\n"
+            "c = Node(3)\n"
+            "d = Node(-1)\n"
+            "e = Node(7)\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n\n"
+            "sum_list(a)    # -> 19\n\n"
+            "x = Node(38)\n"
+            "sum_list(x)    # -> 38\n\n"
+            "sum_list(None) # -> 0"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def sum_list(head):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def sum_list(head):\n"
+            "    total_sum = 0\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        total_sum += current.val\n"
+            "        current = current.next\n"
+            "    return total_sum\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def sum_list(head):\n"
+            "    if head is None:\n"
+            "        return 0\n"
+            "    return head.val + sum_list(head.next)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "a = Node(2)\n"
+            "b = Node(8)\n"
+            "c = Node(3)\n"
+            "d = Node(-1)\n"
+            "e = Node(7)\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n\n"
+            "print(sum_list(a))    # -> 19\n"
+            "print(sum_list(None)) # -> 0\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Linear traversal across all n nodes. The iterative approach uses O(1) auxiliary memory; the recursive solution uses O(n) call stack space."
+        ),
+    },
+    {
+        "id": "linked_list_find",
+        "title": "23. linked list find",
+        "raw_title": "linked list find",
+        "category": "Linked List",
+        "description": (
+            "Write a function, linked_list_find, that takes in the head of a linked list and a target value. "
+            "The function should return a boolean indicating whether or not the linked list contains the target."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "linked_list_find(a, 'c')    # -> True\n"
+            "linked_list_find(a, 'd')    # -> True\n"
+            "linked_list_find(a, 'q')    # -> False\n"
+            "linked_list_find(None, 'c') # -> False"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def linked_list_find(head, target):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def linked_list_find(head, target):\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        if current.val == target:\n"
+            "            return True\n"
+            "        current = current.next\n"
+            "    return False\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def linked_list_find(head, target):\n"
+            "    if head is None:\n"
+            "        return False\n"
+            "    if head.val == target:\n"
+            "        return True\n"
+            "    return linked_list_find(head.next, target)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "print(linked_list_find(a, 'c'))    # -> True\n"
+            "print(linked_list_find(a, 'd'))    # -> True\n"
+            "print(linked_list_find(a, 'q'))    # -> False\n"
+            "print(linked_list_find(None, 'c')) # -> False\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses at most n nodes looking for the target value, consuming O(1) space iteratively and O(n) call stack frames recursively."
+        ),
+    },
+    {
+        "id": "get_node_value",
+        "title": "24. get node value",
+        "raw_title": "get node value",
+        "category": "Linked List",
+        "description": (
+            "Write a function, get_node_value, that takes in the head of a linked list and an index. "
+            "The function should return the value of the linked list at the specified index.\n\n"
+            "If there is no node at the given index, then return None."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "get_node_value(a, 2)    # -> 'c'\n"
+            "get_node_value(a, 3)    # -> 'd'\n"
+            "get_node_value(a, 7)    # -> None\n"
+            "get_node_value(None, 0) # -> None"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def get_node_value(head, index):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def get_node_value(head, index):\n"
+            "    count = 0\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        if count == index:\n"
+            "            return current.val\n"
+            "        current = current.next\n"
+            "        count += 1\n"
+            "    return None\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def get_node_value(head, index):\n"
+            "    if head is None:\n"
+            "        return None\n"
+            "    if index == 0:\n"
+            "        return head.val\n"
+            "    return get_node_value(head.next, index - 1)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "print(get_node_value(a, 2))    # -> 'c'\n"
+            "print(get_node_value(a, 3))    # -> 'd'\n"
+            "print(get_node_value(a, 7))    # -> None\n"
+            "print(get_node_value(None, 0)) # -> None\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Steps sequentially through the linked list up to index (at most n steps), taking O(n) time and O(1) space iteratively (O(n) recursive stack)."
+        ),
+    },
 ]
 
 
@@ -1440,13 +1947,16 @@ class ProblemsListDialog(QDialog):
     def populate_list(self, problems):
         self.list_widget.clear()
 
-        # Group problems by section: "Basics" (1-6) and "Hash Map" (7-14)
+        # Group problems by section: "Basics" (1-6), "Hash Map" (7-14), "Recursion" (15-20), "Linked List" (21-24)
         sections = [
             ("Basics", [p for p in problems if p.get("category") == "Basics"]),
             ("Hash Map", [p for p in problems if p.get("category") == "Hash Map"]),
+            ("Recursion", [p for p in problems if p.get("category") == "Recursion"]),
+            ("Linked List", [p for p in problems if p.get("category") == "Linked List"]),
         ]
 
-        other_problems = [p for p in problems if p.get("category") not in ("Basics", "Hash Map")]
+        known_cats = ("Basics", "Hash Map", "Recursion", "Linked List")
+        other_problems = [p for p in problems if p.get("category") not in known_cats]
         if other_problems:
             sections.append(("Other", other_problems))
 
