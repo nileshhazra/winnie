@@ -1697,6 +1697,692 @@ PROBLEMS_DATA = [
             "Advances up to the target index (at most n steps) to splice in the new Node, running in O(1) space iteratively (O(n) recursive stack)."
         ),
     },
+    {
+        "id": "depth_first_values",
+        "title": "32. depth first values",
+        "raw_title": "depth first values",
+        "category": "Tree",
+        "description": (
+            "Write a function, depth_first_values, that takes in the root of a binary tree. "
+            "The function should return a list containing all values of the tree in depth-first order."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#      a\n"
+            "#    /   \\\n"
+            "#   b     c\n"
+            "#  / \\     \\\n"
+            "# d   e     f\n\n"
+            "depth_first_values(a)\n"
+            "#   -> ['a', 'b', 'd', 'e', 'c', 'f']"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def depth_first_values(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach (Stack) ===\n"
+            "def depth_first_values(root):\n"
+            "    if not root:\n"
+            "        return []\n\n"
+            "    stack = [root]\n"
+            "    values = []\n\n"
+            "    while stack:\n"
+            "        node = stack.pop()\n"
+            "        values.append(node.val)\n"
+            "        if node.right:\n"
+            "            stack.append(node.right)\n"
+            "        if node.left:\n"
+            "            stack.append(node.left)\n"
+            "    return values\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def depth_first_values_recursive(root):\n"
+            "    if not root:\n"
+            "        return []\n\n"
+            "    left_values = depth_first_values_recursive(root.left)\n"
+            "    right_values = depth_first_values_recursive(root.right)\n"
+            "    return [root.val, *left_values, *right_values]\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(depth_first_values(a)) # -> ['a', 'b', 'd', 'e', 'c', 'f']\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits every node once with O(1) stack operations, accumulating n values into an array in O(n) space."
+        ),
+    },
+    {
+        "id": "breadth_first_values",
+        "title": "33. breadth first values",
+        "raw_title": "breadth first values",
+        "category": "Tree",
+        "description": (
+            "Write a function, breadth_first_values, that takes in the root of a binary tree. "
+            "The function should return a list containing all values of the tree in breadth-first order."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#      a\n"
+            "#    /   \\\n"
+            "#   b     c\n"
+            "#  / \\     \\\n"
+            "# d   e     f\n\n"
+            "breadth_first_values(a)\n"
+            "#    -> ['a', 'b', 'c', 'd', 'e', 'f']"
+        ),
+        "starter_code": (
+            "from collections import deque\n\n"
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def breadth_first_values(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "def breadth_first_values(root):\n"
+            "    if not root:\n"
+            "        return []\n\n"
+            "    queue = deque([root])\n"
+            "    values = []\n\n"
+            "    while queue:\n"
+            "        node = queue.popleft()\n"
+            "        values.append(node.val)\n\n"
+            "        if node.left:\n"
+            "            queue.append(node.left)\n"
+            "        if node.right:\n"
+            "            queue.append(node.right)\n\n"
+            "    return values\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(breadth_first_values(a)) # -> ['a', 'b', 'c', 'd', 'e', 'f']\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses all n nodes level by level using a queue with O(1) push and popleft operations, using O(n) auxiliary memory."
+        ),
+    },
+    {
+        "id": "tree_sum",
+        "title": "34. tree sum",
+        "raw_title": "tree sum",
+        "category": "Tree",
+        "description": (
+            "Write a function, tree_sum, that takes in the root of a binary tree that contains number values. "
+            "The function should return the total sum of all values in the tree."
+        ),
+        "examples": (
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#       3\n"
+            "#    /    \\\n"
+            "#   11     4\n"
+            "#  / \\      \\\n"
+            "# 4  -2      1\n\n"
+            "tree_sum(a) # -> 21\n"
+            "tree_sum(None) # -> 0"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def tree_sum(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def tree_sum(root):\n"
+            "    if root is None:\n"
+            "        return 0\n"
+            "    return root.val + tree_sum(root.left) + tree_sum(root.right)\n\n\n"
+            "# === Breadth-First Search (Iterative) ===\n"
+            "def tree_sum_bfs(root):\n"
+            "    if not root:\n"
+            "        return 0\n\n"
+            "    queue = deque([root])\n"
+            "    total_sum = 0\n"
+            "    while queue:\n"
+            "        node = queue.popleft()\n"
+            "        total_sum += node.val\n\n"
+            "        if node.left:\n"
+            "            queue.append(node.left)\n"
+            "        if node.right:\n"
+            "            queue.append(node.right)\n\n"
+            "    return total_sum\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(tree_sum(a))    # -> 21\n"
+            "print(tree_sum(None)) # -> 0\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits each of the n nodes once, accumulating the sum with O(n) memory on the call stack or queue."
+        ),
+    },
+    {
+        "id": "tree_includes",
+        "title": "35. tree includes",
+        "raw_title": "tree includes",
+        "category": "Tree",
+        "description": (
+            "Write a function, tree_includes, that takes in the root of a binary tree and a target value. "
+            "The function should return a boolean indicating whether or not the value is contained in the tree."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "tree_includes(a, 'e')    # -> True\n"
+            "tree_includes(a, 'n')    # -> False\n"
+            "tree_includes(None, 'b') # -> False"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def tree_includes(root, target):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def tree_includes(root, target):\n"
+            "    if not root:\n"
+            "        return False\n"
+            "    if root.val == target:\n"
+            "        return True\n"
+            "    return tree_includes(root.left, target) or tree_includes(root.right, target)\n\n\n"
+            "# === Breadth-First Search (Iterative) ===\n"
+            "def tree_includes_bfs(root, target):\n"
+            "    if not root:\n"
+            "        return False\n\n"
+            "    queue = deque([root])\n"
+            "    while queue:\n"
+            "        node = queue.popleft()\n"
+            "        if node.val == target:\n"
+            "            return True\n\n"
+            "        if node.left:\n"
+            "            queue.append(node.left)\n"
+            "        if node.right:\n"
+            "            queue.append(node.right)\n\n"
+            "    return False\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(tree_includes(a, 'e'))    # -> True\n"
+            "print(tree_includes(a, 'n'))    # -> False\n"
+            "print(tree_includes(None, 'b')) # -> False\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Searches up to n nodes until the target is found, utilizing O(n) space in the call stack or queue."
+        ),
+    },
+    {
+        "id": "tree_min_value",
+        "title": "36. tree min value",
+        "raw_title": "tree min value",
+        "category": "Tree",
+        "description": (
+            "Write a function, tree_min_value, that takes in the root of a binary tree that contains number values. "
+            "The function should return the minimum value within the tree.\n\n"
+            "You may assume that the input tree is non-empty."
+        ),
+        "examples": (
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "tree_min_value(a) # -> -2"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def tree_min_value(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search (Recursive) ===\n"
+            "def tree_min_value(root):\n"
+            "    if root is None:\n"
+            "        return float('inf')\n"
+            "    smallest_left = tree_min_value(root.left)\n"
+            "    smallest_right = tree_min_value(root.right)\n"
+            "    return min(root.val, smallest_left, smallest_right)\n\n\n"
+            "# === Depth-First Search (Iterative with Stack) ===\n"
+            "def tree_min_value_iterative(root):\n"
+            "    stack = [root]\n"
+            "    smallest = float('inf')\n"
+            "    while stack:\n"
+            "        current = stack.pop()\n"
+            "        if current.val < smallest:\n"
+            "            smallest = current.val\n\n"
+            "        if current.left is not None:\n"
+            "            stack.append(current.left)\n"
+            "        if current.right is not None:\n"
+            "            stack.append(current.right)\n\n"
+            "    return smallest\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(tree_min_value(a)) # -> -2\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses all n nodes to evaluate the global minimum, maintaining at most O(n) auxiliary space on the stack."
+        ),
+    },
+    {
+        "id": "max_path_sum",
+        "title": "37. max root to leaf path sum",
+        "raw_title": "max root to leaf path sum",
+        "category": "Tree",
+        "description": (
+            "Write a function, max_path_sum, that takes in the root of a binary tree that contains number values. "
+            "The function should return the maximum sum of any root to leaf path within the tree.\n\n"
+            "You may assume that the input tree is non-empty."
+        ),
+        "examples": (
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#       3\n"
+            "#    /    \\\n"
+            "#   11     4\n"
+            "#  / \\      \\\n"
+            "# 4  -2      1\n\n"
+            "max_path_sum(a) # -> 18 (3 + 11 + 4)"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def max_path_sum(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search (Recursive) ===\n"
+            "def max_path_sum(root):\n"
+            "    if root is None:\n"
+            "        return float('-inf')\n\n"
+            "    if root.left is None and root.right is None:\n"
+            "        return root.val\n\n"
+            "    return root.val + max(max_path_sum(root.left), max_path_sum(root.right))\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(max_path_sum(a)) # -> 18\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Evaluates all paths from root to leaves in O(n) time, using O(n) space on the recursive call stack."
+        ),
+    },
+    {
+        "id": "tree_path_finder",
+        "title": "38. tree path finder",
+        "raw_title": "tree path finder",
+        "category": "Tree",
+        "description": (
+            "Write a function, path_finder, that takes in the root of a binary tree and a target value. "
+            "The function should return an array representing a path to the target value. "
+            "If the target value is not found in the tree, then return None.\n\n"
+            "You may assume that the tree contains unique values."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "path_finder(a, 'e') # -> ['a', 'b', 'e']\n"
+            "path_finder(a, 'p') # -> None"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def path_finder(root, target):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Optimized Depth-First (O(n) with append and reverse) ===\n"
+            "def path_finder(root, target):\n"
+            "    result = _path_finder(root, target)\n"
+            "    if result is None:\n"
+            "        return None\n"
+            "    return result[::-1]\n\n"
+            "def _path_finder(root, target):\n"
+            "    if root is None:\n"
+            "        return None\n\n"
+            "    if root.val == target:\n"
+            "        return [root.val]\n\n"
+            "    left_path = _path_finder(root.left, target)\n"
+            "    if left_path is not None:\n"
+            "        left_path.append(root.val)\n"
+            "        return left_path\n\n"
+            "    right_path = _path_finder(root.right, target)\n"
+            "    if right_path is not None:\n"
+            "        right_path.append(root.val)\n"
+            "        return right_path\n\n"
+            "    return None\n\n\n"
+            "# === Depth-First Search (Spread operator) ===\n"
+            "# Note: creating new lists with * unpack takes O(n) per node, resulting in O(n²) time\n"
+            "def path_finder_spread(root, target):\n"
+            "    if root is None:\n"
+            "        return None\n\n"
+            "    if root.val == target:\n"
+            "        return [root.val]\n\n"
+            "    left_path = path_finder_spread(root.left, target)\n"
+            "    if left_path is not None:\n"
+            "        return [root.val, *left_path]\n\n"
+            "    right_path = path_finder_spread(root.right, target)\n"
+            "    if right_path is not None:\n"
+            "        return [root.val, *right_path]\n\n"
+            "    return None\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(path_finder(a, 'e')) # -> ['a', 'b', 'e']\n"
+            "print(path_finder(a, 'p')) # -> None\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Searches the tree for target and appends elements to path in O(1) time per level, reversing once at the end for O(n) total time and space."
+        ),
+    },
+    {
+        "id": "tree_value_count",
+        "title": "39. tree value count",
+        "raw_title": "tree value count",
+        "category": "Tree",
+        "description": (
+            "Write a function, tree_value_count, that takes in the root of a binary tree and a target value. "
+            "The function should return the number of times that the target occurs in the tree."
+        ),
+        "examples": (
+            "a = Node(12)\n"
+            "b = Node(6)\n"
+            "c = Node(6)\n"
+            "d = Node(4)\n"
+            "e = Node(6)\n"
+            "f = Node(12)\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "tree_value_count(a, 6)  # -> 3\n"
+            "tree_value_count(a, 12) # -> 2\n"
+            "tree_value_count(a, 99) # -> 0"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def tree_value_count(root, target):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def tree_value_count(root, target):\n"
+            "    if root is None:\n"
+            "        return 0\n\n"
+            "    match = 1 if root.val == target else 0\n"
+            "    return match + tree_value_count(root.left, target) + tree_value_count(root.right, target)\n\n\n"
+            "# === Depth-First Search (Iterative Stack) ===\n"
+            "def tree_value_count_dfs_iterative(root, target):\n"
+            "    if root is None:\n"
+            "        return 0\n\n"
+            "    count = 0\n"
+            "    stack = [root]\n"
+            "    while stack:\n"
+            "        current = stack.pop()\n"
+            "        if current.val == target:\n"
+            "            count += 1\n\n"
+            "        if current.left is not None:\n"
+            "            stack.append(current.left)\n"
+            "        if current.right is not None:\n"
+            "            stack.append(current.right)\n\n"
+            "    return count\n\n\n"
+            "# === Breadth-First Search (Queue) ===\n"
+            "def tree_value_count_bfs(root, target):\n"
+            "    if root is None:\n"
+            "        return 0\n\n"
+            "    count = 0\n"
+            "    queue = deque([root])\n"
+            "    while queue:\n"
+            "        current = queue.popleft()\n"
+            "        if current.val == target:\n"
+            "            count += 1\n\n"
+            "        if current.left is not None:\n"
+            "            queue.append(current.left)\n"
+            "        if current.right is not None:\n"
+            "            queue.append(current.right)\n\n"
+            "    return count\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node(12)\n"
+            "b = Node(6)\n"
+            "c = Node(6)\n"
+            "d = Node(4)\n"
+            "e = Node(6)\n"
+            "f = Node(12)\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(tree_value_count(a, 6))  # -> 3\n"
+            "print(tree_value_count(a, 12)) # -> 2\n"
+            "print(tree_value_count(a, 99)) # -> 0\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses all n nodes in the tree, counting matches against target in linear time with O(n) auxiliary queue or stack space."
+        ),
+    },
 ]
 
 
@@ -2551,15 +3237,16 @@ class ProblemsListDialog(QDialog):
     def populate_list(self, problems):
         self.list_widget.clear()
 
-        # Group problems by section: "Basics" (1-6), "Hash Map" (7-14), "Recursion" (15-20), "Linked List" (21-24)
+        # Group problems by section: "Basics" (1-6), "Hash Map" (7-14), "Recursion" (15-20), "Linked List" (21-31), "Tree" (32-39)
         sections = [
             ("Basics", [p for p in problems if p.get("category") == "Basics"]),
             ("Hash Map", [p for p in problems if p.get("category") == "Hash Map"]),
             ("Recursion", [p for p in problems if p.get("category") == "Recursion"]),
             ("Linked List", [p for p in problems if p.get("category") == "Linked List"]),
+            ("Tree", [p for p in problems if p.get("category") == "Tree"]),
         ]
 
-        known_cats = ("Basics", "Hash Map", "Recursion", "Linked List")
+        known_cats = ("Basics", "Hash Map", "Recursion", "Linked List", "Tree")
         other_problems = [p for p in problems if p.get("category") not in known_cats]
         if other_problems:
             sections.append(("Other", other_problems))
