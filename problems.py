@@ -17,6 +17,7 @@ from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF
 from theme import DARK_THEME
 from highlighter import PythonHighlighter
+from icons import TIME_SVG, SPACE_SVG, render_svg_pixmap
 
 
 # ==========================================================
@@ -27,6 +28,7 @@ PROBLEMS_DATA = [
         "id": "max_value",
         "title": "1. max value",
         "raw_title": "max value",
+        "category": "Basics",
         "description": (
             "Write a function, max_value, that takes in list of numbers as an argument. "
             "The function should return the largest number in the list.\n\n"
@@ -62,6 +64,7 @@ PROBLEMS_DATA = [
         "id": "longest_word",
         "title": "2. longest word",
         "raw_title": "longest word",
+        "category": "Basics",
         "description": (
             "Write a function, longest_word, that takes in a sentence string as an argument. "
             "The function should return the longest word in the sentence. "
@@ -98,6 +101,7 @@ PROBLEMS_DATA = [
         "id": "all_even",
         "title": "3. all even",
         "raw_title": "all even",
+        "category": "Basics",
         "description": (
             "Write a function, all_even, that takes in a list of numbers as an argument. "
             "The function should return a boolean indicating whether or not every element of the list is an even number.\n\n"
@@ -131,6 +135,7 @@ PROBLEMS_DATA = [
         "id": "is_prime",
         "title": "4. is prime",
         "raw_title": "is prime",
+        "category": "Basics",
         "description": (
             "Write a function, is_prime, that takes in a number as an argument. "
             "The function should return a boolean indicating whether or not the given number is prime.\n\n"
@@ -174,6 +179,7 @@ PROBLEMS_DATA = [
         "id": "fizz_buzz",
         "title": "5. fizz buzz",
         "raw_title": "fizz buzz",
+        "category": "Basics",
         "description": (
             "Write a function, fizz_buzz, that takes in a number n as an argument. "
             "The function should return a list containing numbers from 1 to n, replacing certain numbers according to the following rules:\n\n"
@@ -216,6 +222,7 @@ PROBLEMS_DATA = [
         "id": "pairs",
         "title": "6. pairs",
         "raw_title": "pairs",
+        "category": "Basics",
         "description": (
             "Write a function, pairs, that takes in a list as an argument. "
             "The function should return a list containing all unique pairs of elements.\n\n"
@@ -252,6 +259,7 @@ PROBLEMS_DATA = [
         "id": "anagrams",
         "title": "7. anagrams",
         "raw_title": "anagrams",
+        "category": "Hash Map",
         "description": (
             "Write a function, anagrams, that takes in two strings as arguments. "
             "The function should return a boolean indicating whether or not the strings are anagrams. "
@@ -295,6 +303,7 @@ PROBLEMS_DATA = [
         "id": "most_frequent_char",
         "title": "8. most frequent char",
         "raw_title": "most frequent char",
+        "category": "Hash Map",
         "description": (
             "Write a function, most_frequent_char, that takes in a string as an argument. "
             "The function should return the most frequent character of the string. "
@@ -346,6 +355,7 @@ PROBLEMS_DATA = [
         "id": "pair_sum",
         "title": "9. pair sum",
         "raw_title": "pair sum",
+        "category": "Hash Map",
         "description": (
             "Write a function, pair_sum, that takes in a list and a target sum as arguments. "
             "The function should return a tuple containing a pair of indices whose elements sum to the given target. "
@@ -385,6 +395,7 @@ PROBLEMS_DATA = [
         "id": "pair_product",
         "title": "10. pair product",
         "raw_title": "pair product",
+        "category": "Hash Map",
         "description": (
             "Write a function, pair_product, that takes in a list and a target product as arguments. "
             "The function should return a tuple containing a pair of indices whose elements multiply to the given target. "
@@ -424,6 +435,7 @@ PROBLEMS_DATA = [
         "id": "intersection",
         "title": "11. intersection",
         "raw_title": "intersection",
+        "category": "Hash Map",
         "description": (
             "Write a function, intersection, that takes in two lists, a, b, as arguments. "
             "The function should return a new list containing elements that are in both of the two lists.\n\n"
@@ -464,6 +476,7 @@ PROBLEMS_DATA = [
         "id": "exclusive_items",
         "title": "12. exclusive items",
         "raw_title": "exclusive items",
+        "category": "Hash Map",
         "description": (
             "Write a function, exclusive_items, that takes in two lists, a, b, as arguments. "
             "The function should return a new list containing elements that are in either list but not both lists.\n\n"
@@ -505,6 +518,7 @@ PROBLEMS_DATA = [
         "id": "all_unique",
         "title": "13. all unique",
         "raw_title": "all unique",
+        "category": "Hash Map",
         "description": (
             "Write a function, all_unique, that takes in a list. "
             "The function should return a boolean indicating whether or not the list contains unique items."
@@ -537,6 +551,7 @@ PROBLEMS_DATA = [
         "id": "intersection_with_dupes",
         "title": "14. intersection with dupes",
         "raw_title": "intersection with dupes",
+        "category": "Hash Map",
         "description": (
             "Write a function, intersection_with_dupes, that takes in two lists, a, b, as arguments. "
             "The function should return a new list containing elements that are common to both input lists. "
@@ -838,23 +853,23 @@ class BigOComplexityDialog(QDialog):
         t_comp = self.problem.get("time_complexity", "O(n)")
         s_comp = self.problem.get("space_complexity", "O(1)")
 
-        self.t_badge = QLabel(f"⏱ Time: {t_comp}")
+        self.t_badge = QLabel(f"Time: {t_comp}")
         self.t_badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
         self.t_badge.setStyleSheet("""
             background-color: #0284c7;
             color: #ffffff;
-            border-radius: 5px;
-            padding: 3px 8px;
+            border-radius: 6px;
+            padding: 4px 10px;
         """)
         title_row.addWidget(self.t_badge)
 
-        self.s_badge = QLabel(f"💾 Space: {s_comp}")
+        self.s_badge = QLabel(f"Space: {s_comp}")
         self.s_badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
         self.s_badge.setStyleSheet("""
             background-color: #10b981;
             color: #ffffff;
-            border-radius: 5px;
-            padding: 3px 8px;
+            border-radius: 6px;
+            padding: 4px 10px;
         """)
         title_row.addWidget(self.s_badge)
         card_layout.addLayout(title_row)
@@ -1077,23 +1092,50 @@ class ProblemSolutionWidget(QWidget):
         header_layout.addWidget(self.copy_btn)
         layout.addLayout(header_layout)
 
-        # 2. Complexity Banner: Time, Space & Question Mark Button
+        # 2. Complexity Banner: Monotone Vector Pills & Big-O Chart Button
         self.complexity_bar = QFrame()
         self.complexity_bar.setObjectName("complexityBar")
         comp_layout = QHBoxLayout(self.complexity_bar)
-        comp_layout.setContentsMargins(10, 6, 10, 6)
-        comp_layout.setSpacing(10)
+        comp_layout.setContentsMargins(0, 2, 0, 2)
+        comp_layout.setSpacing(8)
 
-        self.time_label = QLabel("⏱ Time: O(n)")
+        # Time Pill (Monotone SVG icon + Text)
+        self.time_pill = QFrame()
+        self.time_pill.setObjectName("timePill")
+        time_pill_layout = QHBoxLayout(self.time_pill)
+        time_pill_layout.setContentsMargins(10, 5, 12, 5)
+        time_pill_layout.setSpacing(7)
+
+        self.time_icon = QLabel()
+        self.time_icon.setFixedSize(14, 14)
+        self.time_icon.setScaledContents(True)
+        time_pill_layout.addWidget(self.time_icon)
+
+        self.time_label = QLabel("Time: O(n)")
         self.time_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        comp_layout.addWidget(self.time_label)
+        time_pill_layout.addWidget(self.time_label)
+        comp_layout.addWidget(self.time_pill)
 
-        self.space_label = QLabel("💾 Space: O(1)")
+        # Space Pill (Monotone SVG icon + Text)
+        self.space_pill = QFrame()
+        self.space_pill.setObjectName("spacePill")
+        space_pill_layout = QHBoxLayout(self.space_pill)
+        space_pill_layout.setContentsMargins(10, 5, 12, 5)
+        space_pill_layout.setSpacing(7)
+
+        self.space_icon = QLabel()
+        self.space_icon.setFixedSize(14, 14)
+        self.space_icon.setScaledContents(True)
+        space_pill_layout.addWidget(self.space_icon)
+
+        self.space_label = QLabel("Space: O(1)")
         self.space_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        comp_layout.addWidget(self.space_label)
+        space_pill_layout.addWidget(self.space_label)
+        comp_layout.addWidget(self.space_pill)
 
         comp_layout.addStretch()
 
+        # Big-O Chart Button
         self.complexity_btn = QPushButton("? Big-O Chart")
         self.complexity_btn.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
         self.complexity_btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -1120,8 +1162,8 @@ class ProblemSolutionWidget(QWidget):
         # Update Complexity labels
         t_comp = problem.get("time_complexity", "O(n)")
         s_comp = problem.get("space_complexity", "O(1)")
-        self.time_label.setText(f"⏱ Time: {t_comp}")
-        self.space_label.setText(f"💾 Space: {s_comp}")
+        self.time_label.setText(f"Time: {t_comp}")
+        self.space_label.setText(f"Space: {s_comp}")
 
     def apply_font_size(self, size: int):
         sol_font = self.solution_view.font()
@@ -1146,24 +1188,42 @@ class ProblemSolutionWidget(QWidget):
         self.header_label.setStyleSheet(f"color: {theme['brand_color']};")
         self.highlighter.apply_theme(theme)
 
+        # High quality monotone SVG icons
+        icon_color = theme.get("btn_clear_text", "#d4d4d8")
+        self.time_icon.setPixmap(render_svg_pixmap(TIME_SVG, size=14, color=icon_color))
+        self.space_icon.setPixmap(render_svg_pixmap(SPACE_SVG, size=14, color=icon_color))
+
         # Complexity Bar styling
-        self.complexity_bar.setStyleSheet(f"""
-            QFrame#complexityBar {{
-                background-color: {theme['console_bg']};
-                border: 1px solid {theme['border_color']};
+        self.complexity_bar.setStyleSheet("""
+            QFrame#complexityBar {
+                background-color: transparent;
+                border: none;
+            }
+        """)
+        self.time_pill.setStyleSheet(f"""
+            QFrame#timePill {{
+                background-color: {theme['btn_clear_bg']};
+                border: 1px solid {theme['btn_clear_border']};
                 border-radius: 6px;
             }}
         """)
-        self.time_label.setStyleSheet("color: #10b981; font-weight: bold;")
-        self.space_label.setStyleSheet("color: #38bdf8; font-weight: bold;")
+        self.space_pill.setStyleSheet(f"""
+            QFrame#spacePill {{
+                background-color: {theme['btn_clear_bg']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 6px;
+            }}
+        """)
+        self.time_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600;")
+        self.space_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600;")
 
         self.complexity_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 5px;
-                padding: 3px 10px;
+                border-radius: 6px;
+                padding: 5px 12px;
                 font-size: 11px;
             }}
             QPushButton:hover {{
@@ -1196,7 +1256,7 @@ class ProblemSolutionWidget(QWidget):
 
 
 # ==========================================================
-# Problems List Selection Dialog
+# Problems List Selection Dialog (Categorized Sections)
 # ==========================================================
 class ProblemsListDialog(QDialog):
     problem_selected = Signal(dict)
@@ -1205,7 +1265,7 @@ class ProblemsListDialog(QDialog):
         super().__init__(parent)
         self.current_theme = theme
         self.setWindowTitle("Practice Problems")
-        self.resize(500, 400)
+        self.resize(500, 440)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 14, 14, 14)
@@ -1222,7 +1282,7 @@ class ProblemsListDialog(QDialog):
         self.search_input.textChanged.connect(self.filter_problems)
         layout.addWidget(self.search_input)
 
-        # List of problems
+        # List of problems (with categorized sections)
         self.list_widget = QListWidget()
         self.list_widget.setFont(QFont("SF Pro Text", 13))
         self.list_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
@@ -1255,31 +1315,62 @@ class ProblemsListDialog(QDialog):
 
     def populate_list(self, problems):
         self.list_widget.clear()
-        for p in problems:
-            t_badge = p.get("time_complexity", "O(n)")
-            item_text = f"{p['title']}  •  {t_badge}"
-            item = QListWidgetItem(item_text)
-            item.setData(Qt.ItemDataRole.UserRole, p)
-            self.list_widget.addItem(item)
-        if self.list_widget.count() > 0:
-            self.list_widget.setCurrentRow(0)
+
+        # Group problems by section: "Basics" (1-6) and "Hash Map" (7-14)
+        sections = [
+            ("Basics", [p for p in problems if p.get("category") == "Basics"]),
+            ("Hash Map", [p for p in problems if p.get("category") == "Hash Map"]),
+        ]
+
+        other_problems = [p for p in problems if p.get("category") not in ("Basics", "Hash Map")]
+        if other_problems:
+            sections.append(("Other", other_problems))
+
+        first_selectable_item = None
+
+        for section_title, section_problems in sections:
+            if not section_problems:
+                continue
+
+            # Section Header Item (Non-selectable category header)
+            header_item = QListWidgetItem(f"─── {section_title.upper()} ───")
+            header_item.setFlags(Qt.ItemFlag.NoItemFlags)
+            self.list_widget.addItem(header_item)
+
+            # Problem items with clean title only (no Big-O text)
+            for p in section_problems:
+                item = QListWidgetItem(f"   {p['title']}")
+                item.setData(Qt.ItemDataRole.UserRole, p)
+                self.list_widget.addItem(item)
+                if first_selectable_item is None:
+                    first_selectable_item = item
+
+        if first_selectable_item:
+            self.list_widget.setCurrentItem(first_selectable_item)
 
     def filter_problems(self, text):
         query = text.strip().lower()
-        filtered = [p for p in PROBLEMS_DATA if query in p["title"].lower() or query in p["raw_title"].lower()]
+        filtered = [
+            p for p in PROBLEMS_DATA
+            if query in p["title"].lower()
+            or query in p["raw_title"].lower()
+            or query in p.get("category", "").lower()
+        ]
         self.populate_list(filtered)
 
     def on_item_double_clicked(self, item):
         problem = item.data(Qt.ItemDataRole.UserRole)
-        self.problem_selected.emit(problem)
-        self.accept()
+        if problem:
+            self.problem_selected.emit(problem)
+            self.accept()
 
     def on_open_clicked(self):
         item = self.list_widget.currentItem()
         if item:
             problem = item.data(Qt.ItemDataRole.UserRole)
-            self.problem_selected.emit(problem)
-            self.accept()
+            if problem:
+                self.problem_selected.emit(problem)
+                self.accept()
 
     def apply_theme(self, theme):
         self.header_label.setStyleSheet(f"color: {theme['brand_color']};")
@@ -1303,8 +1394,17 @@ class ProblemsListDialog(QDialog):
                 padding: 6px;
             }}
             QListWidget::item {{
-                padding: 8px 10px;
+                padding: 7px 10px;
                 border-radius: 4px;
+            }}
+            QListWidget::item:disabled {{
+                color: {theme['table_header_text']};
+                font-size: 10px;
+                font-weight: bold;
+                letter-spacing: 1px;
+                background-color: transparent;
+                padding-top: 10px;
+                padding-bottom: 4px;
             }}
             QListWidget::item:selected {{
                 background-color: #2563eb;

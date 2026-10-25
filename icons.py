@@ -75,6 +75,30 @@ SUN_SVG = """
 </svg>
 """
 
+# 6. Monotone Time / Clock Icon
+TIME_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="12" cy="12" r="9"/>
+  <polyline points="12 7 12 12 15.5 14"/>
+</svg>
+"""
+
+# 7. Monotone Space / Memory Icon
+SPACE_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="4" width="16" height="16" rx="2.5"/>
+  <rect x="8.5" y="8.5" width="7" height="7" rx="1"/>
+  <line x1="9" y1="1" x2="9" y2="4"/>
+  <line x1="15" y1="1" x2="15" y2="4"/>
+  <line x1="9" y1="20" x2="9" y2="23"/>
+  <line x1="15" y1="20" x2="15" y2="23"/>
+  <line x1="20" y1="9" x2="23" y2="9"/>
+  <line x1="20" y1="15" x2="23" y2="15"/>
+  <line x1="1" y1="9" x2="4" y2="9"/>
+  <line x1="1" y1="15" x2="4" y2="15"/>
+</svg>
+"""
+
 
 def render_svg_icon(svg_str: str, size: int = 18, color: str = "#ffffff") -> QIcon:
     """Renders an SVG string into a crisp, color-tinted QIcon with Retina support."""
@@ -91,3 +115,20 @@ def render_svg_icon(svg_str: str, size: int = 18, color: str = "#ffffff") -> QIc
     
     pixmap.setDevicePixelRatio(scale)
     return QIcon(pixmap)
+
+
+def render_svg_pixmap(svg_str: str, size: int = 16, color: str = "#ffffff") -> QPixmap:
+    """Renders an SVG string into a crisp, color-tinted Retina QPixmap."""
+    colored_svg = svg_str.replace("currentColor", color)
+    renderer = QSvgRenderer(QByteArray(colored_svg.encode("utf-8")))
+    
+    scale = 2
+    pixmap = QPixmap(size * scale, size * scale)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    
+    painter = QPainter(pixmap)
+    renderer.render(painter)
+    painter.end()
+    
+    pixmap.setDevicePixelRatio(scale)
+    return pixmap
