@@ -145,6 +145,72 @@ PROBLEMS_DATA = [
             "print(is_prime(25)) # -> False\n"
         ),
     },
+    {
+        "id": "fizz_buzz",
+        "title": "5. fizz buzz",
+        "raw_title": "fizz buzz",
+        "description": (
+            "Write a function, fizz_buzz, that takes in a number n as an argument. "
+            "The function should return a list containing numbers from 1 to n, replacing certain numbers according to the following rules:\n\n"
+            "• if the number is divisible by 3, make the element \"fizz\"\n"
+            "• if the number is divisible by 5, make the element \"buzz\"\n"
+            "• if the number is divisible by 3 and 5, make the element \"fizzbuzz\""
+        ),
+        "examples": (
+            "fizz_buzz(11)\n"
+            "# -> [1, 2, 'fizz', 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11]\n\n"
+            "fizz_buzz(16)\n"
+            "# -> [1, 2, 'fizz', 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16]"
+        ),
+        "starter_code": "def fizz_buzz(n):\n  pass # todo\n",
+        "solution_code": (
+            "def fizz_buzz(n):\n"
+            "    result = []\n"
+            "    for i in range(1, n + 1):\n"
+            "        if i % 3 == 0 and i % 5 == 0:\n"
+            "            result.append(\"fizzbuzz\")\n"
+            "        elif i % 3 == 0:\n"
+            "            result.append(\"fizz\")\n"
+            "        elif i % 5 == 0:\n"
+            "            result.append(\"buzz\")\n"
+            "        else:\n"
+            "            result.append(i)\n"
+            "    return result\n\n"
+            "# Example test cases:\n"
+            "print(fizz_buzz(11))\n"
+            "print(fizz_buzz(16))\n"
+        ),
+    },
+    {
+        "id": "pairs",
+        "title": "6. pairs",
+        "raw_title": "pairs",
+        "description": (
+            "Write a function, pairs, that takes in a list as an argument. "
+            "The function should return a list containing all unique pairs of elements.\n\n"
+            "You may return the pairs in any order and the order of elements within a single pair does not matter.\n\n"
+            "You can assume that the input list contains unique elements."
+        ),
+        "examples": (
+            "pairs([\"a\", \"b\", \"c\"])\n"
+            "# -> [['a', 'b'], ['a', 'c'], ['b', 'c']]\n\n"
+            "pairs([\"red\", \"silver\", \"green\", \"blue\"])\n"
+            "# -> [['red', 'silver'], ['red', 'green'], ['red', 'blue'], ['silver', 'green'], ['silver', 'blue'], ['green', 'blue']]"
+        ),
+        "starter_code": "def pairs(elements):\n  pass # todo\n",
+        "solution_code": (
+            "def pairs(elements):\n"
+            "    result = []\n"
+            "    for i in range(0, len(elements)):\n"
+            "        for j in range(i + 1, len(elements)):\n"
+            "            pair = [elements[i], elements[j]]\n"
+            "            result.append(pair)\n"
+            "    return result\n\n"
+            "# Example test cases:\n"
+            "print(pairs([\"a\", \"b\", \"c\"]))\n"
+            "print(pairs([\"red\", \"silver\", \"green\", \"blue\"]))\n"
+        ),
+    },
 ]
 
 
