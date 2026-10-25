@@ -32,6 +32,11 @@ PROBLEMS_DATA = [
             "Solve this without using any built-in list methods. "
             "You can assume that the list is non-empty."
         ),
+        "examples": (
+            "max_value([4, 7, 2, 8, 10, 9]) # -> 10\n"
+            "max_value([10, 5, 40, 40.3])   # -> 40.3\n"
+            "max_value([-5, -2, -1, -11])   # -> -1"
+        ),
         "starter_code": "def max_value(nums):\n  pass # todo\n",
         "solution_code": (
             "def max_value(nums):\n"
@@ -45,7 +50,101 @@ PROBLEMS_DATA = [
             "print(max_value([10, 5, 40, 40.3]))   # -> 40.3\n"
             "print(max_value([-5, -2, -1, -11]))   # -> -1\n"
         ),
-    }
+    },
+    {
+        "id": "longest_word",
+        "title": "2. longest word",
+        "raw_title": "longest word",
+        "description": (
+            "Write a function, longest_word, that takes in a sentence string as an argument. "
+            "The function should return the longest word in the sentence. "
+            "If there is a tie, return the word that occurs later in the sentence.\n\n"
+            "You can assume that the sentence is non-empty."
+        ),
+        "examples": (
+            'longest_word("the quick brown fox jumps") # -> "jumps"\n'
+            'longest_word("where there is a will there is a way") # -> "there"\n'
+            'longest_word("hello world") # -> "world"'
+        ),
+        "starter_code": "def longest_word(sentence):\n  pass # todo\n",
+        "solution_code": (
+            "def longest_word(sentence):\n"
+            '    words = sentence.split(" ")\n'
+            '    longest = ""\n'
+            "    for word in words:\n"
+            "        if len(word) >= len(longest):\n"
+            "            longest = word\n"
+            "    return longest\n\n"
+            "# Example test cases:\n"
+            'print(longest_word("the quick brown fox jumps")) # -> "jumps"\n'
+            'print(longest_word("where there is a will there is a way")) # -> "there"\n'
+            'print(longest_word("hello world")) # -> "world"\n'
+        ),
+    },
+    {
+        "id": "all_even",
+        "title": "3. all even",
+        "raw_title": "all even",
+        "description": (
+            "Write a function, all_even, that takes in a list of numbers as an argument. "
+            "The function should return a boolean indicating whether or not every element of the list is an even number.\n\n"
+            "You can assume that the list is non-empty."
+        ),
+        "examples": (
+            "all_even([2, 4, 6, 8]) # -> True\n"
+            "all_even([2, 3, 4, 6]) # -> False\n"
+            "all_even([12])         # -> True"
+        ),
+        "starter_code": "def all_even(nums):\n  pass # todo\n",
+        "solution_code": (
+            "def all_even(nums):\n"
+            "    for num in nums:\n"
+            "        if num % 2 != 0:\n"
+            "            return False\n"
+            "    return True\n\n"
+            "# Example test cases:\n"
+            "print(all_even([2, 4, 6, 8])) # -> True\n"
+            "print(all_even([2, 3, 4, 6])) # -> False\n"
+            "print(all_even([12]))         # -> True\n"
+        ),
+    },
+    {
+        "id": "is_prime",
+        "title": "4. is prime",
+        "raw_title": "is prime",
+        "description": (
+            "Write a function, is_prime, that takes in a number as an argument. "
+            "The function should return a boolean indicating whether or not the given number is prime.\n\n"
+            "A prime number is a number that is only divisible by two distinct numbers: 1 and itself.\n\n"
+            "For example, 7 is a prime because it is only divisible by 1 and 7. "
+            "For example, 6 is not a prime because it is divisible by 1, 2, 3, and 6.\n\n"
+            "You can assume that the input number is a positive integer."
+        ),
+        "examples": (
+            "is_prime(2)  # -> True\n"
+            "is_prime(7)  # -> True\n"
+            "is_prime(4)  # -> False\n"
+            "is_prime(1)  # -> False\n"
+            "is_prime(25) # -> False"
+        ),
+        "starter_code": "def is_prime(n):\n  pass # todo\n",
+        "solution_code": (
+            "from math import sqrt, floor\n\n"
+            "def is_prime(n):\n"
+            "    if n < 2:\n"
+            "        return False\n"
+            "    for i in range(2, floor(sqrt(n)) + 1):\n"
+            "        if n % i == 0:\n"
+            "            return False\n"
+            "    return True\n\n"
+            "# Example test cases:\n"
+            "print(is_prime(2))  # -> True\n"
+            "print(is_prime(7))  # -> True\n"
+            "print(is_prime(4))  # -> False\n"
+            "print(is_prime(1))  # -> False\n"
+            "print(is_prime(25)) # -> False\n"
+        ),
+    },
 ]
 
 
@@ -78,22 +177,35 @@ class ProblemDescriptionWidget(QWidget):
         self.title_label.setWordWrap(True)
         self.container_layout.addWidget(self.title_label)
 
-        # Badge
-        self.badge_label = QLabel("  Practice Problem  ")
+        # Badge Pill
+        self.badge_label = QLabel("Practice Problem")
         self.badge_label.setFont(QFont("SF Pro Text", 10, QFont.Weight.Bold))
         self.badge_label.setStyleSheet("""
             background-color: #0284c7;
             color: #ffffff;
-            border-radius: 4px;
-            padding: 2px 6px;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-weight: 600;
         """)
-        self.container_layout.addWidget(self.badge_label)
+        self.container_layout.addWidget(self.badge_label, alignment=Qt.AlignmentFlag.AlignLeft)
 
         # Description
         self.desc_label = QLabel()
         self.desc_label.setFont(QFont("SF Pro Text", 12))
         self.desc_label.setWordWrap(True)
         self.container_layout.addWidget(self.desc_label)
+
+        # Examples Header
+        self.examples_header = QLabel("Example Test Cases")
+        self.examples_header.setFont(QFont("SF Pro Display", 12, QFont.Weight.Bold))
+        self.container_layout.addWidget(self.examples_header)
+
+        # Examples Box (Syntax-highlighted code block)
+        self.examples_box = QPlainTextEdit()
+        self.examples_box.setFont(QFont("Dank Mono", 12))
+        self.examples_box.setReadOnly(True)
+        self.examples_highlighter = PythonHighlighter(self.examples_box.document(), theme=self.current_theme)
+        self.container_layout.addWidget(self.examples_box)
 
         self.container_layout.addStretch()
         layout.addWidget(scroll)
@@ -103,11 +215,32 @@ class ProblemDescriptionWidget(QWidget):
     def set_problem(self, problem):
         self.title_label.setText(problem.get("title", ""))
         self.desc_label.setText(problem.get("description", ""))
+        examples = problem.get("examples", "")
+        self.examples_box.setPlainText(examples)
+        line_count = len(examples.strip().splitlines()) if examples else 2
+        target_height = max(60, min(180, line_count * 22 + 20))
+        self.examples_box.setFixedHeight(target_height)
+
+    def apply_font_size(self, size: int):
+        ex_font = self.examples_box.font()
+        ex_font.setPointSize(size)
+        self.examples_box.setFont(ex_font)
 
     def apply_theme(self, theme):
         self.current_theme = theme
         self.title_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold;")
         self.desc_label.setStyleSheet(f"color: {theme['table_text']}; font-size: 13px;")
+        self.examples_header.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; margin-top: 6px;")
+        self.examples_highlighter.apply_theme(theme)
+        self.examples_box.setStyleSheet(f"""
+            QPlainTextEdit {{
+                background-color: {theme['console_bg']};
+                color: {theme['console_text']};
+                border: 1px solid {theme['border_color']};
+                border-radius: 6px;
+                padding: 8px;
+            }}
+        """)
 
 
 # ==========================================================
@@ -150,6 +283,11 @@ class ProblemSolutionWidget(QWidget):
     def set_problem(self, problem):
         self.current_solution = problem.get("solution_code", "")
         self.solution_view.setPlainText(self.current_solution)
+
+    def apply_font_size(self, size: int):
+        sol_font = self.solution_view.font()
+        sol_font.setPointSize(size)
+        self.solution_view.setFont(sol_font)
 
     def on_copy_clicked(self):
         if self.current_solution:

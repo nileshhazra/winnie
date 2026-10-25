@@ -170,6 +170,7 @@ class WinnieIDE(QMainWindow):
 
         # Cmd + + / Cmd + =: Zoom in font
         self.font_size = 13
+        self.apply_font_size(self.font_size)
         self.shortcut_zoom_in1 = QShortcut(QKeySequence("Ctrl++"), self)
         self.shortcut_zoom_in1.activated.connect(self.zoom_in)
         self.shortcut_zoom_in2 = QShortcut(QKeySequence("Ctrl+="), self)
@@ -274,6 +275,8 @@ class WinnieIDE(QMainWindow):
 
         self.problem_desc_widget.set_problem(problem)
         self.problem_sol_widget.set_problem(problem)
+        self.problem_desc_widget.apply_font_size(self.font_size)
+        self.problem_sol_widget.apply_font_size(self.font_size)
 
         self.is_problem_mode = True
         self.right_tabs.clear()
@@ -437,6 +440,10 @@ class WinnieIDE(QMainWindow):
         var_font.setPointSize(max(9, size - 1))
         self.variables_view.table.setFont(var_font)
         self.variables_view.table.resizeRowsToContents()
+
+        # 4. Update Problem Views fonts (Solution code & Description examples)
+        self.problem_sol_widget.apply_font_size(size)
+        self.problem_desc_widget.apply_font_size(size)
 
     def toggle_terminal(self):
         """Toggles the bottom terminal / console visibility (Cmd + J)."""
