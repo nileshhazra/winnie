@@ -1093,6 +1093,610 @@ PROBLEMS_DATA = [
             "Steps sequentially through the linked list up to index (at most n steps), taking O(n) time and O(1) space iteratively (O(n) recursive stack)."
         ),
     },
+    {
+        "id": "reverse_list",
+        "title": "25. reverse list",
+        "raw_title": "reverse list",
+        "category": "Linked List",
+        "description": (
+            "Write a function, reverse_list, that takes in the head of a linked list as an argument. "
+            "The function should reverse the order of the nodes in the linked list in-place and return the new head of the reversed linked list."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n"
+            "e.next = f\n\n"
+            "reverse_list(a) # -> f -> e -> d -> c -> b -> a"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def reverse_list(head):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def reverse_list(head):\n"
+            "    prev = None\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        next_node = current.next\n"
+            "        current.next = prev\n"
+            "        prev = current\n"
+            "        current = next_node\n"
+            "    return prev\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def reverse_list(head, prev=None):\n"
+            "    if head is None:\n"
+            "        return prev\n"
+            "    next_node = head.next\n"
+            "    head.next = prev\n"
+            "    return reverse_list(next_node, head)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "def print_list(head):\n"
+            "    vals = []\n"
+            "    curr = head\n"
+            "    while curr:\n"
+            "        vals.append(str(curr.val))\n"
+            "        curr = curr.next\n"
+            "    return ' -> '.join(vals)\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n"
+            "e.next = f\n\n"
+            "print(print_list(reverse_list(a))) # -> f -> e -> d -> c -> b -> a\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Reverses the next pointer of each node in-place in a single pass taking O(1) space iteratively (O(n) recursive stack frames)."
+        ),
+    },
+    {
+        "id": "zipper_lists",
+        "title": "26. zipper lists",
+        "raw_title": "zipper lists",
+        "category": "Linked List",
+        "description": (
+            "Write a function, zipper_lists, that takes in the head of two linked lists as arguments. "
+            "The function should zipper the two lists together into single linked list by alternating nodes. "
+            "If one of the linked lists is longer than the other, the resulting list should terminate with the remaining nodes. "
+            "The function should return the head of the zippered linked list.\n\n"
+            "Do this in-place, by mutating the original Nodes.\n\n"
+            "You may assume that both input lists are non-empty."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "a.next = b\n"
+            "b.next = c\n\n"
+            "x = Node('x')\n"
+            "y = Node('y')\n"
+            "z = Node('z')\n"
+            "x.next = y\n"
+            "y.next = z\n\n"
+            "zipper_lists(a, x) # -> a -> x -> b -> y -> c -> z"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def zipper_lists(head_1, head_2):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def zipper_lists(head_1, head_2):\n"
+            "    tail = head_1\n"
+            "    current_1 = head_1.next\n"
+            "    current_2 = head_2\n"
+            "    count = 0\n"
+            "    while current_1 is not None and current_2 is not None:\n"
+            "        if count % 2 == 0:\n"
+            "            tail.next = current_2\n"
+            "            current_2 = current_2.next\n"
+            "        else:\n"
+            "            tail.next = current_1\n"
+            "            current_1 = current_1.next\n"
+            "        tail = tail.next\n"
+            "        count += 1\n\n"
+            "    if current_1 is not None:\n"
+            "        tail.next = current_1\n"
+            "    if current_2 is not None:\n"
+            "        tail.next = current_2\n\n"
+            "    return head_1\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def zipper_lists(head_1, head_2):\n"
+            "    if head_1 is None and head_2 is None:\n"
+            "        return None\n"
+            "    if head_1 is None:\n"
+            "        return head_2\n"
+            "    if head_2 is None:\n"
+            "        return head_1\n\n"
+            "    next_1 = head_1.next\n"
+            "    next_2 = head_2.next\n"
+            "    head_1.next = head_2\n"
+            "    head_2.next = zipper_lists(next_1, next_2)\n"
+            "    return head_1\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "def print_list(head):\n"
+            "    vals = []\n"
+            "    curr = head\n"
+            "    while curr:\n"
+            "        vals.append(str(curr.val))\n"
+            "        curr = curr.next\n"
+            "    return ' -> '.join(vals)\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "a.next = b\n"
+            "b.next = c\n\n"
+            "x = Node('x')\n"
+            "y = Node('y')\n"
+            "z = Node('z')\n"
+            "x.next = y\n"
+            "y.next = z\n\n"
+            "print(print_list(zipper_lists(a, x))) # -> a -> x -> b -> y -> c -> z\n"
+        ),
+        "time_complexity": "O(min(n, m))",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Alternates node references in-place taking linear time proportional to the shorter list in O(1) space iteratively (O(min(n, m)) recursive stack)."
+        ),
+    },
+    {
+        "id": "merge_lists",
+        "title": "27. merge lists",
+        "raw_title": "merge lists",
+        "category": "Linked List",
+        "description": (
+            "Write a function, merge_lists, that takes in the head of two sorted linked lists as arguments. "
+            "The function should merge the two lists together into single sorted linked list. "
+            "The function should return the head of the merged linked list.\n\n"
+            "Do this in-place, by mutating the original Nodes.\n\n"
+            "You may assume that both input lists are non-empty and contain increasing sorted numbers."
+        ),
+        "examples": (
+            "a = Node(5)\n"
+            "b = Node(7)\n"
+            "c = Node(10)\n"
+            "a.next = b\n"
+            "b.next = c\n\n"
+            "q = Node(6)\n"
+            "r = Node(8)\n"
+            "s = Node(9)\n"
+            "q.next = r\n"
+            "r.next = s\n\n"
+            "merge_lists(a, q) # -> 5 -> 6 -> 7 -> 8 -> 9 -> 10"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def merge_lists(head_1, head_2):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def merge_lists(head_1, head_2):\n"
+            "    dummy_head = Node(None)\n"
+            "    tail = dummy_head\n"
+            "    current_1 = head_1\n"
+            "    current_2 = head_2\n\n"
+            "    while current_1 is not None and current_2 is not None:\n"
+            "        if current_1.val < current_2.val:\n"
+            "            tail.next = current_1\n"
+            "            current_1 = current_1.next\n"
+            "        else:\n"
+            "            tail.next = current_2\n"
+            "            current_2 = current_2.next\n"
+            "        tail = tail.next\n\n"
+            "    if current_1 is not None:\n"
+            "        tail.next = current_1\n"
+            "    if current_2 is not None:\n"
+            "        tail.next = current_2\n\n"
+            "    return dummy_head.next\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def merge_lists(head_1, head_2):\n"
+            "    if head_1 is None and head_2 is None:\n"
+            "        return None\n"
+            "    if head_1 is None:\n"
+            "        return head_2\n"
+            "    if head_2 is None:\n"
+            "        return head_1\n\n"
+            "    if head_1.val < head_2.val:\n"
+            "        head_1.next = merge_lists(head_1.next, head_2)\n"
+            "        return head_1\n"
+            "    else:\n"
+            "        head_2.next = merge_lists(head_1, head_2.next)\n"
+            "        return head_2\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "def print_list(head):\n"
+            "    vals = []\n"
+            "    curr = head\n"
+            "    while curr:\n"
+            "        vals.append(str(curr.val))\n"
+            "        curr = curr.next\n"
+            "    return ' -> '.join(vals)\n\n"
+            "a = Node(5)\n"
+            "b = Node(7)\n"
+            "c = Node(10)\n"
+            "a.next = b\n"
+            "b.next = c\n\n"
+            "q = Node(6)\n"
+            "r = Node(8)\n"
+            "s = Node(9)\n"
+            "q.next = r\n"
+            "r.next = s\n\n"
+            "print(print_list(merge_lists(a, q))) # -> 5 -> 6 -> 7 -> 8 -> 9 -> 10\n"
+        ),
+        "time_complexity": "O(min(n, m))",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Compares node values and splices pointers in-place, running in time bounded by the shorter list with O(1) iterative space (O(min(n, m)) recursive stack)."
+        ),
+    },
+    {
+        "id": "is_univalue_list",
+        "title": "28. is univalue list",
+        "raw_title": "is univalue list",
+        "category": "Linked List",
+        "description": (
+            "Write a function, is_univalue_list, that takes in the head of a linked list as an argument. "
+            "The function should return a boolean indicating whether or not the linked list contains exactly one unique value.\n\n"
+            "You may assume that the input list is non-empty."
+        ),
+        "examples": (
+            "u = Node(7)\n"
+            "v = Node(7)\n"
+            "w = Node(7)\n"
+            "u.next = v\n"
+            "v.next = w\n"
+            "is_univalue_list(u) # -> True\n\n"
+            "a = Node(7)\n"
+            "b = Node(4)\n"
+            "a.next = b\n"
+            "is_univalue_list(a) # -> False"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def is_univalue_list(head):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def is_univalue_list(head):\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        if current.val != head.val:\n"
+            "            return False\n"
+            "        current = current.next\n"
+            "    return True\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def is_univalue_list(head, prev_val=None):\n"
+            "    if head is None:\n"
+            "        return True\n"
+            "    if prev_val is None or head.val == prev_val:\n"
+            "        return is_univalue_list(head.next, head.val)\n"
+            "    else:\n"
+            "        return False\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "u = Node(7)\n"
+            "v = Node(7)\n"
+            "w = Node(7)\n"
+            "u.next = v\n"
+            "v.next = w\n"
+            "print(is_univalue_list(u)) # -> True\n\n"
+            "a = Node(7)\n"
+            "b = Node(4)\n"
+            "a.next = b\n"
+            "print(is_univalue_list(a)) # -> False\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses the list until a mismatch is found or all n nodes are verified, using O(1) space iteratively (O(n) recursive stack)."
+        ),
+    },
+    {
+        "id": "longest_streak",
+        "title": "29. longest streak",
+        "raw_title": "longest streak",
+        "category": "Linked List",
+        "description": (
+            "Write a function, longest_streak, that takes in the head of a linked list as an argument. "
+            "The function should return the length of the longest consecutive streak of the same value within the list."
+        ),
+        "examples": (
+            "a = Node(5)\n"
+            "b = Node(5)\n"
+            "c = Node(7)\n"
+            "d = Node(7)\n"
+            "e = Node(7)\n"
+            "f = Node(6)\n\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n"
+            "e.next = f\n\n"
+            "longest_streak(a) # -> 3\n\n"
+            "longest_streak(None) # -> 0"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def longest_streak(head):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def longest_streak(head):\n"
+            "    max_streak = 0\n"
+            "    current_streak = 0\n"
+            "    prev_val = None\n\n"
+            "    current_node = head\n"
+            "    while current_node is not None:\n"
+            "        if current_node.val == prev_val:\n"
+            "            current_streak += 1\n"
+            "        else:\n"
+            "            current_streak = 1\n\n"
+            "        prev_val = current_node.val\n"
+            "        if current_streak > max_streak:\n"
+            "            max_streak = current_streak\n\n"
+            "        current_node = current_node.next\n\n"
+            "    return max_streak\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "a = Node(5)\n"
+            "b = Node(5)\n"
+            "c = Node(7)\n"
+            "d = Node(7)\n"
+            "e = Node(7)\n"
+            "f = Node(6)\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n"
+            "e.next = f\n\n"
+            "print(longest_streak(a))    # -> 3\n"
+            "print(longest_streak(None)) # -> 0\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Iterates through the n nodes tracking the maximum contiguous run of identical node values, in O(1) auxiliary space."
+        ),
+    },
+    {
+        "id": "remove_node",
+        "title": "30. remove node",
+        "raw_title": "remove node",
+        "category": "Linked List",
+        "description": (
+            "Write a function, remove_node, that takes in the head of a linked list and a target value as arguments. "
+            "The function should delete the node containing the target value from the linked list and return the head of the resulting linked list. "
+            "If the target appears multiple times in the linked list, only remove the first instance of the target in the list.\n\n"
+            "Do this in-place.\n\n"
+            "You may assume that the input list is non-empty.\n\n"
+            "You may assume that the input list contains the target."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n"
+            "e.next = f\n\n"
+            "remove_node(a, 'c') # -> a -> b -> d -> e -> f"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def remove_node(head, target_val):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def remove_node(head, target_val):\n"
+            "    if head.val == target_val:\n"
+            "        return head.next\n\n"
+            "    current = head\n"
+            "    prev = None\n"
+            "    while current is not None:\n"
+            "        if current.val == target_val:\n"
+            "            prev.next = current.next\n"
+            "            break\n"
+            "        prev = current\n"
+            "        current = current.next\n"
+            "    return head\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def remove_node(head, target_val):\n"
+            "    if head is None:\n"
+            "        return None\n\n"
+            "    if head.val == target_val:\n"
+            "        return head.next\n\n"
+            "    head.next = remove_node(head.next, target_val)\n"
+            "    return head\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "def print_list(head):\n"
+            "    vals = []\n"
+            "    curr = head\n"
+            "    while curr:\n"
+            "        vals.append(str(curr.val))\n"
+            "        curr = curr.next\n"
+            "    return ' -> '.join(vals)\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n"
+            "d.next = e\n"
+            "e.next = f\n\n"
+            "print(print_list(remove_node(a, 'c'))) # -> a -> b -> d -> e -> f\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Searches for the target node and rewires the preceding pointer in-place, using O(1) space iteratively (O(n) recursive stack frames)."
+        ),
+    },
+    {
+        "id": "insert_node",
+        "title": "31. insert node",
+        "raw_title": "insert node",
+        "category": "Linked List",
+        "description": (
+            "Write a function, insert_node, that takes in the head of a linked list, a value, and an index. "
+            "The function should insert a new node with the value into the list at the specified index. "
+            "Consider the head of the linked list as index 0. The function should return the head of the resulting linked list.\n\n"
+            "Do this in-place.\n\n"
+            "You may assume that the input list is non-empty and the index is not greater than the length of the input list."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "insert_node(a, 'x', 2) # -> a -> b -> x -> c -> d\n"
+            "insert_node(a, 'm', 0) # -> m -> a -> b -> c -> d"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.next = None\n\n"
+            "def insert_node(head, value, index):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Iterative Approach ===\n"
+            "def insert_node(head, value, index):\n"
+            "    if index == 0:\n"
+            "        new_head = Node(value)\n"
+            "        new_head.next = head\n"
+            "        return new_head\n\n"
+            "    count = 0\n"
+            "    current = head\n"
+            "    while current is not None:\n"
+            "        if count == index - 1:\n"
+            "            temp = current.next\n"
+            "            current.next = Node(value)\n"
+            "            current.next.next = temp\n"
+            "            break\n\n"
+            "        count += 1\n"
+            "        current = current.next\n"
+            "    return head\n\n\n"
+            "# === Recursive Approach ===\n"
+            "def insert_node(head, value, index, count=0):\n"
+            "    if index == 0:\n"
+            "        new_head = Node(value)\n"
+            "        new_head.next = head\n"
+            "        return new_head\n\n"
+            "    if head is None:\n"
+            "        return None\n\n"
+            "    if count == index - 1:\n"
+            "        temp = head.next\n"
+            "        head.next = Node(value)\n"
+            "        head.next.next = temp\n"
+            "        return head\n\n"
+            "    insert_node(head.next, value, index, count + 1)\n"
+            "    return head\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.next = None\n\n"
+            "def print_list(head):\n"
+            "    vals = []\n"
+            "    curr = head\n"
+            "    while curr:\n"
+            "        vals.append(str(curr.val))\n"
+            "        curr = curr.next\n"
+            "    return ' -> '.join(vals)\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "a.next = b\n"
+            "b.next = c\n"
+            "c.next = d\n\n"
+            "print(print_list(insert_node(a, 'x', 2))) # -> a -> b -> x -> c -> d\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Advances up to the target index (at most n steps) to splice in the new Node, running in O(1) space iteratively (O(n) recursive stack)."
+        ),
+    },
 ]
 
 
