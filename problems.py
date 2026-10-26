@@ -21,7 +21,7 @@ from icons import TIME_SVG, SPACE_SVG, render_svg_pixmap
 
 
 # ==========================================================
-# Problems Database (All 14 Practice Problems)
+# Problems Database (All 45 Practice Problems)
 # ==========================================================
 PROBLEMS_DATA = [
     {
@@ -2383,6 +2383,557 @@ PROBLEMS_DATA = [
             "Traverses all n nodes in the tree, counting matches against target in linear time with O(n) auxiliary queue or stack space."
         ),
     },
+    {
+        "id": "how_high",
+        "title": "40. how high",
+        "raw_title": "how high",
+        "category": "Tree",
+        "description": (
+            "Write a function, how_high, that takes in the root of a binary tree. "
+            "The function should return a number representing the height of the tree.\n\n"
+            "The height of a binary tree is defined as the maximal number of edges from the root node to any leaf node.\n\n"
+            "If the tree is empty, return -1."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "how_high(a) # -> 2\n\n"
+            "# Single node tree:\n"
+            "g = Node('g')\n"
+            "how_high(g) # -> 0\n\n"
+            "# Empty tree:\n"
+            "how_high(None) # -> -1"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def how_high(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def how_high(root):\n"
+            "    if root is None:\n"
+            "        return -1\n\n"
+            "    left_height = how_high(root.left)\n"
+            "    right_height = how_high(root.right)\n"
+            "    return 1 + max(left_height, right_height)\n\n\n"
+            "# === Breadth-First Search (Iterative Queue) ===\n"
+            "def how_high_bfs(root):\n"
+            "    queue = deque([])\n"
+            "    if root is not None:\n"
+            "        queue.append((root, 0))\n\n"
+            "    max_depth = -1\n"
+            "    while queue:\n"
+            "        node, depth = queue.popleft()\n"
+            "        max_depth = max(max_depth, depth)\n"
+            "        if node.left is not None:\n"
+            "            queue.append((node.left, depth + 1))\n"
+            "        if node.right is not None:\n"
+            "            queue.append((node.right, depth + 1))\n\n"
+            "    return max_depth\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(how_high(a))         # -> 2\n"
+            "print(how_high(Node('g'))) # -> 0\n"
+            "print(how_high(None))      # -> -1\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits each node once in linear O(n) time, using O(n) auxiliary call stack space in the worst case (for skewed trees)."
+        ),
+    },
+    {
+        "id": "bottom_right_value",
+        "title": "41. bottom right value",
+        "raw_title": "bottom right value",
+        "category": "Tree",
+        "description": (
+            "Write a function, bottom_right_value, that takes in the root of a binary tree. "
+            "The function should return the right-most value in the bottom-most level of the tree.\n\n"
+            "You may assume that the input tree is non-empty."
+        ),
+        "examples": (
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(10)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#       3\n"
+            "#    /    \\\n"
+            "#   11     10\n"
+            "#  / \\       \\\n"
+            "# 4   -2      1\n\n"
+            "bottom_right_value(a) # -> 1"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def bottom_right_value(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "# === Breadth-First Search (Iterative Queue) ===\n"
+            "def bottom_right_value(root):\n"
+            "    queue = deque([root])\n"
+            "    current = None\n\n"
+            "    while queue:\n"
+            "        current = queue.popleft()\n\n"
+            "        if current.left is not None:\n"
+            "            queue.append(current.left)\n"
+            "        if current.right is not None:\n"
+            "            queue.append(current.right)\n\n"
+            "    return current.val\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(10)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(bottom_right_value(a)) # -> 1\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses the tree level-by-level in O(n) time using a queue of up to O(n) capacity. The last popped element is guaranteed to be the bottom-rightmost node."
+        ),
+    },
+    {
+        "id": "all_tree_paths",
+        "title": "42. all tree paths",
+        "raw_title": "all tree paths",
+        "category": "Tree",
+        "description": (
+            "Write a function, all_tree_paths, that takes in the root of a binary tree. "
+            "The function should return a 2-Dimensional list where each subarray represents a root-to-leaf path in the tree.\n\n"
+            "The order within an individual path must start at the root and end at the leaf, "
+            "but the relative order among paths in the outer list does not matter.\n\n"
+            "You may assume that the input tree is non-empty."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "all_tree_paths(a) # ->\n"
+            "# [ \n"
+            "#   [ 'a', 'b', 'd' ], \n"
+            "#   [ 'a', 'b', 'e' ], \n"
+            "#   [ 'a', 'c', 'f' ] \n"
+            "# ]"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def all_tree_paths(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Recursive Path Collector (Depth-First) ===\n"
+            "def all_tree_paths(root):\n"
+            "    paths = _all_tree_paths(root)\n"
+            "    for path in paths:\n"
+            "        path.reverse()\n"
+            "    return paths\n\n"
+            "def _all_tree_paths(root):\n"
+            "    if root is None:\n"
+            "        return []\n\n"
+            "    if root.left is None and root.right is None:\n"
+            "        return [[root.val]]\n\n"
+            "    all_paths = []\n"
+            "    left_sub_paths = _all_tree_paths(root.left)\n"
+            "    for path in left_sub_paths:\n"
+            "        path.append(root.val)\n"
+            "        all_paths.append(path)\n\n"
+            "    right_sub_paths = _all_tree_paths(root.right)\n"
+            "    for path in right_sub_paths:\n"
+            "        path.append(root.val)\n"
+            "        all_paths.append(path)\n\n"
+            "    return all_paths\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(all_tree_paths(a))\n"
+            "# -> [ ['a', 'b', 'd'], ['a', 'b', 'e'], ['a', 'c', 'f'] ]\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits all n nodes recursively, constructing root-to-leaf subarrays with O(n) total path elements and call stack space."
+        ),
+    },
+    {
+        "id": "tree_levels",
+        "title": "43. tree levels",
+        "raw_title": "tree levels",
+        "category": "Tree",
+        "description": (
+            "Write a function, tree_levels, that takes in the root of a binary tree. "
+            "The function should return a 2-Dimensional list where each sublist represents a level of the tree."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#      a\n"
+            "#    /   \\\n"
+            "#   b     c\n"
+            "#  / \\     \\\n"
+            "# d   e     f\n\n"
+            "tree_levels(a) # ->\n"
+            "# [\n"
+            "#   ['a'],\n"
+            "#   ['b', 'c'],\n"
+            "#   ['d', 'e', 'f']\n"
+            "# ]"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def tree_levels(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "# === Breadth-First Search (Iterative Queue) ===\n"
+            "def tree_levels(root):\n"
+            "    if root is None:\n"
+            "        return []\n\n"
+            "    levels = []\n"
+            "    queue = deque([(root, 0)])\n"
+            "    while queue:\n"
+            "        current, level_num = queue.popleft()\n\n"
+            "        if len(levels) == level_num:\n"
+            "            levels.append([current.val])\n"
+            "        else:\n"
+            "            levels[level_num].append(current.val)\n\n"
+            "        if current.left is not None:\n"
+            "            queue.append((current.left, level_num + 1))\n"
+            "        if current.right is not None:\n"
+            "            queue.append((current.right, level_num + 1))\n\n"
+            "    return levels\n\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def tree_levels_dfs(root):\n"
+            "    levels = []\n"
+            "    _fill_levels(root, levels, 0)\n"
+            "    return levels\n\n"
+            "def _fill_levels(root, levels, level_num):\n"
+            "    if root is None:\n"
+            "        return\n\n"
+            "    if len(levels) == level_num:\n"
+            "        levels.append([root.val])\n"
+            "    else:\n"
+            "        levels[level_num].append(root.val)\n\n"
+            "    _fill_levels(root.left, levels, level_num + 1)\n"
+            "    _fill_levels(root.right, levels, level_num + 1)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(tree_levels(a))\n"
+            "# -> [ ['a'], ['b', 'c'], ['d', 'e', 'f'] ]\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses all n nodes once while recording level numbers, organizing nodes into level buckets in O(n) time and O(n) auxiliary space."
+        ),
+    },
+    {
+        "id": "level_averages",
+        "title": "44. level averages",
+        "raw_title": "level averages",
+        "category": "Tree",
+        "description": (
+            "Write a function, level_averages, that takes in the root of a binary tree that contains number values. "
+            "The function should return a list containing the average value of each level."
+        ),
+        "examples": (
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#       3\n"
+            "#    /    \\\n"
+            "#   11     4\n"
+            "#  / \\      \\\n"
+            "# 4   -2     1\n\n"
+            "level_averages(a) # -> [ 3.0, 7.5, 1.0 ]"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def level_averages(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from statistics import mean\n"
+            "from collections import deque\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def level_averages(root):\n"
+            "    levels = []\n"
+            "    fill_levels(root, levels, 0)\n"
+            "    avgs = []\n"
+            "    for level in levels:\n"
+            "        avgs.append(mean(level))\n"
+            "    return avgs\n\n"
+            "def fill_levels(root, levels, level_num):\n"
+            "    if root is None:\n"
+            "        return\n\n"
+            "    if level_num == len(levels):\n"
+            "        levels.append([root.val])\n"
+            "    else:\n"
+            "        levels[level_num].append(root.val)\n\n"
+            "    fill_levels(root.left, levels, level_num + 1)\n"
+            "    fill_levels(root.right, levels, level_num + 1)\n\n\n"
+            "# === Breadth-First Search (Iterative Queue) ===\n"
+            "def level_averages_bfs(root):\n"
+            "    if root is None:\n"
+            "        return []\n\n"
+            "    levels = []\n"
+            "    queue = deque([(root, 0)])\n"
+            "    while queue:\n"
+            "        current, level_num = queue.popleft()\n"
+            "        if len(levels) == level_num:\n"
+            "            levels.append([current.val])\n"
+            "        else:\n"
+            "            levels[level_num].append(current.val)\n\n"
+            "        if current.left is not None:\n"
+            "            queue.append((current.left, level_num + 1))\n"
+            "        if current.right is not None:\n"
+            "            queue.append((current.right, level_num + 1))\n\n"
+            "    return [mean(lvl) for lvl in levels]\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node(3)\n"
+            "b = Node(11)\n"
+            "c = Node(4)\n"
+            "d = Node(4)\n"
+            "e = Node(-2)\n"
+            "f = Node(1)\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(level_averages(a))     # -> [3.0, 7.5, 1.0]\n"
+            "print(level_averages_bfs(a)) # -> [3.0, 7.5, 1.0]\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Gathers nodes across all levels in linear O(n) time and computes each level mean in O(n) total operations with O(n) space."
+        ),
+    },
+    {
+        "id": "leaf_list",
+        "title": "45. leaf list",
+        "raw_title": "leaf list",
+        "category": "Tree",
+        "description": (
+            "Write a function, leaf_list, that takes in the root of a binary tree and "
+            "returns a list containing the values of all leaf nodes in left-to-right order."
+        ),
+        "examples": (
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "#      a\n"
+            "#    /   \\\n"
+            "#   b     c\n"
+            "#  / \\     \\\n"
+            "# d   e     f\n\n"
+            "leaf_list(a) # -> [ 'd', 'e', 'f' ]"
+        ),
+        "starter_code": (
+            "class Node:\n"
+            "  def __init__(self, val):\n"
+            "    self.val = val\n"
+            "    self.left = None\n"
+            "    self.right = None\n\n"
+            "def leaf_list(root):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search (Iterative Stack) ===\n"
+            "def leaf_list(root):\n"
+            "    if root is None:\n"
+            "        return []\n\n"
+            "    leaves = []\n"
+            "    stack = [root]\n"
+            "    while stack:\n"
+            "        current = stack.pop()\n"
+            "        if current.left is None and current.right is None:\n"
+            "            leaves.append(current.val)\n\n"
+            "        if current.right is not None:\n"
+            "            stack.append(current.right)\n"
+            "        if current.left is not None:\n"
+            "            stack.append(current.left)\n\n"
+            "    return leaves\n\n\n"
+            "# === Depth-First Search (Recursive) ===\n"
+            "def leaf_list_recursive(root):\n"
+            "    leaves = []\n"
+            "    _leaf_list(root, leaves)\n"
+            "    return leaves\n\n"
+            "def _leaf_list(root, leaves):\n"
+            "    if root is None:\n"
+            "        return\n\n"
+            "    if root.left is None and root.right is None:\n"
+            "        leaves.append(root.val)\n\n"
+            "    _leaf_list(root.left, leaves)\n"
+            "    _leaf_list(root.right, leaves)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "class Node:\n"
+            "    def __init__(self, val):\n"
+            "        self.val = val\n"
+            "        self.left = None\n"
+            "        self.right = None\n\n"
+            "a = Node('a')\n"
+            "b = Node('b')\n"
+            "c = Node('c')\n"
+            "d = Node('d')\n"
+            "e = Node('e')\n"
+            "f = Node('f')\n"
+            "a.left = b\n"
+            "a.right = c\n"
+            "b.left = d\n"
+            "b.right = e\n"
+            "c.right = f\n\n"
+            "print(leaf_list(a))           # -> ['d', 'e', 'f']\n"
+            "print(leaf_list_recursive(a)) # -> ['d', 'e', 'f']\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits all n nodes via depth-first traversal (pushing right child before left child to process left-to-right), gathering leaves in O(n) time and O(n) auxiliary stack space."
+        ),
+    },
 ]
 
 
@@ -2894,6 +3445,8 @@ class BigOComplexityDialog(QDialog):
 class ProblemDescriptionWidget(QWidget):
     def __init__(self, parent=None, theme=DARK_THEME):
         super().__init__(parent)
+        self.setObjectName("problemDescriptionWidget")
+        self.setAutoFillBackground(True)
         self.current_theme = theme
 
         layout = QVBoxLayout(self)
@@ -2903,13 +3456,14 @@ class ProblemDescriptionWidget(QWidget):
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.scroll.setStyleSheet("background: transparent; border: none;")
 
-        container = QWidget()
-        self.container_layout = QVBoxLayout(container)
+        self.container = QWidget()
+        self.container.setObjectName("problemDescriptionContainer")
+        self.container.setAutoFillBackground(True)
+        self.container_layout = QVBoxLayout(self.container)
         self.container_layout.setContentsMargins(0, 0, 0, 0)
         self.container_layout.setSpacing(12)
-        self.scroll.setWidget(container)
+        self.scroll.setWidget(self.container)
 
         # Title
         self.title_label = QLabel()
@@ -2968,10 +3522,27 @@ class ProblemDescriptionWidget(QWidget):
 
     def apply_theme(self, theme):
         self.current_theme = theme
-        self.scroll.setStyleSheet(f"QScrollArea {{ background: transparent; border: none; }} {get_scrollbar_stylesheet(theme)}")
-        self.title_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold;")
-        self.desc_label.setStyleSheet(f"color: {theme['table_text']}; font-size: 13px;")
-        self.examples_header.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; margin-top: 6px;")
+        self.setStyleSheet(f"""
+            QWidget#problemDescriptionWidget, QWidget#problemDescriptionContainer {{
+                background-color: {theme['table_bg']};
+            }}
+            QLabel {{
+                background-color: transparent;
+            }}
+        """)
+        self.scroll.setStyleSheet(f"""
+            QScrollArea {{
+                background-color: {theme['table_bg']};
+                border: none;
+            }}
+            QScrollArea > QWidget > QWidget {{
+                background-color: {theme['table_bg']};
+            }}
+            {get_scrollbar_stylesheet(theme)}
+        """)
+        self.title_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; background: transparent;")
+        self.desc_label.setStyleSheet(f"color: {theme['table_text']}; font-size: 13px; line-height: 1.4; background: transparent;")
+        self.examples_header.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; margin-top: 6px; background: transparent;")
         self.examples_highlighter.apply_theme(theme)
         self.examples_box.setStyleSheet(f"""
             QPlainTextEdit {{
@@ -2993,6 +3564,8 @@ class ProblemSolutionWidget(QWidget):
 
     def __init__(self, parent=None, theme=DARK_THEME):
         super().__init__(parent)
+        self.setObjectName("problemSolutionWidget")
+        self.setAutoFillBackground(True)
         self.current_theme = theme
         self.current_problem = {}
         self.current_solution = ""
@@ -3108,7 +3681,15 @@ class ProblemSolutionWidget(QWidget):
 
     def apply_theme(self, theme):
         self.current_theme = theme
-        self.header_label.setStyleSheet(f"color: {theme['brand_color']};")
+        self.setStyleSheet(f"""
+            QWidget#problemSolutionWidget {{
+                background-color: {theme['table_bg']};
+            }}
+            QLabel {{
+                background-color: transparent;
+            }}
+        """)
+        self.header_label.setStyleSheet(f"color: {theme['brand_color']}; background: transparent;")
         self.highlighter.apply_theme(theme)
 
         # High quality monotone SVG icons
@@ -3137,8 +3718,8 @@ class ProblemSolutionWidget(QWidget):
                 border-radius: 6px;
             }}
         """)
-        self.time_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600;")
-        self.space_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600;")
+        self.time_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600; background: transparent;")
+        self.space_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600; background: transparent;")
 
         self.complexity_btn.setStyleSheet(f"""
             QPushButton {{

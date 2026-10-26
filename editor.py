@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QPlainTextEdit, QTextEdit, QWidget
-from PySide6.QtGui import QColor, QPainter, QTextFormat, QFont, QTextCursor
+from PySide6.QtGui import QColor, QPainter, QPainterPath, QTextFormat, QFont, QTextCursor
 from PySide6.QtCore import Qt, QRect, QSize
 from highlighter import PythonHighlighter
 from theme import DARK_THEME, get_scrollbar_stylesheet
@@ -64,7 +64,8 @@ class CodeEditor(QPlainTextEdit):
 
     def line_number_area_width(self):
         digits = max(1, len(str(self.blockCount())))
-        space = 20 + self.fontMetrics().horizontalAdvance('9') * digits
+        # Dedicated indicator space (24px) + digit width + right padding (12px)
+        space = 36 + self.fontMetrics().horizontalAdvance('9') * digits
         return space
 
     def update_line_number_area_width(self, _):
@@ -191,21 +192,34 @@ class CodeEditor(QPlainTextEdit):
             if block.isVisible() and bottom >= event.rect().top():
                 number = str(block_number + 1)
                 
-                # If this is the active debug execution line, draw the yellow pointer
+                font_h = self.fontMetrics().height()
+
+                # If this is the active debug execution line, draw the clean amber step pointer
                 if self.debug_line == block_number + 1:
-                    painter.setPen(QColor("#fbbf24"))
-                    painter.drawText(
-                        4, top, self.line_number_area.width(),
-                        self.fontMetrics().height(),
-                        Qt.AlignmentFlag.AlignLeft, "▶"
-                    )
+                    painter.save()
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                    arrow_h = min(11.0, font_h * 0.62)
+                    arrow_w = arrow_h * 0.85
+                    arrow_x = 7.0
+                    arrow_y = top + (font_h - arrow_h) / 2.0
+
+                    arrow = QPainterPath()
+                    arrow.moveTo(arrow_x, arrow_y)
+                    arrow.lineTo(arrow_x + arrow_w, arrow_y + arrow_h / 2.0)
+                    arrow.lineTo(arrow_x, arrow_y + arrow_h)
+                    arrow.closeSubpath()
+
+                    painter.fillPath(arrow, QColor("#fbbf24"))
+                    painter.restore()
+
+                    # Highlight the active line number in matching amber
                     painter.setPen(QColor("#fbbf24"))
                 else:
                     painter.setPen(QColor(self.current_theme["gutter_text"]))
 
                 painter.drawText(
                     0, top, self.line_number_area.width() - 10,
-                    self.fontMetrics().height(),
+                    font_h,
                     Qt.AlignmentFlag.AlignRight, number
                 )
 

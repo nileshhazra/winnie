@@ -11,6 +11,8 @@ pyinstaller --noconsole \
             --name "Winnie" \
             --icon "Winnie.icns" \
             --add-data "runner.py:." \
+            --add-data "Winnie.png:." \
+            --add-data "Winnie.icns:." \
             --osx-bundle-identifier "com.winnie.ide" \
             --clean \
             main.py

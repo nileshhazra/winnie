@@ -172,6 +172,9 @@ class AssistantView(QWidget):
         self.current_theme = theme
         self.current_error = None
 
+        self.setObjectName("assistantView")
+        self.setAutoFillBackground(True)
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(10)
@@ -180,15 +183,18 @@ class AssistantView(QWidget):
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.scroll.setStyleSheet(f"QScrollArea {{ background: transparent; border: none; }} {get_scrollbar_stylesheet(self.current_theme)}")
 
         self.container = QWidget()
+        self.container.setObjectName("assistantContainer")
+        self.container.setAutoFillBackground(True)
         self.container_layout = QVBoxLayout(self.container)
         self.container_layout.setContentsMargins(4, 4, 4, 4)
         self.container_layout.setSpacing(10)
         self.scroll.setWidget(self.container)
 
         layout.addWidget(self.scroll)
+
+        self.apply_theme(self.current_theme)
 
         # Initial Empty State
         self.show_success_state()
@@ -315,7 +321,21 @@ class AssistantView(QWidget):
 
     def apply_theme(self, theme):
         self.current_theme = theme
-        self.scroll.setStyleSheet(f"QScrollArea {{ background: transparent; border: none; }} {get_scrollbar_stylesheet(theme)}")
+        self.setStyleSheet(f"""
+            QWidget#assistantView, QWidget#assistantContainer {{
+                background-color: {theme['table_bg']};
+            }}
+        """)
+        self.scroll.setStyleSheet(f"""
+            QScrollArea {{
+                background-color: {theme['table_bg']};
+                border: none;
+            }}
+            QScrollArea > QWidget > QWidget {{
+                background-color: {theme['table_bg']};
+            }}
+            {get_scrollbar_stylesheet(theme)}
+        """)
         if self.current_error:
             self.show_error(self.current_error)
         else:

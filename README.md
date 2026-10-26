@@ -1,8 +1,10 @@
-# Winnie
+<div align="center">
+  <img src="Winnie.png" width="128" height="128" alt="Winnie App Icon" />
+  <h1>Winnie</h1>
+  <p><strong>A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS</strong></p>
+</div>
 
-A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS, built with PySide6 (Qt for Python). 
-
-Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, and an interactive shell within a clean, modern macOS interface.
+Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, built-in practice problems, multi-tab editing, and an interactive shell within a clean, modern macOS interface.
 
 ---
 

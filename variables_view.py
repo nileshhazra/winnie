@@ -38,11 +38,15 @@ class VariablesView(QWidget):
         font.setStyleHint(QFont.StyleHint.Monospace)
         self.table.setFont(font)
 
+        self.setObjectName("variablesView")
+        self.setAutoFillBackground(True)
+
         layout.addWidget(self.table)
         self.apply_theme(self.current_theme)
 
     def apply_theme(self, theme):
         self.current_theme = theme
+        self.setStyleSheet(f"QWidget#variablesView {{ background-color: {theme['table_bg']}; }}")
         self.title.setStyleSheet(f"color: {theme['table_header_text']}; letter-spacing: 1px; padding: 2px;")
         self.table.setStyleSheet(f"""
             QTableWidget {{

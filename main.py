@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QTabBar,
 )
-from PySide6.QtGui import QFont, QIcon, QShortcut, QKeySequence
+from PySide6.QtGui import QFont, QIcon, QShortcut, QKeySequence, QPalette, QColor
 from PySide6.QtCore import Qt, QProcess, QSize
 
 from editor import CodeEditor
@@ -67,18 +67,113 @@ def get_python_interpreter():
     return which_py if which_py else "python3"
 
 
+class WinnieCentralWidget(QWidget):
+    """Central widget that allows dragging from the top header margin area."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._drag_pos = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and event.position().y() <= 60:
+            wh = self.window().windowHandle()
+            if wh and wh.startSystemMove():
+                event.accept()
+                return
+            self._drag_pos = event.globalPosition().toPoint() - self.window().pos()
+            event.accept()
+            return
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if (event.buttons() & Qt.MouseButton.LeftButton) and self._drag_pos is not None:
+            win = self.window()
+            if win.isMaximized():
+                win.showNormal()
+            win.move(event.globalPosition().toPoint() - self._drag_pos)
+            event.accept()
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._drag_pos = None
+        super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and event.position().y() <= 60:
+            win = self.window()
+            if win.isMaximized():
+                win.showNormal()
+            else:
+                win.showMaximized()
+            event.accept()
+            return
+        super().mouseDoubleClickEvent(event)
+
+
+class TopActionBar(QWidget):
+    """Top action bar that supports native window dragging and double-click zoom."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._drag_pos = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            wh = self.window().windowHandle()
+            if wh and wh.startSystemMove():
+                event.accept()
+                return
+            self._drag_pos = event.globalPosition().toPoint() - self.window().pos()
+            event.accept()
+            return
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if (event.buttons() & Qt.MouseButton.LeftButton) and self._drag_pos is not None:
+            win = self.window()
+            if win.isMaximized():
+                win.showNormal()
+            win.move(event.globalPosition().toPoint() - self._drag_pos)
+            event.accept()
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._drag_pos = None
+        super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            win = self.window()
+            if win.isMaximized():
+                win.showNormal()
+            else:
+                win.showMaximized()
+            event.accept()
+            return
+        super().mouseDoubleClickEvent(event)
+
+
 class WinnieIDE(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Winnie — Python IDE")
         self.resize(1100, 700)
 
+        # Set Window / Application Icon
+        icon_path = get_resource_path("Winnie.png")
+        if not os.path.exists(icon_path):
+            icon_path = get_resource_path("Winnie.icns")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+
         self.current_theme = DARK_THEME
 
         # Central Widget & Main Layout
-        central_widget = QWidget()
+        central_widget = WinnieCentralWidget()
+        central_widget.setObjectName("centralWidget")
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(12, 8, 12, 12)
+        top_margin = 8 if sys.platform == "darwin" else 8
+        main_layout.setContentsMargins(12, top_margin, 12, 12)
         main_layout.setSpacing(8)
         self.setCentralWidget(central_widget)
 
@@ -92,10 +187,11 @@ class WinnieIDE(QMainWindow):
         # 2. Multi-Tab Code Editor & Console (Left)
         self.editor_tabs = QTabWidget()
         self.editor_tabs.setObjectName("editorTabs")
-        self.editor_tabs.setTabsClosable(True)
+        self.editor_tabs.setTabsClosable(False)
         self.editor_tabs.setMovable(True)
         self.editor_tabs.setDocumentMode(True)
-        self.editor_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideMiddle)
+        self.editor_tabs.setUsesScrollButtons(True)
+        self.editor_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideRight)
         self.editor_tabs.tabCloseRequested.connect(self.close_tab)
         self.editor_tabs.currentChanged.connect(self.on_editor_tab_changed)
         self.editor_tabs.tabBarClicked.connect(self.on_tab_bar_clicked)
@@ -183,6 +279,7 @@ class WinnieIDE(QMainWindow):
         # Append inline "+" tab immediately next to opened files
         plus_idx = self.editor_tabs.addTab(self.plus_tab_widget, "")
         self.editor_tabs.setTabIcon(plus_idx, render_svg_icon(PLUS_SVG, size=11, color=self.current_theme["table_header_text"]))
+        self.editor_tabs.tabBar().setTabButton(plus_idx, QTabBar.ButtonPosition.LeftSide, None)
         self.editor_tabs.tabBar().setTabButton(plus_idx, QTabBar.ButtonPosition.RightSide, None)
         self.editor_tabs.setTabToolTip(plus_idx, "New File Tab (⌘N)")
         self.editor_tabs.setCurrentIndex(0)
@@ -254,9 +351,78 @@ class WinnieIDE(QMainWindow):
         # Native macOS Menu Bar
         self.create_menu_bar()
 
+        # Setup native macOS blended titlebar (like Reminders, Safari, Xcode)
+        self.setup_macos_unified_titlebar()
+
         # Apply initial theme styling
         self.apply_theme(self.current_theme)
         self.update_window_title()
+
+    def setup_macos_unified_titlebar(self):
+        """Blends the top title bar seamlessly into the window background like native macOS apps."""
+        if sys.platform != "darwin":
+            return
+        try:
+            from AppKit import (
+                NSApp,
+                NSColor,
+                NSAppearance,
+                NSAppearanceNameAqua,
+                NSAppearanceNameDarkAqua,
+                NSWindowTitleHidden,
+                NSWindowStyleMaskFullSizeContentView,
+            )
+            self.winId()
+            windows = NSApp.windows()
+            if not windows:
+                return
+            nswin = windows[0]
+            nswin.setTitlebarAppearsTransparent_(True)
+            nswin.setTitleVisibility_(NSWindowTitleHidden)
+            nswin.setStyleMask_(nswin.styleMask() | NSWindowStyleMaskFullSizeContentView)
+            nswin.setMovableByWindowBackground_(True)
+            if self.current_theme["name"] == "dark":
+                nswin.setAppearance_(NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua))
+                nswin.setBackgroundColor_(NSColor.colorWithSRGBRed_green_blue_alpha_(24/255, 24/255, 27/255, 1.0))
+            else:
+                nswin.setAppearance_(NSAppearance.appearanceNamed_(NSAppearanceNameAqua))
+                nswin.setBackgroundColor_(NSColor.colorWithSRGBRed_green_blue_alpha_(244/255, 244/255, 245/255, 1.0))
+        except Exception:
+            pass
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and event.position().y() <= 60:
+            wh = self.windowHandle()
+            if wh and wh.startSystemMove():
+                event.accept()
+                return
+            self._drag_pos = event.globalPosition().toPoint() - self.pos()
+            event.accept()
+            return
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if (event.buttons() & Qt.MouseButton.LeftButton) and getattr(self, "_drag_pos", None) is not None:
+            if self.isMaximized():
+                self.showNormal()
+            self.move(event.globalPosition().toPoint() - self._drag_pos)
+            event.accept()
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._drag_pos = None
+        super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and event.position().y() <= 60:
+            if self.isMaximized():
+                self.showNormal()
+            else:
+                self.showMaximized()
+            event.accept()
+            return
+        super().mouseDoubleClickEvent(event)
 
     # ==========================================
     # Multi-Tab Editor & File Management
@@ -318,14 +484,16 @@ class WinnieIDE(QMainWindow):
         if file_path:
             self.editor_tabs.setTabToolTip(idx, file_path)
 
-        # Attach custom monochromatic vector close button
+        # Ensure left button is cleared and right button is our custom monochromatic close button
+        self.editor_tabs.tabBar().setTabButton(idx, QTabBar.ButtonPosition.LeftSide, None)
         close_btn = self.create_tab_close_button(ed)
         self.editor_tabs.tabBar().setTabButton(idx, QTabBar.ButtonPosition.RightSide, close_btn)
 
-        # Ensure plus tab has no close button
+        # Ensure plus tab has no close button on either side
         if hasattr(self, "plus_tab_widget"):
             p_idx = self.editor_tabs.indexOf(self.plus_tab_widget)
             if p_idx != -1:
+                self.editor_tabs.tabBar().setTabButton(p_idx, QTabBar.ButtonPosition.LeftSide, None)
                 self.editor_tabs.tabBar().setTabButton(p_idx, QTabBar.ButtonPosition.RightSide, None)
 
         self.editor_tabs.setCurrentIndex(idx)
@@ -345,7 +513,8 @@ class WinnieIDE(QMainWindow):
                 background: transparent;
                 border: none;
                 border-radius: 3px;
-                margin-left: 6px;
+                padding: 0px;
+                margin: 0px;
             }}
             QPushButton:hover {{
                 background-color: {self.current_theme['btn_clear_hover']};
@@ -423,6 +592,8 @@ class WinnieIDE(QMainWindow):
             self.active_problem_title = prob.get("raw_title", prob.get("title"))
             self.problem_desc_widget.set_problem(prob)
             self.problem_sol_widget.set_problem(prob)
+            self.problem_desc_widget.apply_theme(self.current_theme)
+            self.problem_sol_widget.apply_theme(self.current_theme)
             self.problem_desc_widget.apply_font_size(self.font_size)
             self.problem_sol_widget.apply_font_size(self.font_size)
 
@@ -841,7 +1012,7 @@ class WinnieIDE(QMainWindow):
 
     def create_action_bar(self):
         """Creates a modern top bar with sleek monochromatic icons."""
-        bar = QWidget()
+        bar = TopActionBar(self)
         bar.setFixedHeight(44)
         bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout = QHBoxLayout(bar)
@@ -851,6 +1022,7 @@ class WinnieIDE(QMainWindow):
         # 1. Clean Minimal Brand Name
         self.brand = QLabel("Winnie")
         self.brand.setFont(QFont("SF Pro Display", 16, QFont.Weight.Bold))
+        self.brand.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         layout.addWidget(self.brand)
 
         # 2. ▶ Run Button (Modern Emerald Pill with Monochromatic SVG Icon)
@@ -991,6 +1163,41 @@ class WinnieIDE(QMainWindow):
     def apply_theme(self, theme):
         self.current_theme = theme
 
+        # Set application and window palette to ensure Cocoa paints light mode background
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor(theme["window_bg"]))
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(theme["brand_color"]))
+        palette.setColor(QPalette.ColorRole.Base, QColor(theme["editor_bg"]))
+        palette.setColor(QPalette.ColorRole.Text, QColor(theme["editor_text"]))
+        palette.setColor(QPalette.ColorRole.Button, QColor(theme["btn_clear_bg"]))
+        palette.setColor(QPalette.ColorRole.ButtonText, QColor(theme["btn_clear_text"]))
+        self.setPalette(palette)
+        app_inst = QApplication.instance()
+        if app_inst:
+            app_inst.setPalette(palette)
+
+        # Update native macOS window appearance and background
+        if sys.platform == "darwin":
+            try:
+                from AppKit import (
+                    NSApp,
+                    NSColor,
+                    NSAppearance,
+                    NSAppearanceNameAqua,
+                    NSAppearanceNameDarkAqua,
+                )
+                windows = NSApp.windows()
+                if windows:
+                    nswin = windows[0]
+                    if theme["name"] == "dark":
+                        nswin.setAppearance_(NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua))
+                        nswin.setBackgroundColor_(NSColor.colorWithSRGBRed_green_blue_alpha_(24/255, 24/255, 27/255, 1.0))
+                    else:
+                        nswin.setAppearance_(NSAppearance.appearanceNamed_(NSAppearanceNameAqua))
+                        nswin.setBackgroundColor_(NSColor.colorWithSRGBRed_green_blue_alpha_(244/255, 244/255, 245/255, 1.0))
+            except Exception:
+                pass
+
         # Main window and splitters + sleek global scrollbars
         self.setStyleSheet(f"""
             QMainWindow {{
@@ -1122,7 +1329,7 @@ class WinnieIDE(QMainWindow):
             QTabWidget#editorTabs QTabBar::tab {{
                 background-color: {theme['console_bg']};
                 color: {theme['table_header_text']};
-                padding: 5px 10px;
+                padding: 5px 6px 5px 12px;
                 margin-right: 2px;
                 border: 1px solid transparent;
                 border-bottom: none;
@@ -1150,12 +1357,14 @@ class WinnieIDE(QMainWindow):
             plus_idx = self.editor_tabs.indexOf(self.plus_tab_widget)
             if plus_idx != -1:
                 self.editor_tabs.setTabIcon(plus_idx, render_svg_icon(PLUS_SVG, size=11, color=theme["table_header_text"]))
+                self.editor_tabs.tabBar().setTabButton(plus_idx, QTabBar.ButtonPosition.LeftSide, None)
                 self.editor_tabs.tabBar().setTabButton(plus_idx, QTabBar.ButtonPosition.RightSide, None)
 
         # Update monochromatic close buttons on open file tabs
         for i in range(self.editor_tabs.count()):
             widget = self.editor_tabs.widget(i)
             if isinstance(widget, CodeEditor):
+                self.editor_tabs.tabBar().setTabButton(i, QTabBar.ButtonPosition.LeftSide, None)
                 btn = self.editor_tabs.tabBar().tabButton(i, QTabBar.ButtonPosition.RightSide)
                 if isinstance(btn, QPushButton):
                     btn.setIcon(render_svg_icon(CLOSE_SVG, size=9, color=theme["table_header_text"]))
@@ -1164,7 +1373,8 @@ class WinnieIDE(QMainWindow):
                             background: transparent;
                             border: none;
                             border-radius: 3px;
-                            margin-left: 6px;
+                            padding: 0px;
+                            margin: 0px;
                         }}
                         QPushButton:hover {{
                             background-color: {theme['btn_clear_hover']};
@@ -1177,6 +1387,9 @@ class WinnieIDE(QMainWindow):
                 border: 1px solid {theme['border_color']};
                 background-color: {theme['table_bg']};
                 border-radius: 8px;
+            }}
+            QTabWidget > QStackedWidget, QTabWidget > QStackedWidget > QWidget {{
+                background-color: {theme['table_bg']};
             }}
             QTabBar {{
                 qproperty-drawBase: 0;
@@ -1396,6 +1609,11 @@ class WinnieIDE(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    icon_path = get_resource_path("Winnie.png")
+    if not os.path.exists(icon_path):
+        icon_path = get_resource_path("Winnie.icns")
+    if os.path.exists(icon_path):
+        app.setWindowIcon(QIcon(icon_path))
     ide = WinnieIDE()
     ide.show()
     sys.exit(app.exec())
