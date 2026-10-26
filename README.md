@@ -8,26 +8,38 @@ Winnie implements a dual-process execution model inspired by educational environ
 
 ---
 
-## Interface
+## Interface & Previews
 
-### Dark Mode
+### Modern Dark Mode & Visual Step Debugger
+Statement-by-statement execution tracking with real-time instruction pointer, live variable scopes, and interactive terminal.
 ![Winnie Dark Mode](assets/winnie-dark.png)
 
-### Light Mode
+### 45 Built-In Practice Problems
+Interactive problem descriptions, ASCII tree/data structure diagrams, Big-O time complexity curves, reference solutions, and one-click editor loading.
+![Winnie Practice Problems](assets/winnie-problems.png)
+
+### Native Blended Light Mode
+Clean, high-contrast light theme with unified macOS blended title bar and monochromatic iconography.
 ![Winnie Light Mode](assets/winnie-light.png)
+
+### Graphical Package Manager (pip)
+Search, install, inspect, and uninstall PyPI packages directly without touching the terminal.
+![Winnie Package Manager](assets/winnie-packages.png)
 
 ---
 
 ## Architectural Highlights
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
+- **Multi-Tab Code Editor**: Full multi-file editing support with sleek tab navigation, drag re-ordering, inline `+` tab creation, and monochromatic close buttons.
+- **45 Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, and Hash Maps, complete with interactive Big-O complexity charts and reference solutions.
 - **Beginner Error Assistant**: Automatic traceback analysis engine. Intercepts runtime exceptions, highlights offending source lines, and translates technical errors into plain-English explanations with actionable fix suggestions.
 - **Graphical Package Manager**: Integrated pip GUI dialog for searching, installing, and uninstalling PyPI packages directly into the active Python environment with real-time log streaming.
 - **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.
 - **Interactive Standard Streams**: Bidirectional, unbuffered communication channel between the GUI shell and the running process. Fully supports interactive `input()` calls with input boundary protection.
 - **Runtime Scope Inspector**: Real-time inspection table displaying variable identifiers, dynamic types, and serialized string representations after each statement or script execution.
-- **Editor & Formatting**: Custom code editor featuring line numbers, active line indicators, syntax highlighting, and PEP 8 automatic indentation (auto-indent after colons, soft-tabs, and block un-indentation).
-- **macOS System Integration**: Native macOS menu bar, file lifecycle management (New, Open, Save, Save As), document dirty state tracking (`setWindowModified`), and custom high-DPI application icons.
+- **Editor & Formatting**: Custom code editor featuring line numbers, active line indicators, syntax highlighting (with regular, upright comments), and PEP 8 automatic indentation.
+- **Native macOS System Integration**: Blended title bar (`NSWindowStyleMaskFullSizeContentView`), WindowServer hardware-accelerated title bar dragging, native menu bar, and custom Retina high-DPI application icon.
 
 ---
 
@@ -63,7 +75,7 @@ Winnie implements a dual-process execution model inspired by educational environ
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/winnie.git
+git clone https://github.com/nileshhazra/winnie.git
 cd winnie
 
 # 2. Create and activate a virtual environment
