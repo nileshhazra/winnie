@@ -13,6 +13,9 @@ pyinstaller --noconsole \
             --add-data "runner.py:." \
             --add-data "Winnie.png:." \
             --add-data "Winnie.icns:." \
+            --hidden-import "AppKit" \
+            --hidden-import "Foundation" \
+            --hidden-import "objc" \
             --osx-bundle-identifier "com.winnie.ide" \
             --clean \
             main.py

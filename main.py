@@ -43,6 +43,25 @@ from icons import (
 )
 
 
+def setup_macos_app_identity():
+    """Sets the macOS process name, bundle display name, and dock title to 'Winnie'."""
+    if sys.platform != "darwin":
+        return
+    try:
+        from Foundation import NSProcessInfo, NSBundle
+        NSProcessInfo.processInfo().setProcessName_("Winnie")
+        bundle = NSBundle.mainBundle()
+        info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+        if info is not None:
+            info["CFBundleName"] = "Winnie"
+            info["CFBundleDisplayName"] = "Winnie"
+    except Exception:
+        pass
+
+
+setup_macos_app_identity()
+
+
 def get_resource_path(relative_path):
     """Finds resource path whether running from source or inside a frozen .app bundle."""
     if getattr(sys, "frozen", False):
@@ -358,11 +377,16 @@ class WinnieIDE(QMainWindow):
         self.apply_theme(self.current_theme)
         self.update_window_title()
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.setup_macos_unified_titlebar()
+
     def setup_macos_unified_titlebar(self):
         """Blends the top title bar seamlessly into the window background like native macOS apps."""
         if sys.platform != "darwin":
             return
         try:
+            import objc
             from AppKit import (
                 NSApp,
                 NSColor,
@@ -372,11 +396,16 @@ class WinnieIDE(QMainWindow):
                 NSWindowTitleHidden,
                 NSWindowStyleMaskFullSizeContentView,
             )
-            self.winId()
-            windows = NSApp.windows()
-            if not windows:
+            win_id = int(self.winId())
+            view = objc.objc_object(c_void_p=win_id)
+            nswin = view.window()
+            if not nswin:
+                windows = NSApp.windows()
+                if windows:
+                    nswin = windows[0]
+            if not nswin:
                 return
-            nswin = windows[0]
+
             nswin.setTitlebarAppearsTransparent_(True)
             nswin.setTitleVisibility_(NSWindowTitleHidden)
             nswin.setStyleMask_(nswin.styleMask() | NSWindowStyleMaskFullSizeContentView)
@@ -1179,6 +1208,7 @@ class WinnieIDE(QMainWindow):
         # Update native macOS window appearance and background
         if sys.platform == "darwin":
             try:
+                import objc
                 from AppKit import (
                     NSApp,
                     NSColor,
@@ -1186,9 +1216,14 @@ class WinnieIDE(QMainWindow):
                     NSAppearanceNameAqua,
                     NSAppearanceNameDarkAqua,
                 )
-                windows = NSApp.windows()
-                if windows:
-                    nswin = windows[0]
+                win_id = int(self.winId())
+                view = objc.objc_object(c_void_p=win_id)
+                nswin = view.window()
+                if not nswin:
+                    windows = NSApp.windows()
+                    if windows:
+                        nswin = windows[0]
+                if nswin:
                     if theme["name"] == "dark":
                         nswin.setAppearance_(NSAppearance.appearanceNamed_(NSAppearanceNameDarkAqua))
                         nswin.setBackgroundColor_(NSColor.colorWithSRGBRed_green_blue_alpha_(24/255, 24/255, 27/255, 1.0))
@@ -1608,12 +1643,27 @@ class WinnieIDE(QMainWindow):
 
 
 if __name__ == "__main__":
+    setup_macos_app_identity()
     app = QApplication(sys.argv)
+    app.setApplicationName("Winnie")
+    app.setApplicationDisplayName("Winnie")
+    app.setDesktopFileName("Winnie")
+
     icon_path = get_resource_path("Winnie.png")
     if not os.path.exists(icon_path):
         icon_path = get_resource_path("Winnie.icns")
     if os.path.exists(icon_path):
-        app.setWindowIcon(QIcon(icon_path))
+        app_icon = QIcon(icon_path)
+        app.setWindowIcon(app_icon)
+        if sys.platform == "darwin":
+            try:
+                from AppKit import NSApp, NSImage
+                ns_img = NSImage.alloc().initWithContentsOfFile_(icon_path)
+                if ns_img:
+                    NSApp.setApplicationIconImage_(ns_img)
+            except Exception:
+                pass
+
     ide = WinnieIDE()
     ide.show()
     sys.exit(app.exec())
