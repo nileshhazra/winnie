@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 from PySide6.QtGui import QFont, QColor
-from theme import DARK_THEME
+from theme import DARK_THEME, get_scrollbar_stylesheet
 
 
 class VariablesView(QWidget):
@@ -61,6 +61,7 @@ class VariablesView(QWidget):
                 border-bottom: 1px solid {theme['table_border']};
                 padding: 6px;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
         # Refresh colors of existing items
         if self.current_vars:

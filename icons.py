@@ -99,6 +99,22 @@ SPACE_SVG = """
 </svg>
 """
 
+# 8. Monotone Plus / Add Tab Icon
+PLUS_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <line x1="12" y1="5" x2="12" y2="19"/>
+  <line x1="5" y1="12" x2="19" y2="12"/>
+</svg>
+"""
+
+# 9. Monotone Close / Cross Icon
+CLOSE_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <line x1="18" y1="6" x2="6" y2="18"/>
+  <line x1="6" y1="6" x2="18" y2="18"/>
+</svg>
+"""
+
 
 def render_svg_icon(svg_str: str, size: int = 18, color: str = "#ffffff") -> QIcon:
     """Renders an SVG string into a crisp, color-tinted QIcon with Retina support."""

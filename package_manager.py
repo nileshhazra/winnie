@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt, QProcess
-from theme import DARK_THEME
+from theme import DARK_THEME, get_scrollbar_stylesheet
 
 
 class PackageManagerDialog(QDialog):
@@ -187,6 +187,7 @@ class PackageManagerDialog(QDialog):
                 border-radius: 6px;
                 padding: 6px;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
         # Install button emerald styling

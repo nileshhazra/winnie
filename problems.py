@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush, QLinearGradient
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF
-from theme import DARK_THEME
+from theme import DARK_THEME, get_scrollbar_stylesheet
 from highlighter import PythonHighlighter
 from icons import TIME_SVG, SPACE_SVG, render_svg_pixmap
 
@@ -2900,16 +2900,16 @@ class ProblemDescriptionWidget(QWidget):
         layout.setContentsMargins(12, 12, 12, 12)
         layout.setSpacing(10)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.Shape.NoFrame)
-        scroll.setStyleSheet("background: transparent; border: none;")
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll.setStyleSheet("background: transparent; border: none;")
 
         container = QWidget()
         self.container_layout = QVBoxLayout(container)
         self.container_layout.setContentsMargins(0, 0, 0, 0)
         self.container_layout.setSpacing(12)
-        scroll.setWidget(container)
+        self.scroll.setWidget(container)
 
         # Title
         self.title_label = QLabel()
@@ -2948,7 +2948,7 @@ class ProblemDescriptionWidget(QWidget):
         self.container_layout.addWidget(self.examples_box)
 
         self.container_layout.addStretch()
-        layout.addWidget(scroll)
+        layout.addWidget(self.scroll)
 
         self.apply_theme(self.current_theme)
 
@@ -2968,6 +2968,7 @@ class ProblemDescriptionWidget(QWidget):
 
     def apply_theme(self, theme):
         self.current_theme = theme
+        self.scroll.setStyleSheet(f"QScrollArea {{ background: transparent; border: none; }} {get_scrollbar_stylesheet(theme)}")
         self.title_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold;")
         self.desc_label.setStyleSheet(f"color: {theme['table_text']}; font-size: 13px;")
         self.examples_header.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; margin-top: 6px;")
@@ -2980,6 +2981,7 @@ class ProblemDescriptionWidget(QWidget):
                 border-radius: 6px;
                 padding: 8px;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
 
@@ -3173,6 +3175,7 @@ class ProblemSolutionWidget(QWidget):
                 border-radius: 6px;
                 padding: 8px;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
 
@@ -3335,4 +3338,5 @@ class ProblemsListDialog(QDialog):
                 background-color: #2563eb;
                 color: #ffffff;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)

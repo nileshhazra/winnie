@@ -33,6 +33,11 @@ DARK_THEME = {
     "var_type": "#fbbf24",
     "var_str": "#34d399",
 
+    # Scrollbar
+    "scrollbar_track": "#141416",
+    "scrollbar_handle": "#3f3f46",
+    "scrollbar_handle_hover": "#52525b",
+    
     # Syntax Highlighting
     "syntax_keyword": "#C586C0",
     "syntax_constant": "#569CD6",
@@ -77,6 +82,11 @@ LIGHT_THEME = {
     "var_type": "#b45309",
     "var_str": "#059669",
 
+    # Scrollbar
+    "scrollbar_track": "#ffffff",
+    "scrollbar_handle": "#d4d4d8",
+    "scrollbar_handle_hover": "#a1a1aa",
+    
     # Syntax Highlighting
     "syntax_keyword": "#AF00DB",
     "syntax_constant": "#0000FF",
@@ -85,3 +95,62 @@ LIGHT_THEME = {
     "syntax_number": "#098658",
     "syntax_comment": "#008000",
 }
+
+
+def get_scrollbar_stylesheet(theme: dict) -> str:
+    """Returns modern, sleek, rounded scrollbar styling consistent with the active theme."""
+    handle = theme.get("scrollbar_handle", "#3f3f46")
+    handle_hover = theme.get("scrollbar_handle_hover", "#52525b")
+    return f"""
+        QScrollBar:vertical {{
+            border: none;
+            background: transparent;
+            width: 10px;
+            margin: 0px;
+        }}
+        QScrollBar::handle:vertical {{
+            background-color: {handle};
+            min-height: 24px;
+            border-radius: 4px;
+            margin: 1px 2px;
+        }}
+        QScrollBar::handle:vertical:hover {{
+            background-color: {handle_hover};
+        }}
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+            border: none;
+            background: none;
+            height: 0px;
+        }}
+        QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
+            background: none;
+        }}
+
+        QScrollBar:horizontal {{
+            border: none;
+            background: transparent;
+            height: 10px;
+            margin: 0px;
+        }}
+        QScrollBar::handle:horizontal {{
+            background-color: {handle};
+            min-width: 24px;
+            border-radius: 4px;
+            margin: 2px 1px;
+        }}
+        QScrollBar::handle:horizontal:hover {{
+            background-color: {handle_hover};
+        }}
+        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{
+            border: none;
+            background: none;
+            width: 0px;
+        }}
+        QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {{
+            background: none;
+        }}
+        QScrollBar::corner {{
+            background: transparent;
+        }}
+    """
+

@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QTabWidget,
+    QTabBar,
 )
 from PySide6.QtGui import QFont, QIcon, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, QProcess, QSize
@@ -26,7 +27,7 @@ from variables_view import VariablesView
 from assistant import AssistantView, parse_traceback
 from package_manager import PackageManagerDialog
 from problems import ProblemsListDialog, ProblemDescriptionWidget, ProblemSolutionWidget
-from theme import DARK_THEME, LIGHT_THEME
+from theme import DARK_THEME, LIGHT_THEME, get_scrollbar_stylesheet
 from icons import (
     render_svg_icon,
     RUN_SVG,
@@ -37,6 +38,8 @@ from icons import (
     CLEAR_SVG,
     MOON_SVG,
     SUN_SVG,
+    PLUS_SVG,
+    CLOSE_SVG,
 )
 
 
@@ -95,14 +98,11 @@ class WinnieIDE(QMainWindow):
         self.editor_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideMiddle)
         self.editor_tabs.tabCloseRequested.connect(self.close_tab)
         self.editor_tabs.currentChanged.connect(self.on_editor_tab_changed)
+        self.editor_tabs.tabBarClicked.connect(self.on_tab_bar_clicked)
+        self.editor_tabs.tabBar().tabMoved.connect(self.on_tab_moved)
 
-        # "+" button on tab bar to open a new empty file tab
-        self.new_tab_btn = QPushButton("+")
-        self.new_tab_btn.setFixedSize(28, 24)
-        self.new_tab_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.new_tab_btn.setToolTip("New File Tab (⌘N)")
-        self.new_tab_btn.clicked.connect(self.new_file)
-        self.editor_tabs.setCornerWidget(self.new_tab_btn, Qt.Corner.TopRightCorner)
+        # Persistent trailing "+" tab placed inline next to opened files
+        self.plus_tab_widget = QWidget()
 
         self.untitled_counter = 0
         self._fallback_editor = CodeEditor(theme=self.current_theme)
@@ -179,6 +179,13 @@ class WinnieIDE(QMainWindow):
             'print("All done!")'
         )
         self.create_editor_tab(title="Untitled", content=initial_code, file_path=None)
+
+        # Append inline "+" tab immediately next to opened files
+        plus_idx = self.editor_tabs.addTab(self.plus_tab_widget, "")
+        self.editor_tabs.setTabIcon(plus_idx, render_svg_icon(PLUS_SVG, size=11, color=self.current_theme["table_header_text"]))
+        self.editor_tabs.tabBar().setTabButton(plus_idx, QTabBar.ButtonPosition.RightSide, None)
+        self.editor_tabs.setTabToolTip(plus_idx, "New File Tab (⌘N)")
+        self.editor_tabs.setCurrentIndex(0)
 
         # Background Process Runner & Stderr Tracking
         self.process = QProcess(self)
@@ -303,13 +310,71 @@ class WinnieIDE(QMainWindow):
         ed.setPlainText(content)
         ed.textChanged.connect(lambda editor=ed: self.on_editor_text_changed(editor))
 
-        idx = self.editor_tabs.addTab(ed, title)
+        plus_idx = self.editor_tabs.indexOf(self.plus_tab_widget) if hasattr(self, "plus_tab_widget") else -1
+        if plus_idx != -1:
+            idx = self.editor_tabs.insertTab(plus_idx, ed, title)
+        else:
+            idx = self.editor_tabs.addTab(ed, title)
         if file_path:
             self.editor_tabs.setTabToolTip(idx, file_path)
+
+        # Attach custom monochromatic vector close button
+        close_btn = self.create_tab_close_button(ed)
+        self.editor_tabs.tabBar().setTabButton(idx, QTabBar.ButtonPosition.RightSide, close_btn)
+
+        # Ensure plus tab has no close button
+        if hasattr(self, "plus_tab_widget"):
+            p_idx = self.editor_tabs.indexOf(self.plus_tab_widget)
+            if p_idx != -1:
+                self.editor_tabs.tabBar().setTabButton(p_idx, QTabBar.ButtonPosition.RightSide, None)
+
         self.editor_tabs.setCurrentIndex(idx)
         self.update_tab_title(ed)
         self.update_window_title()
         return ed
+
+    def create_tab_close_button(self, editor: CodeEditor) -> QPushButton:
+        """Creates a custom monochromatic SVG close button for a tab."""
+        btn = QPushButton()
+        btn.setIcon(render_svg_icon(CLOSE_SVG, size=9, color=self.current_theme["table_header_text"]))
+        btn.setFixedSize(16, 16)
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.setToolTip("Close Tab (⌘W)")
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background: transparent;
+                border: none;
+                border-radius: 3px;
+                margin-left: 6px;
+            }}
+            QPushButton:hover {{
+                background-color: {self.current_theme['btn_clear_hover']};
+            }}
+        """)
+        btn.clicked.connect(lambda _, ed=editor: self.close_editor_tab(ed))
+        return btn
+
+    def close_editor_tab(self, editor: CodeEditor):
+        """Finds index for given editor and closes its tab."""
+        idx = self.editor_tabs.indexOf(editor)
+        if idx != -1:
+            self.close_tab(idx)
+
+    def on_tab_bar_clicked(self, index: int):
+        """Opens a new tab when clicking the trailing '+' tab."""
+        if index >= 0 and hasattr(self, "plus_tab_widget") and self.editor_tabs.widget(index) == self.plus_tab_widget:
+            self.new_file()
+
+    def on_tab_moved(self, from_idx: int, to_idx: int):
+        """Keeps the trailing '+' tab locked to the right end when tabs are dragged."""
+        if not hasattr(self, "plus_tab_widget"):
+            return
+        plus_idx = self.editor_tabs.indexOf(self.plus_tab_widget)
+        last_idx = self.editor_tabs.count() - 1
+        if plus_idx != -1 and plus_idx != last_idx:
+            self.editor_tabs.tabBar().blockSignals(True)
+            self.editor_tabs.tabBar().moveTab(plus_idx, last_idx)
+            self.editor_tabs.tabBar().blockSignals(False)
 
     def on_editor_text_changed(self, editor: CodeEditor):
         """Called whenever code inside an editor tab is modified."""
@@ -342,6 +407,11 @@ class WinnieIDE(QMainWindow):
         if not hasattr(self, "right_tabs"):
             return
         if index < 0 or index >= self.editor_tabs.count():
+            return
+        if hasattr(self, "plus_tab_widget") and self.editor_tabs.widget(index) == self.plus_tab_widget:
+            # Revert to last file tab so plus tab is never selected as active content
+            if index > 0:
+                self.editor_tabs.setCurrentIndex(index - 1)
             return
         ed = self.editor_tabs.widget(index)
         if not isinstance(ed, CodeEditor):
@@ -380,27 +450,44 @@ class WinnieIDE(QMainWindow):
         """Closes the tab at index. Keeps at least one tab open."""
         if index < 0 or index >= self.editor_tabs.count():
             return
+        if hasattr(self, "plus_tab_widget") and self.editor_tabs.widget(index) == self.plus_tab_widget:
+            return
         self.editor_tabs.removeTab(index)
-        if self.editor_tabs.count() == 0:
+        file_tabs_count = sum(1 for i in range(self.editor_tabs.count()) if isinstance(self.editor_tabs.widget(i), CodeEditor))
+        if file_tabs_count == 0:
             self.new_file()
 
     def close_current_tab(self):
         """Closes the currently active tab (Cmd + W)."""
         idx = self.editor_tabs.currentIndex()
         if idx >= 0:
+            if hasattr(self, "plus_tab_widget") and self.editor_tabs.widget(idx) == self.plus_tab_widget:
+                return
             self.close_tab(idx)
 
     def next_tab(self):
-        """Cycles to the next tab (Ctrl + Tab)."""
-        count = self.editor_tabs.count()
-        if count > 1:
-            self.editor_tabs.setCurrentIndex((self.editor_tabs.currentIndex() + 1) % count)
+        """Cycles to the next file tab (Ctrl + Tab)."""
+        file_indices = [i for i in range(self.editor_tabs.count()) if isinstance(self.editor_tabs.widget(i), CodeEditor)]
+        if len(file_indices) > 1:
+            curr = self.editor_tabs.currentIndex()
+            if curr in file_indices:
+                curr_pos = file_indices.index(curr)
+                next_pos = (curr_pos + 1) % len(file_indices)
+                self.editor_tabs.setCurrentIndex(file_indices[next_pos])
+            else:
+                self.editor_tabs.setCurrentIndex(file_indices[0])
 
     def prev_tab(self):
-        """Cycles to the previous tab (Ctrl + Shift + Tab)."""
-        count = self.editor_tabs.count()
-        if count > 1:
-            self.editor_tabs.setCurrentIndex((self.editor_tabs.currentIndex() - 1 + count) % count)
+        """Cycles to the previous file tab (Ctrl + Shift + Tab)."""
+        file_indices = [i for i in range(self.editor_tabs.count()) if isinstance(self.editor_tabs.widget(i), CodeEditor)]
+        if len(file_indices) > 1:
+            curr = self.editor_tabs.currentIndex()
+            if curr in file_indices:
+                curr_pos = file_indices.index(curr)
+                prev_pos = (curr_pos - 1 + len(file_indices)) % len(file_indices)
+                self.editor_tabs.setCurrentIndex(file_indices[prev_pos])
+            else:
+                self.editor_tabs.setCurrentIndex(file_indices[0])
 
     def create_menu_bar(self):
         """Creates the native macOS File menu bar with multi-tab support."""
@@ -466,6 +553,8 @@ class WinnieIDE(QMainWindow):
         # Check if this problem is already open in an existing tab
         for i in range(self.editor_tabs.count()):
             ed = self.editor_tabs.widget(i)
+            if not isinstance(ed, CodeEditor):
+                continue
             p = getattr(ed, "problem_data", None)
             if p and p.get("id") == prob_id:
                 self.editor_tabs.setCurrentIndex(i)
@@ -473,8 +562,9 @@ class WinnieIDE(QMainWindow):
 
         # Check if current tab is an untouched starter/empty tab
         curr = self.editor
+        file_tabs_count = sum(1 for i in range(self.editor_tabs.count()) if isinstance(self.editor_tabs.widget(i), CodeEditor))
         if (
-            self.editor_tabs.count() == 1
+            file_tabs_count == 1
             and not getattr(curr, "file_path", None)
             and not getattr(curr, "problem_data", None)
             and not getattr(curr, "is_modified", False)
@@ -901,7 +991,7 @@ class WinnieIDE(QMainWindow):
     def apply_theme(self, theme):
         self.current_theme = theme
 
-        # Main window and splitters
+        # Main window and splitters + sleek global scrollbars
         self.setStyleSheet(f"""
             QMainWindow {{
                 background-color: {theme['window_bg']};
@@ -912,6 +1002,7 @@ class WinnieIDE(QMainWindow):
             QSplitter::handle:hover {{
                 background-color: #3b82f6;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
         # Brand styling
@@ -1051,34 +1142,34 @@ class WinnieIDE(QMainWindow):
                 border-bottom: 1px solid {theme['editor_bg']};
                 font-weight: 600;
             }}
-            QTabWidget#editorTabs QTabBar::close-button {{
-                subcontrol-position: right;
-                margin-left: 6px;
-                border-radius: 3px;
-                padding: 1px;
-            }}
-            QTabWidget#editorTabs QTabBar::close-button:hover {{
-                background-color: {theme['btn_clear_hover']};
-            }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
-        self.new_tab_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {theme['btn_clear_bg']};
-                color: {theme['table_header_text']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 4px;
-                font-size: 14px;
-                font-weight: bold;
-                padding: 0px;
-                margin-right: 4px;
-                margin-top: 2px;
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
-                color: {theme['brand_color']};
-            }}
-        """)
+        # Update inline "+" tab icon
+        if hasattr(self, "plus_tab_widget"):
+            plus_idx = self.editor_tabs.indexOf(self.plus_tab_widget)
+            if plus_idx != -1:
+                self.editor_tabs.setTabIcon(plus_idx, render_svg_icon(PLUS_SVG, size=11, color=theme["table_header_text"]))
+                self.editor_tabs.tabBar().setTabButton(plus_idx, QTabBar.ButtonPosition.RightSide, None)
+
+        # Update monochromatic close buttons on open file tabs
+        for i in range(self.editor_tabs.count()):
+            widget = self.editor_tabs.widget(i)
+            if isinstance(widget, CodeEditor):
+                btn = self.editor_tabs.tabBar().tabButton(i, QTabBar.ButtonPosition.RightSide)
+                if isinstance(btn, QPushButton):
+                    btn.setIcon(render_svg_icon(CLOSE_SVG, size=9, color=theme["table_header_text"]))
+                    btn.setStyleSheet(f"""
+                        QPushButton {{
+                            background: transparent;
+                            border: none;
+                            border-radius: 3px;
+                            margin-left: 6px;
+                        }}
+                        QPushButton:hover {{
+                            background-color: {theme['btn_clear_hover']};
+                        }}
+                    """)
 
         # Tab styling
         self.right_tabs.setStyleSheet(f"""
@@ -1107,6 +1198,7 @@ class WinnieIDE(QMainWindow):
             QTabBar::tab:hover {{
                 color: {theme['brand_color']};
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
         # Propagate to child widgets across all open editor tabs

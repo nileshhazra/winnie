@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QPlainTextEdit
 from PySide6.QtGui import QFont, QTextCursor, QKeySequence
 from PySide6.QtCore import Qt, Signal
-from theme import DARK_THEME
+from theme import DARK_THEME, get_scrollbar_stylesheet
 
 
 class InteractiveConsole(QPlainTextEdit):
@@ -29,6 +29,7 @@ class InteractiveConsole(QPlainTextEdit):
                 border-top: 1px solid {theme['console_border']};
                 selection-background-color: {theme['editor_selection']};
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
 
     def append_output(self, text: str):

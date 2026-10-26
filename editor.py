@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QPlainTextEdit, QTextEdit, QWidget
 from PySide6.QtGui import QColor, QPainter, QTextFormat, QFont, QTextCursor
 from PySide6.QtCore import Qt, QRect, QSize
 from highlighter import PythonHighlighter
-from theme import DARK_THEME
+from theme import DARK_THEME, get_scrollbar_stylesheet
 
 
 class LineNumberArea(QWidget):
@@ -56,6 +56,7 @@ class CodeEditor(QPlainTextEdit):
                 selection-background-color: {theme['editor_selection']};
                 padding: 6px;
             }}
+            {get_scrollbar_stylesheet(theme)}
         """)
         self.update_line_number_area_width(0)
         self.highlight_current_line()

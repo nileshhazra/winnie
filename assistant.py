@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt, Signal
-from theme import DARK_THEME
+from theme import DARK_THEME, get_scrollbar_stylesheet
 
 
 # ==========================================================
@@ -177,18 +177,18 @@ class AssistantView(QWidget):
         layout.setSpacing(10)
 
         # Scroll Area for long explanations
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.Shape.NoFrame)
-        scroll.setStyleSheet("background: transparent; border: none;")
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll.setStyleSheet(f"QScrollArea {{ background: transparent; border: none; }} {get_scrollbar_stylesheet(self.current_theme)}")
 
         self.container = QWidget()
         self.container_layout = QVBoxLayout(self.container)
         self.container_layout.setContentsMargins(4, 4, 4, 4)
         self.container_layout.setSpacing(10)
-        scroll.setWidget(self.container)
+        self.scroll.setWidget(self.container)
 
-        layout.addWidget(scroll)
+        layout.addWidget(self.scroll)
 
         # Initial Empty State
         self.show_success_state()
@@ -315,6 +315,7 @@ class AssistantView(QWidget):
 
     def apply_theme(self, theme):
         self.current_theme = theme
+        self.scroll.setStyleSheet(f"QScrollArea {{ background: transparent; border: none; }} {get_scrollbar_stylesheet(theme)}")
         if self.current_error:
             self.show_error(self.current_error)
         else:
