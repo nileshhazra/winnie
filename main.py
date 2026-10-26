@@ -530,8 +530,14 @@ class WinnieIDE(QMainWindow):
         self.update_window_title()
         return ed
 
-    def create_tab_close_button(self, editor: CodeEditor) -> QPushButton:
-        """Creates a custom monochromatic SVG close button for a tab."""
+    def create_tab_close_button(self, editor: CodeEditor) -> QWidget:
+        """Creates a custom monochromatic SVG close button for a tab with comfortable right margin."""
+        container = QWidget()
+        container.setObjectName("tabCloseContainer")
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(0, 0, 8, 0)
+        layout.setSpacing(0)
+
         btn = QPushButton()
         btn.setIcon(render_svg_icon(CLOSE_SVG, size=9, color=self.current_theme["table_header_text"]))
         btn.setFixedSize(16, 16)
@@ -550,7 +556,8 @@ class WinnieIDE(QMainWindow):
             }}
         """)
         btn.clicked.connect(lambda _, ed=editor: self.close_editor_tab(ed))
-        return btn
+        layout.addWidget(btn)
+        return container
 
     def close_editor_tab(self, editor: CodeEditor):
         """Finds index for given editor and closes its tab."""
@@ -1400,8 +1407,9 @@ class WinnieIDE(QMainWindow):
             widget = self.editor_tabs.widget(i)
             if isinstance(widget, CodeEditor):
                 self.editor_tabs.tabBar().setTabButton(i, QTabBar.ButtonPosition.LeftSide, None)
-                btn = self.editor_tabs.tabBar().tabButton(i, QTabBar.ButtonPosition.RightSide)
-                if isinstance(btn, QPushButton):
+                tab_btn = self.editor_tabs.tabBar().tabButton(i, QTabBar.ButtonPosition.RightSide)
+                btn = tab_btn.findChild(QPushButton) if isinstance(tab_btn, QWidget) else (tab_btn if isinstance(tab_btn, QPushButton) else None)
+                if btn:
                     btn.setIcon(render_svg_icon(CLOSE_SVG, size=9, color=theme["table_header_text"]))
                     btn.setStyleSheet(f"""
                         QPushButton {{
