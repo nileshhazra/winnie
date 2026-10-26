@@ -53,10 +53,10 @@ class PythonHighlighter(QSyntaxHighlighter):
         number_format.setForeground(QColor(theme["syntax_number"]))
         self.rules.append((re.compile(r"\b[0-9]+(\.[0-9]+)?\b"), number_format))
 
-        # 6. Comments
+        # 6. Comments (consistent regular style, no italics)
         comment_format = QTextCharFormat()
         comment_format.setForeground(QColor(theme["syntax_comment"]))
-        comment_format.setFontItalic(True)
+        comment_format.setFontItalic(False)
         self.rules.append((re.compile(r"#[^\n]*"), comment_format))
 
         # Trigger rehighlighting
