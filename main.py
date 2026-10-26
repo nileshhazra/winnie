@@ -83,28 +83,39 @@ class WinnieIDE(QMainWindow):
         top_bar = self.create_action_bar()
         main_layout.addWidget(top_bar, 0)  # Do not allow top bar to expand vertically!
 
-        # 2. Editor & Console (Left)
-        self.editor = CodeEditor(theme=self.current_theme)
-        self.editor.setPlaceholderText("# Type your Python code here and click Run...")
-        self.editor.setPlainText(
-            'total = 0\n'
-            'items = [10, 20, 30]\n\n'
-            'for x in items:\n'
-            '    total += x\n'
-            '    print(f"Added {x}, running total is {total}")\n\n'
-            'print("All done!")'
-        )
+        # Global IDE font size setting
+        self.font_size = 13
+
+        # 2. Multi-Tab Code Editor & Console (Left)
+        self.editor_tabs = QTabWidget()
+        self.editor_tabs.setObjectName("editorTabs")
+        self.editor_tabs.setTabsClosable(True)
+        self.editor_tabs.setMovable(True)
+        self.editor_tabs.setDocumentMode(True)
+        self.editor_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideMiddle)
+        self.editor_tabs.tabCloseRequested.connect(self.close_tab)
+        self.editor_tabs.currentChanged.connect(self.on_editor_tab_changed)
+
+        # "+" button on tab bar to open a new empty file tab
+        self.new_tab_btn = QPushButton("+")
+        self.new_tab_btn.setFixedSize(28, 24)
+        self.new_tab_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.new_tab_btn.setToolTip("New File Tab (⌘N)")
+        self.new_tab_btn.clicked.connect(self.new_file)
+        self.editor_tabs.setCornerWidget(self.new_tab_btn, Qt.Corner.TopRightCorner)
+
+        self.untitled_counter = 0
+        self._fallback_editor = CodeEditor(theme=self.current_theme)
 
         # File Management State
-        self.current_file_path = None
-        self.is_modified = False
-        self.editor.textChanged.connect(self.on_text_changed)
+        self.active_problem_title = None
+        self.is_problem_mode = False
 
         self.console = InteractiveConsole(theme=self.current_theme)
         self.console.input_submitted.connect(self.send_stdin)
 
         self.left_splitter = QSplitter(Qt.Orientation.Vertical)
-        self.left_splitter.addWidget(self.editor)
+        self.left_splitter.addWidget(self.editor_tabs)
         self.left_splitter.addWidget(self.console)
         self.left_splitter.setStretchFactor(0, 7)
         self.left_splitter.setStretchFactor(1, 3)
@@ -156,6 +167,18 @@ class WinnieIDE(QMainWindow):
         self.main_splitter.setStretchFactor(1, 3)
         self.main_splitter.setSizes([720, 340])
         main_layout.addWidget(self.main_splitter, 1)  # Takes 100% of remaining vertical space!
+
+        # Initial demo tab
+        self.untitled_counter += 1
+        initial_code = (
+            'total = 0\n'
+            'items = [10, 20, 30]\n\n'
+            'for x in items:\n'
+            '    total += x\n'
+            '    print(f"Added {x}, running total is {total}")\n\n'
+            'print("All done!")'
+        )
+        self.create_editor_tab(title="Untitled", content=initial_code, file_path=None)
 
         # Background Process Runner & Stderr Tracking
         self.process = QProcess(self)
@@ -229,10 +252,158 @@ class WinnieIDE(QMainWindow):
         self.update_window_title()
 
     # ==========================================
-    # File Management Methods
+    # Multi-Tab Editor & File Management
     # ==========================================
+    @property
+    def editor(self) -> CodeEditor:
+        """Returns the CodeEditor in the currently active tab."""
+        widget = self.editor_tabs.currentWidget()
+        if isinstance(widget, CodeEditor):
+            return widget
+        return self._fallback_editor
+
+    @property
+    def current_file_path(self) -> str | None:
+        return getattr(self.editor, "file_path", None)
+
+    @current_file_path.setter
+    def current_file_path(self, path: str | None):
+        if self.editor:
+            self.editor.file_path = path
+
+    @property
+    def is_modified(self) -> bool:
+        return getattr(self.editor, "is_modified", False)
+
+    @is_modified.setter
+    def is_modified(self, val: bool):
+        if self.editor:
+            self.editor.is_modified = val
+
+    def create_editor_tab(
+        self,
+        title: str = "Untitled",
+        content: str = "",
+        file_path: str = None,
+        problem_data: dict = None
+    ) -> CodeEditor:
+        """Creates a new code editor tab, sets metadata, attaches listeners, and makes it active."""
+        ed = CodeEditor(theme=self.current_theme)
+        ed.setPlaceholderText("# Type your Python code here and click Run...")
+        ed.file_path = file_path
+        ed.problem_data = problem_data
+        ed.is_modified = False
+        ed.untitled_title = title
+
+        # Apply current zoom font size
+        ef = ed.font()
+        ef.setPointSize(self.font_size)
+        ed.setFont(ef)
+
+        ed.setPlainText(content)
+        ed.textChanged.connect(lambda editor=ed: self.on_editor_text_changed(editor))
+
+        idx = self.editor_tabs.addTab(ed, title)
+        if file_path:
+            self.editor_tabs.setTabToolTip(idx, file_path)
+        self.editor_tabs.setCurrentIndex(idx)
+        self.update_tab_title(ed)
+        self.update_window_title()
+        return ed
+
+    def on_editor_text_changed(self, editor: CodeEditor):
+        """Called whenever code inside an editor tab is modified."""
+        if not getattr(editor, "is_modified", False):
+            editor.is_modified = True
+            self.update_tab_title(editor)
+            if editor == self.editor:
+                self.update_window_title()
+
+    def update_tab_title(self, editor: CodeEditor):
+        """Updates tab label with base name and unsaved '●' indicator."""
+        idx = self.editor_tabs.indexOf(editor)
+        if idx == -1:
+            return
+
+        if getattr(editor, "problem_data", None):
+            base_name = editor.problem_data.get("raw_title", editor.problem_data.get("title", "Problem"))
+        elif getattr(editor, "file_path", None):
+            base_name = os.path.basename(editor.file_path)
+        else:
+            base_name = getattr(editor, "untitled_title", "Untitled")
+
+        marker = " ●" if getattr(editor, "is_modified", False) else ""
+        self.editor_tabs.setTabText(idx, f"{base_name}{marker}")
+        if getattr(editor, "file_path", None):
+            self.editor_tabs.setTabToolTip(idx, editor.file_path)
+
+    def on_editor_tab_changed(self, index: int):
+        """Switches context when user switches tabs (toggles between Problem and Variables/Assistant)."""
+        if not hasattr(self, "right_tabs"):
+            return
+        if index < 0 or index >= self.editor_tabs.count():
+            return
+        ed = self.editor_tabs.widget(index)
+        if not isinstance(ed, CodeEditor):
+            return
+
+        prob = getattr(ed, "problem_data", None)
+        if prob:
+            self.is_problem_mode = True
+            self.active_problem_title = prob.get("raw_title", prob.get("title"))
+            self.problem_desc_widget.set_problem(prob)
+            self.problem_sol_widget.set_problem(prob)
+            self.problem_desc_widget.apply_font_size(self.font_size)
+            self.problem_sol_widget.apply_font_size(self.font_size)
+
+            self.right_tabs.clear()
+            self.right_tabs.addTab(self.problem_desc_widget, "Description")
+            self.right_tabs.addTab(self.problem_sol_widget, "Solution")
+            self.right_tabs.addTab(self.variables_view, "Variables")
+            self.right_tabs.addTab(self.assistant_view, "Assistant")
+            self.right_tabs.setCornerWidget(self.corner_widget, Qt.Corner.TopRightCorner)
+            self.tab_toggle_btn.setText("✦ Variables")
+            self.tab_toggle_btn.setToolTip("Switch to Variables Inspector")
+            if not self.right_tabs.isVisible():
+                self.right_tabs.show()
+        else:
+            self.is_problem_mode = False
+            self.active_problem_title = None
+            self.right_tabs.setCornerWidget(None)
+            self.right_tabs.clear()
+            self.right_tabs.addTab(self.variables_view, "Variables")
+            self.right_tabs.addTab(self.assistant_view, "Assistant")
+
+        self.update_window_title()
+
+    def close_tab(self, index: int):
+        """Closes the tab at index. Keeps at least one tab open."""
+        if index < 0 or index >= self.editor_tabs.count():
+            return
+        self.editor_tabs.removeTab(index)
+        if self.editor_tabs.count() == 0:
+            self.new_file()
+
+    def close_current_tab(self):
+        """Closes the currently active tab (Cmd + W)."""
+        idx = self.editor_tabs.currentIndex()
+        if idx >= 0:
+            self.close_tab(idx)
+
+    def next_tab(self):
+        """Cycles to the next tab (Ctrl + Tab)."""
+        count = self.editor_tabs.count()
+        if count > 1:
+            self.editor_tabs.setCurrentIndex((self.editor_tabs.currentIndex() + 1) % count)
+
+    def prev_tab(self):
+        """Cycles to the previous tab (Ctrl + Shift + Tab)."""
+        count = self.editor_tabs.count()
+        if count > 1:
+            self.editor_tabs.setCurrentIndex((self.editor_tabs.currentIndex() - 1 + count) % count)
+
     def create_menu_bar(self):
-        """Creates the native macOS File menu bar."""
+        """Creates the native macOS File menu bar with multi-tab support."""
         menubar = self.menuBar()
         file_menu = menubar.addMenu("File")
 
@@ -244,6 +415,10 @@ class WinnieIDE(QMainWindow):
         open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.triggered.connect(self.open_file)
 
+        close_action = file_menu.addAction("Close Tab")
+        close_action.setShortcut(QKeySequence("Ctrl+W"))
+        close_action.triggered.connect(self.close_current_tab)
+
         file_menu.addSeparator()
 
         save_action = file_menu.addAction("Save")
@@ -253,6 +428,12 @@ class WinnieIDE(QMainWindow):
         save_as_action = file_menu.addAction("Save As...")
         save_as_action.setShortcut(QKeySequence("Ctrl+Shift+S"))
         save_as_action.triggered.connect(self.save_file_as)
+
+        # Tab navigation keyboard shortcuts
+        self.shortcut_next_tab = QShortcut(QKeySequence("Ctrl+Tab"), self)
+        self.shortcut_next_tab.activated.connect(self.next_tab)
+        self.shortcut_prev_tab = QShortcut(QKeySequence("Ctrl+Shift+Tab"), self)
+        self.shortcut_prev_tab.activated.connect(self.prev_tab)
 
         # Tools Menu
         tools_menu = menubar.addMenu("Tools")
@@ -277,38 +458,49 @@ class WinnieIDE(QMainWindow):
         dlg.exec()
 
     def load_problem(self, problem: dict):
-        """Loads a practice problem into the editor and sets right panel to Description/Solution."""
+        """Loads a practice problem into its own dedicated tab."""
+        prob_id = problem.get("id")
+        title = problem.get("raw_title", problem.get("title", "Problem"))
         starter_code = problem.get("starter_code", "")
-        self.editor.setPlainText(starter_code)
-        self.current_file_path = None
-        self.is_modified = False
-        self.active_problem_title = problem.get("raw_title", problem.get("title"))
-        self.update_window_title()
 
-        self.problem_desc_widget.set_problem(problem)
-        self.problem_sol_widget.set_problem(problem)
-        self.problem_desc_widget.apply_font_size(self.font_size)
-        self.problem_sol_widget.apply_font_size(self.font_size)
+        # Check if this problem is already open in an existing tab
+        for i in range(self.editor_tabs.count()):
+            ed = self.editor_tabs.widget(i)
+            p = getattr(ed, "problem_data", None)
+            if p and p.get("id") == prob_id:
+                self.editor_tabs.setCurrentIndex(i)
+                return
 
-        self.is_problem_mode = True
-        self.right_tabs.clear()
-        self.right_tabs.addTab(self.problem_desc_widget, "Description")
-        self.right_tabs.addTab(self.problem_sol_widget, "Solution")
-        self.right_tabs.addTab(self.variables_view, "Variables")
-        self.right_tabs.addTab(self.assistant_view, "Assistant")
-        self.right_tabs.setCornerWidget(self.corner_widget, Qt.Corner.TopRightCorner)
-        self.right_tabs.setCurrentWidget(self.problem_desc_widget)
-        self.tab_toggle_btn.setText("✦ Variables")
-        self.tab_toggle_btn.setToolTip("Switch to Variables Inspector")
+        # Check if current tab is an untouched starter/empty tab
+        curr = self.editor
+        if (
+            self.editor_tabs.count() == 1
+            and not getattr(curr, "file_path", None)
+            and not getattr(curr, "problem_data", None)
+            and not getattr(curr, "is_modified", False)
+            and curr.toPlainText().strip() in (
+                "",
+                "# Type your Python code here and click Run...",
+                (
+                    'total = 0\n'
+                    'items = [10, 20, 30]\n\n'
+                    'for x in items:\n'
+                    '    total += x\n'
+                    '    print(f"Added {x}, running total is {total}")\n\n'
+                    'print("All done!")'
+                )
+            )
+        ):
+            curr.setPlainText(starter_code)
+            curr.problem_data = problem
+            curr.is_modified = False
+            curr.untitled_title = title
+            self.update_tab_title(curr)
+            self.on_editor_tab_changed(self.editor_tabs.currentIndex())
+            return
 
-        if not self.right_tabs.isVisible():
-            self.right_tabs.show()
-
-        # Ensure right panel has ample room for all 4 tabs + corner controls
-        sizes = self.main_splitter.sizes()
-        if len(sizes) == 2 and sizes[1] < 420:
-            total = sum(sizes) if sum(sizes) > 0 else 1060
-            self.main_splitter.setSizes([max(500, total - 420), 420])
+        # Otherwise create a fresh tab for the problem
+        self.create_editor_tab(title=title, content=starter_code, file_path=None, problem_data=problem)
 
     def exit_problem_mode(self):
         """Exits problem mode and restores the standard Variables & Assistant tabs."""
@@ -343,68 +535,115 @@ class WinnieIDE(QMainWindow):
             self.right_tabs.setCurrentWidget(self.problem_desc_widget)
 
     def load_solution_to_editor(self, solution_code: str):
-        """Loads reference solution code into editor upon request."""
+        """Loads reference solution code into current editor upon request."""
         self.editor.setPlainText(solution_code)
-        self.is_modified = True
+        self.editor.is_modified = True
+        self.update_tab_title(self.editor)
         self.update_window_title()
         self.console.append_output("\n[Solution copied to editor — click Step or Variables tab to inspect live]\n")
 
     def on_text_changed(self):
-        """Called whenever code in the editor is modified."""
-        if not self.is_modified:
-            self.is_modified = True
-            self.update_window_title()
+        """Fallback text change slot."""
+        self.on_editor_text_changed(self.editor)
 
     def update_window_title(self):
         """Updates the macOS window title and native unsaved indicator."""
-        if self.active_problem_title:
-            filename = self.active_problem_title
+        ed = self.editor
+        if not ed:
+            self.setWindowTitle("Winnie")
+            self.setWindowModified(False)
+            return
+
+        if getattr(ed, "problem_data", None):
+            filename = ed.problem_data.get("raw_title", ed.problem_data.get("title", "Problem"))
+        elif getattr(ed, "file_path", None):
+            filename = os.path.basename(ed.file_path)
         else:
-            filename = os.path.basename(self.current_file_path) if self.current_file_path else "Untitled"
-        self.setWindowModified(self.is_modified)
-        mod_marker = " ●" if self.is_modified else ""
-        self.setWindowTitle(f"{filename}{mod_marker} — Winnie")
+            filename = getattr(ed, "untitled_title", "Untitled")
+
+        is_mod = getattr(ed, "is_modified", False)
+        self.setWindowModified(is_mod)
+        mod_marker = " ●" if is_mod else ""
+        self.setWindowTitle(f"{filename}{mod_marker} — Winnie [*]")
 
     def maybe_save(self) -> bool:
         """By default do not prompt to save; user can save via Cmd+S or File menu."""
         return True
 
     def new_file(self):
-        """Creates a new empty file (Cmd + N)."""
-        if self.is_problem_mode:
-            self.exit_problem_mode()
-        self.current_file_path = None
-        self.editor.setPlainText("")
-        self.is_modified = False
-        self.update_window_title()
+        """Creates a new empty file in a new tab (Cmd + N)."""
+        self.untitled_counter += 1
+        title = f"Untitled-{self.untitled_counter}"
+        self.create_editor_tab(title=title, content="", file_path=None, problem_data=None)
 
     def open_file(self):
-        """Opens an existing Python file from disk (Cmd + O)."""
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Open Python File", "", "Python Files (*.py);;All Files (*)"
+        """Opens one or multiple existing Python files from disk into separate tabs (Cmd + O)."""
+        paths, _ = QFileDialog.getOpenFileNames(
+            self, "Open Python Files", "", "Python Files (*.py);;All Files (*)"
         )
-        if not path:
+        if not paths:
             return
+        for path in paths:
+            self.open_file_path(path)
+
+    def open_file_path(self, path: str):
+        """Opens a single file path into an editor tab."""
+        # Check if already open
+        for i in range(self.editor_tabs.count()):
+            ed = self.editor_tabs.widget(i)
+            if getattr(ed, "file_path", None) == path:
+                self.editor_tabs.setCurrentIndex(i)
+                return
+
         try:
             with open(path, "r", encoding="utf-8") as f:
                 content = f.read()
-            if self.is_problem_mode:
-                self.exit_problem_mode()
-            self.current_file_path = path
-            self.editor.setPlainText(content)
-            self.is_modified = False
-            self.update_window_title()
         except Exception as e:
-            QMessageBox.critical(self, "Error Opening File", f"Could not read file:\n{e}")
+            QMessageBox.critical(self, "Error Opening File", f"Could not read file '{path}':\n{e}")
+            return
+
+        # Check if current single tab is an untouched starter tab
+        curr = self.editor
+        if (
+            self.editor_tabs.count() == 1
+            and not getattr(curr, "file_path", None)
+            and not getattr(curr, "problem_data", None)
+            and not getattr(curr, "is_modified", False)
+            and curr.toPlainText().strip() in (
+                "",
+                "# Type your Python code here and click Run...",
+                (
+                    'total = 0\n'
+                    'items = [10, 20, 30]\n\n'
+                    'for x in items:\n'
+                    '    total += x\n'
+                    '    print(f"Added {x}, running total is {total}")\n\n'
+                    'print("All done!")'
+                )
+            )
+        ):
+            curr.setPlainText(content)
+            curr.file_path = path
+            curr.is_modified = False
+            self.update_tab_title(curr)
+            self.update_window_title()
+            return
+
+        filename = os.path.basename(path)
+        self.create_editor_tab(title=filename, content=content, file_path=path)
 
     def save_file(self) -> bool:
-        """Saves current file to disk (Cmd + S)."""
-        if not self.current_file_path:
+        """Saves current active tab to disk (Cmd + S)."""
+        ed = self.editor
+        if not ed:
+            return False
+        if not getattr(ed, "file_path", None):
             return self.save_file_as()
         try:
-            with open(self.current_file_path, "w", encoding="utf-8") as f:
-                f.write(self.editor.toPlainText())
-            self.is_modified = False
+            with open(ed.file_path, "w", encoding="utf-8") as f:
+                f.write(ed.toPlainText())
+            ed.is_modified = False
+            self.update_tab_title(ed)
             self.update_window_title()
             return True
         except Exception as e:
@@ -412,15 +651,25 @@ class WinnieIDE(QMainWindow):
             return False
 
     def save_file_as(self) -> bool:
-        """Prompts for a filename and saves (Cmd + Shift + S)."""
+        """Prompts for a filename and saves current active tab (Cmd + Shift + S)."""
+        ed = self.editor
+        if not ed:
+            return False
+        suggested = ""
+        if getattr(ed, "file_path", None):
+            suggested = ed.file_path
+        elif getattr(ed, "problem_data", None):
+            suggested = f"{ed.problem_data.get('id', 'solution')}.py"
+
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save Python File", "", "Python Files (*.py);;All Files (*)"
+            self, "Save Python File", suggested, "Python Files (*.py);;All Files (*)"
         )
         if not path:
             return False
         if not path.endswith(".py"):
             path += ".py"
-        self.current_file_path = path
+        ed.file_path = path
+        ed.problem_data = None  # once saved as file, it's a regular file
         return self.save_file()
 
     def closeEvent(self, event):
@@ -447,12 +696,15 @@ class WinnieIDE(QMainWindow):
     def apply_font_size(self, size: int):
         self.font_size = size
 
-        # 1. Update Code Editor font & line number gutter width
-        editor_font = self.editor.font()
-        editor_font.setPointSize(size)
-        self.editor.setFont(editor_font)
-        self.editor.update_line_number_area_width(0)
-        self.editor.line_number_area.update()
+        # 1. Update all open Code Editors font & line number gutter width
+        for i in range(self.editor_tabs.count()):
+            ed = self.editor_tabs.widget(i)
+            if isinstance(ed, CodeEditor):
+                editor_font = ed.font()
+                editor_font.setPointSize(size)
+                ed.setFont(editor_font)
+                ed.update_line_number_area_width(0)
+                ed.line_number_area.update()
 
         # 2. Update Console font
         console_font = self.console.font()
@@ -764,6 +1016,70 @@ class WinnieIDE(QMainWindow):
             }}
         """)
 
+        # Editor Tabs Styling (VS Code / Sublime-like sleek tabs)
+        self.editor_tabs.setStyleSheet(f"""
+            QTabWidget#editorTabs::pane {{
+                border: 1px solid {theme['border_color']};
+                background-color: {theme['editor_bg']};
+                border-top: none;
+            }}
+            QTabWidget#editorTabs QTabBar {{
+                qproperty-drawBase: 0;
+                background-color: {theme['console_bg']};
+                border-bottom: 1px solid {theme['border_color']};
+            }}
+            QTabWidget#editorTabs QTabBar::tab {{
+                background-color: {theme['console_bg']};
+                color: {theme['table_header_text']};
+                padding: 5px 10px;
+                margin-right: 2px;
+                border: 1px solid transparent;
+                border-bottom: none;
+                border-top-left-radius: 6px;
+                border-top-right-radius: 6px;
+                font-size: 11px;
+                font-weight: 500;
+            }}
+            QTabWidget#editorTabs QTabBar::tab:hover {{
+                background-color: {theme['btn_clear_hover']};
+                color: {theme['brand_color']};
+            }}
+            QTabWidget#editorTabs QTabBar::tab:selected {{
+                background-color: {theme['editor_bg']};
+                color: {theme['brand_color']};
+                border: 1px solid {theme['border_color']};
+                border-bottom: 1px solid {theme['editor_bg']};
+                font-weight: 600;
+            }}
+            QTabWidget#editorTabs QTabBar::close-button {{
+                subcontrol-position: right;
+                margin-left: 6px;
+                border-radius: 3px;
+                padding: 1px;
+            }}
+            QTabWidget#editorTabs QTabBar::close-button:hover {{
+                background-color: {theme['btn_clear_hover']};
+            }}
+        """)
+
+        self.new_tab_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['table_header_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 0px;
+                margin-right: 4px;
+                margin-top: 2px;
+            }}
+            QPushButton:hover {{
+                background-color: {theme['btn_clear_hover']};
+                color: {theme['brand_color']};
+            }}
+        """)
+
         # Tab styling
         self.right_tabs.setStyleSheet(f"""
             QTabWidget::pane {{
@@ -777,9 +1093,9 @@ class WinnieIDE(QMainWindow):
             QTabBar::tab {{
                 background-color: transparent;
                 color: {theme['table_header_text']};
-                padding: 6px 12px;
-                margin-right: 4px;
-                font-size: 12px;
+                padding: 5px 8px;
+                margin-right: 2px;
+                font-size: 11px;
                 font-weight: bold;
                 border: none;
                 border-bottom: 2px solid transparent;
@@ -793,8 +1109,11 @@ class WinnieIDE(QMainWindow):
             }}
         """)
 
-        # Propagate to child widgets
-        self.editor.apply_theme(theme)
+        # Propagate to child widgets across all open editor tabs
+        for i in range(self.editor_tabs.count()):
+            ed = self.editor_tabs.widget(i)
+            if isinstance(ed, CodeEditor):
+                ed.apply_theme(theme)
         self.console.apply_theme(theme)
         self.variables_view.apply_theme(theme)
         self.assistant_view.apply_theme(theme)

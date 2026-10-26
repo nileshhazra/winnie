@@ -24,6 +24,12 @@ class CodeEditor(QPlainTextEdit):
         self.line_number_area = LineNumberArea(self)
         self.debug_line = None
 
+        # Tab & File metadata
+        self.file_path = None
+        self.is_modified = False
+        self.problem_data = None
+        self.untitled_title = "Untitled"
+
         # Dank Mono with Menlo fallback
         font = QFont("Dank Mono", 13)
         font.setStyleHint(QFont.StyleHint.Monospace)
