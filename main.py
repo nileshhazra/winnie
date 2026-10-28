@@ -27,6 +27,7 @@ from variables_view import VariablesView
 from assistant import AssistantView, parse_traceback
 from package_manager import PackageManagerDialog
 from problems import ProblemsListDialog, ProblemDescriptionWidget, ProblemSolutionWidget
+from about_dialog import AboutDialog
 from theme import DARK_THEME, LIGHT_THEME, get_scrollbar_stylesheet
 from icons import (
     render_svg_icon,
@@ -40,6 +41,7 @@ from icons import (
     SUN_SVG,
     PLUS_SVG,
     CLOSE_SVG,
+    INFO_SVG,
 )
 
 
@@ -739,6 +741,16 @@ class WinnieIDE(QMainWindow):
         problems_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
         problems_action.triggered.connect(self.open_problems_dialog)
 
+        # Help Menu
+        help_menu = menubar.addMenu("Help")
+        about_action = help_menu.addAction("About Winnie...")
+        about_action.triggered.connect(self.open_about_dialog)
+
+    def open_about_dialog(self):
+        """Opens the About Winnie dialog."""
+        dlg = AboutDialog(self, theme=self.current_theme)
+        dlg.exec()
+
     def open_package_manager(self):
         """Opens the graphical pip package manager dialog."""
         python_bin = get_python_interpreter()
@@ -1187,6 +1199,15 @@ class WinnieIDE(QMainWindow):
         self.theme_btn.clicked.connect(self.toggle_theme)
         layout.addWidget(self.theme_btn)
 
+        # 6. Monochromatic Info Button (About Winnie)
+        self.info_btn = QPushButton()
+        self.info_btn.setToolTip("About Winnie")
+        self.info_btn.setFont(QFont("SF Pro Text", 12))
+        self.info_btn.setIconSize(QSize(15, 15))
+        self.info_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.info_btn.clicked.connect(self.open_about_dialog)
+        layout.addWidget(self.info_btn)
+
         return bar
 
     def toggle_theme(self):
@@ -1350,6 +1371,21 @@ class WinnieIDE(QMainWindow):
                 border: 1px solid {theme['btn_clear_border']};
                 border-radius: 8px;
                 padding: 6px 14px;
+            }}
+            QPushButton:hover {{
+                background-color: {theme['btn_clear_hover']};
+            }}
+        """)
+
+        # Info (About Winnie) button styling & monochromatic icon
+        self.info_btn.setIcon(render_svg_icon(INFO_SVG, size=15, color=theme["btn_clear_text"]))
+        self.info_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 8px;
+                padding: 6px 10px;
             }}
             QPushButton:hover {{
                 background-color: {theme['btn_clear_hover']};
