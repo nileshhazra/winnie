@@ -90,29 +90,29 @@ def draw_modern_play_icon(size: int = 512) -> QPixmap:
     tile_path = QPainterPath()
     tile_path.addRoundedRect(rect, radius, radius)
 
-    # 4. Matte Charcoal / Slate Gradient Background
+    # 4. Matte Charcoal / Obsidian Gradient Background with subtle warm undertone
     bg_grad = QLinearGradient(rect.topLeft(), rect.bottomRight())
-    bg_grad.setColorAt(0.0, QColor("#2d2f36"))  # Top-left slate highlight
-    bg_grad.setColorAt(0.35, QColor("#24252b")) # Matte charcoal body
-    bg_grad.setColorAt(0.85, QColor("#1e1f24")) # Deep charcoal
-    bg_grad.setColorAt(1.0, QColor("#17181c"))  # Bottom-right shadow
+    bg_grad.setColorAt(0.0, QColor("#302f35"))  # Top-left warm slate highlight
+    bg_grad.setColorAt(0.35, QColor("#242328")) # Matte dark charcoal body
+    bg_grad.setColorAt(0.85, QColor("#1c1b20")) # Deep obsidian
+    bg_grad.setColorAt(1.0, QColor("#141317"))  # Bottom-right shadow
     painter.fillPath(tile_path, bg_grad)
 
-    # Subtle inner top lighting sheen
+    # Subtle inner top lighting sheen with warm touch
     painter.save()
     painter.setClipPath(tile_path)
     top_sheen = QLinearGradient(rect.topLeft(), QPointF(rect.topLeft().x(), rect.center().y()))
-    top_sheen.setColorAt(0.0, QColor(255, 255, 255, 25))
+    top_sheen.setColorAt(0.0, QColor(254, 243, 199, 25))
     top_sheen.setColorAt(0.4, QColor(255, 255, 255, 8))
     top_sheen.setColorAt(1.0, QColor(255, 255, 255, 0))
     painter.fillRect(rect, top_sheen)
     painter.restore()
 
-    # 5. Squircle Hardware Edge Rim (Apple style perimeter bevel)
+    # 5. Squircle Hardware Edge Rim (Warm golden-tinted perimeter bevel)
     rim_pen = QPen()
     rim_pen.setWidthF(max(1.0, size * 0.003))
     rim_grad = QLinearGradient(rect.topLeft(), rect.bottomRight())
-    rim_grad.setColorAt(0.0, QColor(255, 255, 255, 60))
+    rim_grad.setColorAt(0.0, QColor(254, 240, 138, 70))
     rim_grad.setColorAt(0.5, QColor(255, 255, 255, 20))
     rim_grad.setColorAt(1.0, QColor(0, 0, 0, 50))
     rim_pen.setBrush(rim_grad)
@@ -154,7 +154,7 @@ def draw_modern_play_icon(size: int = 512) -> QPixmap:
     shadow_offset = size * 0.012
     for offset_mult, alpha in [(1.5, 40), (0.9, 75), (0.4, 95)]:
         s_off = shadow_offset * offset_mult
-        s_color = QColor(0, 0, 0, alpha)
+        s_color = QColor(10, 5, 0, alpha)
 
         painter.save()
         painter.translate(0, s_off)
@@ -163,45 +163,46 @@ def draw_modern_play_icon(size: int = 512) -> QPixmap:
         painter.fillPath(tri_path, s_color)
         painter.restore()
 
-    # 8. Render Left Dot
+    # 8. Render Left Dot: Caramel Honey
     dot_grad = QLinearGradient(dot_rect.topLeft(), dot_rect.bottomLeft())
-    dot_grad.setColorAt(0.0, QColor("#5a458f")) # Medium violet highlight
-    dot_grad.setColorAt(0.4, QColor("#453175"))
-    dot_grad.setColorAt(1.0, QColor("#2b1e55")) # Deep dark purple
+    dot_grad.setColorAt(0.0, QColor("#f59e0b")) # Golden amber
+    dot_grad.setColorAt(0.35, QColor("#d97706")) # Warm honey
+    dot_grad.setColorAt(0.70, QColor("#b45309")) # Caramel
+    dot_grad.setColorAt(1.0, QColor("#78350f"))  # Rich deep bronze
     painter.fillPath(dot_path, dot_grad)
 
-    dot_rim_pen = QPen(QColor(255, 255, 255, 45), max(1.0, size * 0.002))
+    dot_rim_pen = QPen(QColor(254, 243, 199, 65), max(1.0, size * 0.002))
     painter.strokePath(dot_path, dot_rim_pen)
 
-    # 9. Render Middle Pill
+    # 9. Render Middle Pill: Vibrant Warm Honey Amber
     mid_grad = QLinearGradient(mid_rect.topLeft(), mid_rect.bottomLeft())
-    mid_grad.setColorAt(0.0, QColor("#625bc9"))  # Vibrant periwinkle violet
-    mid_grad.setColorAt(0.35, QColor("#4743b0")) # Royal indigo
-    mid_grad.setColorAt(0.70, QColor("#343896")) # Deep blue-indigo
-    mid_grad.setColorAt(1.0, QColor("#242b74"))  # Midnight blue-violet
+    mid_grad.setColorAt(0.0, QColor("#fbbf24"))  # Bright honey gold
+    mid_grad.setColorAt(0.30, QColor("#f59e0b")) # Vibrant amber
+    mid_grad.setColorAt(0.65, QColor("#d97706")) # Rich honey
+    mid_grad.setColorAt(1.0, QColor("#92400e"))  # Deep caramel amber
     painter.fillPath(mid_path, mid_grad)
 
-    mid_rim_pen = QPen(QColor(255, 255, 255, 55), max(1.0, size * 0.002))
+    mid_rim_pen = QPen(QColor(254, 243, 199, 75), max(1.0, size * 0.002))
     painter.strokePath(mid_path, mid_rim_pen)
 
-    # 10. Render Right Play Triangle
+    # 10. Render Right Play Triangle: Radiant Sunburst Gold to Rich Amber
     tri_grad = QLinearGradient(
         QPointF(tri_left, cy - tri_h / 2.0),
         QPointF(tri_right, cy + tri_h / 2.0)
     )
-    tri_grad.setColorAt(0.0, QColor("#36e2ff"))  # Electric vivid cyan
-    tri_grad.setColorAt(0.25, QColor("#25c8fa")) # Sky blue
-    tri_grad.setColorAt(0.60, QColor("#179edf")) # Vibrant azure blue
-    tri_grad.setColorAt(0.85, QColor("#0977bd")) # Deep royal blue
-    tri_grad.setColorAt(1.0, QColor("#025396"))  # Bottom navy blue
+    tri_grad.setColorAt(0.0, QColor("#fef08a"))  # Sunburst electric gold
+    tri_grad.setColorAt(0.18, QColor("#facc15")) # Vivid honey yellow
+    tri_grad.setColorAt(0.42, QColor("#f59e0b")) # Radiant warm amber
+    tri_grad.setColorAt(0.75, QColor("#d97706")) # Rich golden caramel
+    tri_grad.setColorAt(1.0, QColor("#92400e"))  # Deep honey bronze
     painter.fillPath(tri_path, tri_grad)
 
     # Subtle inner top reflection highlight on triangle
     painter.save()
     painter.setClipPath(tri_path)
     tri_highlight = QLinearGradient(QPointF(tri_left, cy - tri_h / 2.0), QPointF(tri_left, cy))
-    tri_highlight.setColorAt(0.0, QColor(255, 255, 255, 95))
-    tri_highlight.setColorAt(0.3, QColor(255, 255, 255, 25))
+    tri_highlight.setColorAt(0.0, QColor(255, 255, 255, 110))
+    tri_highlight.setColorAt(0.25, QColor(254, 240, 138, 40))
     tri_highlight.setColorAt(1.0, QColor(255, 255, 255, 0))
     painter.fillPath(tri_path, tri_highlight)
     painter.restore()
@@ -210,8 +211,8 @@ def draw_modern_play_icon(size: int = 512) -> QPixmap:
     tri_rim_pen = QPen()
     tri_rim_pen.setWidthF(max(1.0, size * 0.0025))
     tri_rim_grad = QLinearGradient(QPointF(tri_left, cy - tri_h / 2.0), QPointF(tri_right, cy + tri_h / 2.0))
-    tri_rim_grad.setColorAt(0.0, QColor(255, 255, 255, 120))
-    tri_rim_grad.setColorAt(0.5, QColor(255, 255, 255, 40))
+    tri_rim_grad.setColorAt(0.0, QColor(255, 255, 255, 150))
+    tri_rim_grad.setColorAt(0.5, QColor(254, 240, 138, 50))
     tri_rim_grad.setColorAt(1.0, QColor(0, 0, 0, 40))
     tri_rim_pen.setBrush(tri_rim_grad)
     painter.strokePath(tri_path, tri_rim_pen)

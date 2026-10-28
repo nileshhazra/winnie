@@ -39,7 +39,7 @@ Search, install, inspect, and uninstall PyPI packages directly without touching 
 - **Interactive Standard Streams**: Bidirectional, unbuffered communication channel between the GUI shell and the running process. Fully supports interactive `input()` calls with input boundary protection.
 - **Runtime Scope Inspector**: Real-time inspection table displaying variable identifiers, dynamic types, and serialized string representations after each statement or script execution.
 - **Editor & Formatting**: Custom code editor featuring line numbers, active line indicators, syntax highlighting (with regular, upright comments), and PEP 8 automatic indentation.
-- **Native macOS System Integration**: Blended title bar (`NSWindowStyleMaskFullSizeContentView`), WindowServer hardware-accelerated title bar dragging, native menu bar, and custom Retina high-DPI application icon.
+- **Native macOS System Integration**: Blended title bar (`NSWindowStyleMaskFullSizeContentView`), WindowServer hardware-accelerated title bar dragging, native menu bar, and custom warm Honey & Amber Retina application icon.
 
 ---
 
