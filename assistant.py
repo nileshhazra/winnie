@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt, Signal
-from theme import DARK_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 
 
 # ==========================================================
@@ -271,7 +271,7 @@ class AssistantView(QWidget):
         # 3. Offending Code Snippet Box (if available)
         if code_snippet:
             code_box = QLabel(code_snippet)
-            code_box.setFont(QFont("Dank Mono", 12))
+            code_box.setFont(get_code_font(size=12))
             code_box.setStyleSheet(f"""
                 background-color: {self.current_theme['table_bg']};
                 color: #f87171;

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 from PySide6.QtGui import QFont, QColor
-from theme import DARK_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 
 
 class VariablesView(QWidget):
@@ -34,8 +34,7 @@ class VariablesView(QWidget):
         self.table.verticalHeader().setVisible(False)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         
-        font = QFont("Dank Mono", 12)
-        font.setStyleHint(QFont.StyleHint.Monospace)
+        font = get_code_font(size=12)
         self.table.setFont(font)
 
         self.setObjectName("variablesView")

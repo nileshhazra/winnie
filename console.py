@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QPlainTextEdit
 from PySide6.QtGui import QFont, QTextCursor, QKeySequence
 from PySide6.QtCore import Qt, Signal
-from theme import DARK_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 
 
 class InteractiveConsole(QPlainTextEdit):
@@ -11,9 +11,9 @@ class InteractiveConsole(QPlainTextEdit):
     def __init__(self, parent=None, theme=DARK_THEME):
         super().__init__(parent)
         
-        font = QFont("Dank Mono", 13)
-        font.setStyleHint(QFont.StyleHint.Monospace)
+        font = get_code_font(size=13)
         self.setFont(font)
+        self.document().setDefaultFont(font)
         
         self.input_start_pos = 0
         self.is_running = False

@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush, QLinearGradient
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF
-from theme import DARK_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font, configure_no_ligatures
 from highlighter import PythonHighlighter
 from icons import TIME_SVG, SPACE_SVG, render_svg_pixmap
 
@@ -3496,7 +3496,9 @@ class ProblemDescriptionWidget(QWidget):
 
         # Examples Box (Syntax-highlighted code block)
         self.examples_box = QPlainTextEdit()
-        self.examples_box.setFont(QFont("Dank Mono", 12))
+        ex_font = get_code_font(size=12)
+        self.examples_box.setFont(ex_font)
+        self.examples_box.document().setDefaultFont(ex_font)
         self.examples_box.setReadOnly(True)
         self.examples_highlighter = PythonHighlighter(self.examples_box.document(), theme=self.current_theme)
         self.container_layout.addWidget(self.examples_box)
@@ -3518,7 +3520,9 @@ class ProblemDescriptionWidget(QWidget):
     def apply_font_size(self, size: int):
         ex_font = self.examples_box.font()
         ex_font.setPointSize(size)
+        configure_no_ligatures(ex_font)
         self.examples_box.setFont(ex_font)
+        self.examples_box.document().setDefaultFont(ex_font)
 
     def apply_theme(self, theme):
         self.current_theme = theme
@@ -3643,7 +3647,9 @@ class ProblemSolutionWidget(QWidget):
 
         # 3. Code View
         self.solution_view = QPlainTextEdit()
-        self.solution_view.setFont(QFont("Dank Mono", 13))
+        sol_font = get_code_font(size=13)
+        self.solution_view.setFont(sol_font)
+        self.solution_view.document().setDefaultFont(sol_font)
         self.solution_view.setReadOnly(True)
         self.highlighter = PythonHighlighter(self.solution_view.document(), theme=self.current_theme)
         layout.addWidget(self.solution_view)
@@ -3664,7 +3670,9 @@ class ProblemSolutionWidget(QWidget):
     def apply_font_size(self, size: int):
         sol_font = self.solution_view.font()
         sol_font.setPointSize(size)
+        configure_no_ligatures(sol_font)
         self.solution_view.setFont(sol_font)
+        self.solution_view.document().setDefaultFont(sol_font)
 
     def on_copy_clicked(self):
         if self.current_solution:

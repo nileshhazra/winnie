@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt, QProcess
-from theme import DARK_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 
 
 class PackageManagerDialog(QDialog):
@@ -41,7 +41,7 @@ class PackageManagerDialog(QDialog):
 
         # 1. Header: Python Environment Info
         env_label = QLabel(f"Environment: {self.python_executable}")
-        env_label.setFont(QFont("Dank Mono", 11))
+        env_label.setFont(get_code_font(size=11))
         env_label.setStyleSheet("color: #71717a;")
         layout.addWidget(env_label)
 
@@ -105,7 +105,7 @@ class PackageManagerDialog(QDialog):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.itemSelectionChanged.connect(self.on_selection_changed)
-        self.table.setFont(QFont("Dank Mono", 12))
+        self.table.setFont(get_code_font(size=12))
         table_layout.addWidget(self.table)
         splitter.addWidget(table_container)
 
@@ -121,7 +121,9 @@ class PackageManagerDialog(QDialog):
         log_layout.addWidget(log_label)
 
         self.log_console = QPlainTextEdit()
-        self.log_console.setFont(QFont("Dank Mono", 11))
+        log_font = get_code_font(size=11)
+        self.log_console.setFont(log_font)
+        self.log_console.document().setDefaultFont(log_font)
         self.log_console.setReadOnly(True)
         log_layout.addWidget(self.log_console)
         splitter.addWidget(log_container)

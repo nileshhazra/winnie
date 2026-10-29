@@ -28,7 +28,7 @@ from assistant import AssistantView, parse_traceback
 from package_manager import PackageManagerDialog
 from problems import ProblemsListDialog, ProblemDescriptionWidget, ProblemSolutionWidget
 from about_dialog import AboutDialog
-from theme import DARK_THEME, LIGHT_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, LIGHT_THEME, get_scrollbar_stylesheet, get_code_font, configure_no_ligatures
 from icons import (
     render_svg_icon,
     RUN_SVG,
@@ -499,10 +499,12 @@ class WinnieIDE(QMainWindow):
         ed.is_modified = False
         ed.untitled_title = title
 
-        # Apply current zoom font size
+        # Apply current zoom font size with ligatures disabled
         ef = ed.font()
         ef.setPointSize(self.font_size)
+        configure_no_ligatures(ef)
         ed.setFont(ef)
+        ed.document().setDefaultFont(ef)
 
         ed.setPlainText(content)
         ed.textChanged.connect(lambda editor=ed: self.on_editor_text_changed(editor))
@@ -1011,18 +1013,23 @@ class WinnieIDE(QMainWindow):
             if isinstance(ed, CodeEditor):
                 editor_font = ed.font()
                 editor_font.setPointSize(size)
+                configure_no_ligatures(editor_font)
                 ed.setFont(editor_font)
+                ed.document().setDefaultFont(editor_font)
                 ed.update_line_number_area_width(0)
                 ed.line_number_area.update()
 
         # 2. Update Console font
         console_font = self.console.font()
         console_font.setPointSize(size)
+        configure_no_ligatures(console_font)
         self.console.setFont(console_font)
+        self.console.document().setDefaultFont(console_font)
 
         # 3. Update Variables Table font
         var_font = self.variables_view.table.font()
         var_font.setPointSize(max(9, size - 1))
+        configure_no_ligatures(var_font)
         self.variables_view.table.setFont(var_font)
         self.variables_view.table.resizeRowsToContents()
 

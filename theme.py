@@ -1,3 +1,5 @@
+from PySide6.QtGui import QFont
+
 DARK_THEME = {
     "name": "dark",
     "window_bg": "#18181b",
@@ -153,4 +155,28 @@ def get_scrollbar_stylesheet(theme: dict) -> str:
             background: transparent;
         }}
     """
+
+
+def configure_no_ligatures(font: QFont) -> QFont:
+    """Disables all OpenType ligatures and contextual alternates on a QFont."""
+    if hasattr(QFont, "Tag") and hasattr(font, "setFeature"):
+        try:
+            for tag_name in ("calt", "liga", "dlig", "clig", "hlig"):
+                font.setFeature(QFont.Tag(tag_name), 0)
+        except Exception:
+            pass
+    font.setKerning(False)
+    return font
+
+
+def get_code_font(size: int = 13, bold: bool = False, family: str = "Dank Mono") -> QFont:
+    """Returns a programming font with ligatures explicitly disabled and native fallbacks."""
+    font = QFont(family, size)
+    if bold:
+        font.setBold(True)
+    font.setStyleHint(QFont.StyleHint.Monospace)
+    font.setFamilies([family, "Menlo", "Monaco", "Courier New", "monospace"])
+    configure_no_ligatures(font)
+    return font
+
 

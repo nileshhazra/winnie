@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QPlainTextEdit, QTextEdit, QWidget
 from PySide6.QtGui import QColor, QPainter, QPainterPath, QTextFormat, QFont, QTextCursor
 from PySide6.QtCore import Qt, QRect, QSize
 from highlighter import PythonHighlighter
-from theme import DARK_THEME, get_scrollbar_stylesheet
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 
 
 class LineNumberArea(QWidget):
@@ -30,10 +30,10 @@ class CodeEditor(QPlainTextEdit):
         self.problem_data = None
         self.untitled_title = "Untitled"
 
-        # Dank Mono with Menlo fallback
-        font = QFont("Dank Mono", 13)
-        font.setStyleHint(QFont.StyleHint.Monospace)
+        # Dank Mono with Menlo fallback, font ligatures explicitly turned off
+        font = get_code_font(size=13)
         self.setFont(font)
+        self.document().setDefaultFont(font)
 
         self.blockCountChanged.connect(self.update_line_number_area_width)
         self.updateRequest.connect(self.update_line_number_area)
