@@ -14,7 +14,7 @@ Winnie implements a dual-process execution model inspired by educational environ
 Statement-by-statement execution tracking with real-time instruction pointer, live variable scopes, and interactive terminal.
 ![Winnie Dark Mode](assets/winnie-dark.png)
 
-### 45 Built-In Practice Problems
+### 58 Built-In Practice Problems
 Interactive problem descriptions, ASCII tree/data structure diagrams, Big-O time complexity curves, reference solutions, and one-click editor loading.
 ![Winnie Practice Problems](assets/winnie-problems.png)
 
@@ -32,7 +32,7 @@ Search, install, inspect, and uninstall PyPI packages directly without touching 
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
 - **Multi-Tab Code Editor**: Full multi-file editing support with sleek tab navigation, drag re-ordering, inline `+` tab creation, and monochromatic close buttons.
-- **45 Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, and Hash Maps, complete with interactive Big-O complexity charts and reference solutions.
+- **58 Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, Hash Maps, Graphs, and Sliding Window, complete with interactive Big-O complexity charts and reference solutions.
 - **Beginner Error Assistant**: Automatic traceback analysis engine. Intercepts runtime exceptions, highlights offending source lines, and translates technical errors into plain-English explanations with actionable fix suggestions.
 - **Graphical Package Manager**: Integrated pip GUI dialog for searching, installing, and uninstalling PyPI packages directly into the active Python environment with real-time log streaming.
 - **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.

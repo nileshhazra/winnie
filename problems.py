@@ -21,7 +21,7 @@ from icons import TIME_SVG, SPACE_SVG, render_svg_pixmap
 
 
 # ==========================================================
-# Problems Database (All 45 Practice Problems)
+# Problems Database (All 58 Practice Problems)
 # ==========================================================
 PROBLEMS_DATA = [
     {
@@ -2934,6 +2934,1011 @@ PROBLEMS_DATA = [
             "Visits all n nodes via depth-first traversal (pushing right child before left child to process left-to-right), gathering leaves in O(n) time and O(n) auxiliary stack space."
         ),
     },
+    {
+        "id": "has_path",
+        "title": "46. has path",
+        "raw_title": "has path",
+        "category": "Graph",
+        "description": (
+            "Write a function, has_path, that takes in a dictionary representing the adjacency list "
+            "of a directed acyclic graph and two nodes (src, dst). The function should return a boolean "
+            "indicating whether or not there exists a directed path between the source and destination nodes."
+        ),
+        "examples": (
+            "graph = {\n"
+            "  'f': ['g', 'i'],\n"
+            "  'g': ['h'],\n"
+            "  'h': [],\n"
+            "  'i': ['g', 'k'],\n"
+            "  'j': ['i'],\n"
+            "  'k': []\n"
+            "}\n\n"
+            "has_path(graph, 'f', 'k') # -> True\n"
+            "has_path(graph, 'f', 'j') # -> False"
+        ),
+        "starter_code": (
+            "def has_path(graph, src, dst):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search (Recursive) ===\n"
+            "def has_path(graph, src, dst):\n"
+            "    if src == dst:\n"
+            "        return True\n\n"
+            "    for neighbor in graph[src]:\n"
+            "        if has_path(graph, neighbor, dst):\n"
+            "            return True\n\n"
+            "    return False\n\n\n"
+            "# === Breadth-First Search (Queue) ===\n"
+            "from collections import deque\n\n"
+            "def has_path_bfs(graph, src, dst):\n"
+            "    queue = deque([src])\n\n"
+            "    while queue:\n"
+            "        current = queue.popleft()\n"
+            "        if current == dst:\n"
+            "            return True\n\n"
+            "        for neighbor in graph[current]:\n"
+            "            queue.append(neighbor)\n\n"
+            "    return False\n\n\n"
+            "# === Example Test Cases ===\n"
+            "graph = {\n"
+            "    'f': ['g', 'i'],\n"
+            "    'g': ['h'],\n"
+            "    'h': [],\n"
+            "    'i': ['g', 'k'],\n"
+            "    'j': ['i'],\n"
+            "    'k': []\n"
+            "}\n\n"
+            "print(has_path(graph, 'f', 'k'))     # -> True\n"
+            "print(has_path(graph, 'f', 'j'))     # -> False\n"
+            "print(has_path_bfs(graph, 'f', 'k')) # -> True\n"
+        ),
+        "time_complexity": "O(e)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses edges and nodes in the directed acyclic graph in O(e) time (or O(v + e)) with O(v) auxiliary space for the call stack or BFS queue."
+        ),
+    },
+    {
+        "id": "undirected_path",
+        "title": "47. undirected path",
+        "raw_title": "undirected path",
+        "category": "Graph",
+        "description": (
+            "Write a function, undirected_path, that takes in a list of edges for an undirected graph "
+            "and two nodes (node_A, node_B). The function should return a boolean indicating whether "
+            "or not there exists a path between node_A and node_B.\n\n"
+            "You can assume that node_A and node_B both exist in the graph."
+        ),
+        "examples": (
+            "edges = [\n"
+            "  ('i', 'j'),\n"
+            "  ('k', 'i'),\n"
+            "  ('m', 'k'),\n"
+            "  ('k', 'l'),\n"
+            "  ('o', 'n')\n"
+            "]\n\n"
+            "undirected_path(edges, 'j', 'm') # -> True\n"
+            "undirected_path(edges, 'k', 'o') # -> False"
+        ),
+        "starter_code": (
+            "def undirected_path(edges, node_A, node_B):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search with Visited Set ===\n"
+            "def undirected_path(edges, node_A, node_B):\n"
+            "    graph = build_graph(edges)\n"
+            "    return has_path(graph, node_A, node_B, set())\n\n"
+            "def build_graph(edges):\n"
+            "    graph = {}\n"
+            "    for edge in edges:\n"
+            "        a, b = edge\n"
+            "        if a not in graph:\n"
+            "            graph[a] = []\n"
+            "        if b not in graph:\n"
+            "            graph[b] = []\n"
+            "        graph[a].append(b)\n"
+            "        graph[b].append(a)\n"
+            "    return graph\n\n"
+            "def has_path(graph, src, dst, visited):\n"
+            "    if src == dst:\n"
+            "        return True\n"
+            "    if src in visited:\n"
+            "        return False\n\n"
+            "    visited.add(src)\n"
+            "    for neighbor in graph[src]:\n"
+            "        if has_path(graph, neighbor, dst, visited):\n"
+            "            return True\n\n"
+            "    return False\n\n\n"
+            "# === Breadth-First Search with Visited Set ===\n"
+            "from collections import deque\n\n"
+            "def undirected_path_bfs(edges, node_A, node_B):\n"
+            "    graph = build_graph(edges)\n"
+            "    visited = {node_A}\n"
+            "    queue = deque([node_A])\n\n"
+            "    while queue:\n"
+            "        node = queue.popleft()\n"
+            "        if node == node_B:\n"
+            "            return True\n"
+            "        for neighbor in graph[node]:\n"
+            "            if neighbor not in visited:\n"
+            "                visited.add(neighbor)\n"
+            "                queue.append(neighbor)\n\n"
+            "    return False\n\n\n"
+            "# === Example Test Cases ===\n"
+            "edges = [\n"
+            "    ('i', 'j'),\n"
+            "    ('k', 'i'),\n"
+            "    ('m', 'k'),\n"
+            "    ('k', 'l'),\n"
+            "    ('o', 'n')\n"
+            "]\n\n"
+            "print(undirected_path(edges, 'j', 'm'))     # -> True\n"
+            "print(undirected_path(edges, 'k', 'o'))     # -> False\n"
+            "print(undirected_path_bfs(edges, 'j', 'm')) # -> True\n"
+        ),
+        "time_complexity": "O(e)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Converts the edge list to an adjacency list in O(e) time and searches connected components in O(v + e) time using a visited set to avoid cycles, with O(v) auxiliary space."
+        ),
+    },
+    {
+        "id": "connected_components_count",
+        "title": "48. connected components count",
+        "raw_title": "connected components count",
+        "category": "Graph",
+        "description": (
+            "Write a function, connected_components_count, that takes in the adjacency list "
+            "of an undirected graph. The function should return the number of connected components within the graph."
+        ),
+        "examples": (
+            "connected_components_count({\n"
+            "  0: [8, 1, 5],\n"
+            "  1: [0],\n"
+            "  5: [0, 8],\n"
+            "  8: [0, 5],\n"
+            "  2: [3, 4],\n"
+            "  3: [2, 4],\n"
+            "  4: [3, 2]\n"
+            "}) # -> 2"
+        ),
+        "starter_code": (
+            "def connected_components_count(graph):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search ===\n"
+            "def connected_components_count(graph):\n"
+            "    visited = set()\n"
+            "    count = 0\n"
+            "    for node in graph:\n"
+            "        if explore(graph, node, visited):\n"
+            "            count += 1\n"
+            "    return count\n\n"
+            "def explore(graph, current, visited):\n"
+            "    if current in visited:\n"
+            "        return False\n\n"
+            "    visited.add(current)\n"
+            "    for neighbor in graph[current]:\n"
+            "        explore(graph, neighbor, visited)\n\n"
+            "    return True\n\n\n"
+            "# === Breadth-First Search ===\n"
+            "from collections import deque\n\n"
+            "def connected_components_count_bfs(graph):\n"
+            "    visited = set()\n"
+            "    count = 0\n"
+            "    for node in graph:\n"
+            "        if explore_bfs(graph, node, visited):\n"
+            "            count += 1\n"
+            "    return count\n\n"
+            "def explore_bfs(graph, src, visited):\n"
+            "    if src in visited:\n"
+            "        return False\n\n"
+            "    visited.add(src)\n"
+            "    queue = deque([src])\n"
+            "    while queue:\n"
+            "        current = queue.popleft()\n"
+            "        for neighbor in graph[current]:\n"
+            "            if neighbor not in visited:\n"
+            "                visited.add(neighbor)\n"
+            "                queue.append(neighbor)\n\n"
+            "    return True\n\n\n"
+            "# === Example Test Cases ===\n"
+            "graph = {\n"
+            "    0: [8, 1, 5],\n"
+            "    1: [0],\n"
+            "    5: [0, 8],\n"
+            "    8: [0, 5],\n"
+            "    2: [3, 4],\n"
+            "    3: [2, 4],\n"
+            "    4: [3, 2]\n"
+            "}\n\n"
+            "print(connected_components_count(graph))     # -> 2\n"
+            "print(connected_components_count_bfs(graph)) # -> 2\n"
+        ),
+        "time_complexity": "O(e)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits each node and edge once across all components in O(v + e) total time. The visited set prevents reprocessing visited nodes, requiring O(v) auxiliary space."
+        ),
+    },
+    {
+        "id": "largest_component",
+        "title": "49. largest component",
+        "raw_title": "largest component",
+        "category": "Graph",
+        "description": (
+            "Write a function, largest_component, that takes in the adjacency list of an undirected graph. "
+            "The function should return the size of the largest connected component in the graph."
+        ),
+        "examples": (
+            "largest_component({\n"
+            "  0: [8, 1, 5],\n"
+            "  1: [0],\n"
+            "  5: [0, 8],\n"
+            "  8: [0, 5],\n"
+            "  2: [3, 4],\n"
+            "  3: [2, 4],\n"
+            "  4: [3, 2]\n"
+            "}) # -> 4"
+        ),
+        "starter_code": (
+            "def largest_component(graph):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search ===\n"
+            "def largest_component(graph):\n"
+            "    visited = set()\n"
+            "    largest = 0\n"
+            "    for node in graph:\n"
+            "        size = explore_size(graph, node, visited)\n"
+            "        if size > largest:\n"
+            "            largest = size\n"
+            "    return largest\n\n"
+            "def explore_size(graph, node, visited):\n"
+            "    if node in visited:\n"
+            "        return 0\n\n"
+            "    visited.add(node)\n"
+            "    size = 1\n"
+            "    for neighbor in graph[node]:\n"
+            "        size += explore_size(graph, neighbor, visited)\n"
+            "    return size\n\n\n"
+            "# === Breadth-First Search ===\n"
+            "from collections import deque\n\n"
+            "def largest_component_bfs(graph):\n"
+            "    visited = set()\n"
+            "    largest = 0\n"
+            "    for node in graph:\n"
+            "        size = explore_size_bfs(graph, node, visited)\n"
+            "        if size > largest:\n"
+            "            largest = size\n"
+            "    return largest\n\n"
+            "def explore_size_bfs(graph, node, visited):\n"
+            "    if node in visited:\n"
+            "        return 0\n\n"
+            "    visited.add(node)\n"
+            "    size = 0\n"
+            "    queue = deque([node])\n"
+            "    while queue:\n"
+            "        current = queue.popleft()\n"
+            "        size += 1\n"
+            "        for neighbor in graph[current]:\n"
+            "            if neighbor not in visited:\n"
+            "                visited.add(neighbor)\n"
+            "                queue.append(neighbor)\n"
+            "    return size\n\n\n"
+            "# === Example Test Cases ===\n"
+            "graph = {\n"
+            "    0: [8, 1, 5],\n"
+            "    1: [0],\n"
+            "    5: [0, 8],\n"
+            "    8: [0, 5],\n"
+            "    2: [3, 4],\n"
+            "    3: [2, 4],\n"
+            "    4: [3, 2]\n"
+            "}\n\n"
+            "print(largest_component(graph))     # -> 4\n"
+            "print(largest_component_bfs(graph)) # -> 4\n"
+        ),
+        "time_complexity": "O(e)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Measures each component size in O(v + e) total time across all nodes using a visited set to avoid re-visiting nodes. Requires O(v) auxiliary memory."
+        ),
+    },
+    {
+        "id": "shortest_path",
+        "title": "50. shortest path",
+        "raw_title": "shortest path",
+        "category": "Graph",
+        "description": (
+            "Write a function, shortest_path, that takes in a list of edges for an undirected graph "
+            "and two nodes (node_A, node_B). The function should return the length of the shortest path "
+            "between A and B. Consider the length as the number of edges in the path, not the number of nodes. "
+            "If there is no path between A and B, then return -1. You can assume that A and B exist as nodes in the graph."
+        ),
+        "examples": (
+            "edges = [\n"
+            "  ['w', 'x'],\n"
+            "  ['x', 'y'],\n"
+            "  ['z', 'y'],\n"
+            "  ['z', 'v'],\n"
+            "  ['w', 'v']\n"
+            "]\n\n"
+            "shortest_path(edges, 'w', 'z') # -> 2"
+        ),
+        "starter_code": (
+            "def shortest_path(edges, node_A, node_B):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "def shortest_path(edges, node_A, node_B):\n"
+            "    graph = build_graph(edges)\n"
+            "    visited = {node_A}\n"
+            "    queue = deque([(node_A, 0)])\n\n"
+            "    while queue:\n"
+            "        node, distance = queue.popleft()\n"
+            "        if node == node_B:\n"
+            "            return distance\n\n"
+            "        for neighbor in graph[node]:\n"
+            "            if neighbor not in visited:\n"
+            "                visited.add(neighbor)\n"
+            "                queue.append((neighbor, distance + 1))\n\n"
+            "    return -1\n\n"
+            "def build_graph(edges):\n"
+            "    graph = {}\n"
+            "    for edge in edges:\n"
+            "        a, b = edge\n"
+            "        if a not in graph:\n"
+            "            graph[a] = []\n"
+            "        if b not in graph:\n"
+            "            graph[b] = []\n"
+            "        graph[a].append(b)\n"
+            "        graph[b].append(a)\n"
+            "    return graph\n\n\n"
+            "# === Example Test Cases ===\n"
+            "edges = [\n"
+            "    ['w', 'x'],\n"
+            "    ['x', 'y'],\n"
+            "    ['z', 'y'],\n"
+            "    ['z', 'v'],\n"
+            "    ['w', 'v']\n"
+            "]\n\n"
+            "print(shortest_path(edges, 'w', 'z')) # -> 2\n"
+            "print(shortest_path(edges, 'y', 'w')) # -> 2\n"
+            "print(shortest_path(edges, 'w', 'w')) # -> 0\n"
+        ),
+        "time_complexity": "O(e)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Breadth-First Search (BFS) is guaranteed to find the shortest edge path first. Builds the graph in O(e) time and explores nodes in O(v + e) time with O(v) queue space."
+        ),
+    },
+    {
+        "id": "island_count",
+        "title": "51. island count",
+        "raw_title": "island count",
+        "category": "Graph",
+        "description": (
+            "Write a function, island_count, that takes in a grid containing Ws and Ls. "
+            "W represents water and L represents land. The function should return the number of islands "
+            "on the grid. An island is a vertically or horizontally connected region of land."
+        ),
+        "examples": (
+            "grid = [\n"
+            "  ['W', 'L', 'W', 'W', 'W'],\n"
+            "  ['W', 'L', 'W', 'W', 'W'],\n"
+            "  ['W', 'W', 'W', 'L', 'W'],\n"
+            "  ['W', 'W', 'L', 'L', 'W'],\n"
+            "  ['L', 'W', 'W', 'L', 'L'],\n"
+            "  ['L', 'L', 'W', 'W', 'W'],\n"
+            "]\n\n"
+            "island_count(grid) # -> 3"
+        ),
+        "starter_code": (
+            "def island_count(grid):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search ===\n"
+            "def island_count(grid):\n"
+            "    visited = set()\n"
+            "    count = 0\n"
+            "    for r in range(len(grid)):\n"
+            "        for c in range(len(grid[0])):\n"
+            "            if explore(grid, r, c, visited):\n"
+            "                count += 1\n"
+            "    return count\n\n"
+            "def explore(grid, r, c, visited):\n"
+            "    row_inbounds = 0 <= r < len(grid)\n"
+            "    col_inbounds = 0 <= c < len(grid[0])\n"
+            "    if not row_inbounds or not col_inbounds:\n"
+            "        return False\n\n"
+            "    if grid[r][c] == 'W':\n"
+            "        return False\n\n"
+            "    pos = (r, c)\n"
+            "    if pos in visited:\n"
+            "        return False\n"
+            "    visited.add(pos)\n\n"
+            "    explore(grid, r - 1, c, visited)\n"
+            "    explore(grid, r + 1, c, visited)\n"
+            "    explore(grid, r, c - 1, visited)\n"
+            "    explore(grid, r, c + 1, visited)\n"
+            "    return True\n\n\n"
+            "# === Breadth-First Search ===\n"
+            "from collections import deque\n\n"
+            "def island_count_bfs(grid):\n"
+            "    visited = set()\n"
+            "    count = 0\n"
+            "    for r in range(len(grid)):\n"
+            "        for c in range(len(grid[0])):\n"
+            "            if explore_bfs(grid, r, c, visited):\n"
+            "                count += 1\n"
+            "    return count\n\n"
+            "def explore_bfs(grid, r, c, visited):\n"
+            "    pos = (r, c)\n"
+            "    if pos in visited or grid[r][c] == 'W':\n"
+            "        return False\n"
+            "    visited.add(pos)\n\n"
+            "    deltas = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n"
+            "    queue = deque([pos])\n"
+            "    while queue:\n"
+            "        currentR, currentC = queue.popleft()\n"
+            "        for delta in deltas:\n"
+            "            dRow, dCol = delta\n"
+            "            neighborR = dRow + currentR\n"
+            "            neighborC = dCol + currentC\n"
+            "            neighborPos = (neighborR, neighborC)\n"
+            "            row_inbounds = 0 <= neighborR < len(grid)\n"
+            "            col_inbounds = 0 <= neighborC < len(grid[0])\n"
+            "            if neighborPos not in visited and row_inbounds and col_inbounds and grid[neighborR][neighborC] == 'L':\n"
+            "                queue.append(neighborPos)\n"
+            "                visited.add(neighborPos)\n"
+            "    return True\n\n\n"
+            "# === Example Test Cases ===\n"
+            "grid = [\n"
+            "    ['W', 'L', 'W', 'W', 'W'],\n"
+            "    ['W', 'L', 'W', 'W', 'W'],\n"
+            "    ['W', 'W', 'W', 'L', 'W'],\n"
+            "    ['W', 'W', 'L', 'L', 'W'],\n"
+            "    ['L', 'W', 'W', 'L', 'L'],\n"
+            "    ['L', 'L', 'W', 'W', 'W'],\n"
+            "]\n\n"
+            "print(island_count(grid))     # -> 3\n"
+            "print(island_count_bfs(grid)) # -> 3\n"
+        ),
+        "time_complexity": "O(r * c)",
+        "space_complexity": "O(r * c)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Visits every coordinate in the r x c grid once and explores each connected land component in O(r * c) time with O(r * c) space for the visited coordinate set."
+        ),
+    },
+    {
+        "id": "minimum_island",
+        "title": "52. minimum island",
+        "raw_title": "minimum island",
+        "category": "Graph",
+        "description": (
+            "Write a function, minimum_island, that takes in a grid containing Ws and Ls. "
+            "W represents water and L represents land. The function should return the size of the smallest island. "
+            "An island is a vertically or horizontally connected region of land.\n\n"
+            "You may assume that the grid contains at least one island."
+        ),
+        "examples": (
+            "grid = [\n"
+            "  ['W', 'L', 'W', 'W', 'W'],\n"
+            "  ['W', 'L', 'W', 'W', 'W'],\n"
+            "  ['W', 'W', 'W', 'L', 'W'],\n"
+            "  ['W', 'W', 'L', 'L', 'W'],\n"
+            "  ['L', 'W', 'W', 'L', 'L'],\n"
+            "  ['L', 'L', 'W', 'W', 'W'],\n"
+            "]\n\n"
+            "minimum_island(grid) # -> 2"
+        ),
+        "starter_code": (
+            "def minimum_island(grid):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Depth-First Search ===\n"
+            "def minimum_island(grid):\n"
+            "    visited = set()\n"
+            "    min_size = float('inf')\n"
+            "    for r in range(len(grid)):\n"
+            "        for c in range(len(grid[0])):\n"
+            "            size = explore_size(grid, r, c, visited)\n"
+            "            if 0 < size < min_size:\n"
+            "                min_size = size\n"
+            "    return min_size\n\n"
+            "def explore_size(grid, r, c, visited):\n"
+            "    row_inbounds = 0 <= r < len(grid)\n"
+            "    col_inbounds = 0 <= c < len(grid[0])\n"
+            "    if not row_inbounds or not col_inbounds:\n"
+            "        return 0\n\n"
+            "    if grid[r][c] == 'W':\n"
+            "        return 0\n\n"
+            "    pos = (r, c)\n"
+            "    if pos in visited:\n"
+            "        return 0\n"
+            "    visited.add(pos)\n\n"
+            "    size = 1\n"
+            "    size += explore_size(grid, r - 1, c, visited)\n"
+            "    size += explore_size(grid, r + 1, c, visited)\n"
+            "    size += explore_size(grid, r, c - 1, visited)\n"
+            "    size += explore_size(grid, r, c + 1, visited)\n"
+            "    return size\n\n\n"
+            "# === Breadth-First Search ===\n"
+            "from collections import deque\n\n"
+            "def minimum_island_bfs(grid):\n"
+            "    visited = set()\n"
+            "    min_size = float('inf')\n"
+            "    for r in range(len(grid)):\n"
+            "        for c in range(len(grid[0])):\n"
+            "            size = explore_size_bfs(grid, r, c, visited)\n"
+            "            if 0 < size < min_size:\n"
+            "                min_size = size\n"
+            "    return min_size\n\n"
+            "def explore_size_bfs(grid, r, c, visited):\n"
+            "    pos = (r, c)\n"
+            "    if pos in visited or grid[r][c] == 'W':\n"
+            "        return 0\n"
+            "    visited.add(pos)\n\n"
+            "    deltas = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n"
+            "    queue = deque([pos])\n"
+            "    size = 0\n"
+            "    while queue:\n"
+            "        currentR, currentC = queue.popleft()\n"
+            "        size += 1\n"
+            "        for delta in deltas:\n"
+            "            dRow, dCol = delta\n"
+            "            neighborR = dRow + currentR\n"
+            "            neighborC = dCol + currentC\n"
+            "            neighborPos = (neighborR, neighborC)\n"
+            "            row_inbounds = 0 <= neighborR < len(grid)\n"
+            "            col_inbounds = 0 <= neighborC < len(grid[0])\n"
+            "            if neighborPos not in visited and row_inbounds and col_inbounds and grid[neighborR][neighborC] == 'L':\n"
+            "                queue.append(neighborPos)\n"
+            "                visited.add(neighborPos)\n"
+            "    return size\n\n\n"
+            "# === Example Test Cases ===\n"
+            "grid = [\n"
+            "    ['W', 'L', 'W', 'W', 'W'],\n"
+            "    ['W', 'L', 'W', 'W', 'W'],\n"
+            "    ['W', 'W', 'W', 'L', 'W'],\n"
+            "    ['W', 'W', 'L', 'L', 'W'],\n"
+            "    ['L', 'W', 'W', 'L', 'L'],\n"
+            "    ['L', 'L', 'W', 'W', 'W'],\n"
+            "]\n\n"
+            "print(minimum_island(grid))     # -> 2\n"
+            "print(minimum_island_bfs(grid)) # -> 2\n"
+        ),
+        "time_complexity": "O(r * c)",
+        "space_complexity": "O(r * c)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Traverses every position in the r x c grid once, computing the sizes of all disconnected islands in O(r * c) time and O(r * c) space."
+        ),
+    },
+    {
+        "id": "closest_carrot",
+        "title": "53. closest carrot",
+        "raw_title": "closest carrot",
+        "category": "Graph",
+        "description": (
+            "Write a function, closest_carrot, that takes in a grid, a starting row, and a starting column. "
+            "In the grid, 'X's are walls, 'O's are open spaces, and 'C's are carrots. The function should "
+            "return a number representing the length of the shortest path from the starting position to a carrot. "
+            "You may move up, down, left, or right, but cannot pass through walls (X). If there is no possible "
+            "path to a carrot, then return -1."
+        ),
+        "examples": (
+            "grid = [\n"
+            "  ['O', 'O', 'O', 'O', 'O'],\n"
+            "  ['O', 'X', 'O', 'O', 'O'],\n"
+            "  ['O', 'X', 'X', 'O', 'O'],\n"
+            "  ['O', 'X', 'C', 'O', 'O'],\n"
+            "  ['O', 'X', 'X', 'O', 'O'],\n"
+            "  ['C', 'O', 'O', 'O', 'O'],\n"
+            "]\n\n"
+            "closest_carrot(grid, 1, 2) # -> 4"
+        ),
+        "starter_code": (
+            "def closest_carrot(grid, starting_row, starting_col):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "def closest_carrot(grid, starting_row, starting_col):\n"
+            "    visited = {(starting_row, starting_col)}\n"
+            "    queue = deque([(starting_row, starting_col, 0)])\n"
+            "    deltas = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n\n"
+            "    while queue:\n"
+            "        row, col, distance = queue.popleft()\n"
+            "        if grid[row][col] == 'C':\n"
+            "            return distance\n\n"
+            "        for delta in deltas:\n"
+            "            delta_row, delta_col = delta\n"
+            "            neighbor_row = row + delta_row\n"
+            "            neighbor_col = col + delta_col\n"
+            "            pos = (neighbor_row, neighbor_col)\n"
+            "            row_inbounds = 0 <= neighbor_row < len(grid)\n"
+            "            col_inbounds = 0 <= neighbor_col < len(grid[0])\n\n"
+            "            if row_inbounds and col_inbounds and pos not in visited and grid[neighbor_row][neighbor_col] != 'X':\n"
+            "                visited.add(pos)\n"
+            "                queue.append((neighbor_row, neighbor_col, distance + 1))\n\n"
+            "    return -1\n\n\n"
+            "# === Example Test Cases ===\n"
+            "grid = [\n"
+            "    ['O', 'O', 'O', 'O', 'O'],\n"
+            "    ['O', 'X', 'O', 'O', 'O'],\n"
+            "    ['O', 'X', 'X', 'O', 'O'],\n"
+            "    ['O', 'X', 'C', 'O', 'O'],\n"
+            "    ['O', 'X', 'X', 'O', 'O'],\n"
+            "    ['C', 'O', 'O', 'O', 'O'],\n"
+            "]\n\n"
+            "print(closest_carrot(grid, 1, 2)) # -> 4\n"
+            "print(closest_carrot(grid, 0, 0)) # -> 5\n"
+        ),
+        "time_complexity": "O(r * c)",
+        "space_complexity": "O(r * c)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Breadth-First Search (BFS) spreads outward layer-by-layer, guaranteeing discovery of the closest carrot first in O(r * c) time with O(r * c) space."
+        ),
+    },
+    {
+        "id": "best_bridge",
+        "title": "54. best bridge",
+        "raw_title": "best bridge",
+        "category": "Graph",
+        "description": (
+            "Write a function, best_bridge, that takes in a grid as an argument. The grid contains water (W) "
+            "and land (L). There are exactly two islands in the grid. An island is a vertically or horizontally "
+            "connected region of land. Return the minimum length bridge needed to connect the two islands. "
+            "A bridge does not need to form a straight line."
+        ),
+        "examples": (
+            "grid = [\n"
+            "  ['W', 'W', 'W', 'L', 'L'],\n"
+            "  ['L', 'L', 'W', 'W', 'L'],\n"
+            "  ['L', 'L', 'L', 'W', 'L'],\n"
+            "  ['W', 'L', 'W', 'W', 'W'],\n"
+            "  ['W', 'W', 'W', 'W', 'W'],\n"
+            "  ['W', 'W', 'W', 'W', 'W'],\n"
+            "]\n\n"
+            "best_bridge(grid) # -> 1"
+        ),
+        "starter_code": (
+            "def best_bridge(grid):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "from collections import deque\n\n"
+            "def best_bridge(grid):\n"
+            "    main_island = None\n"
+            "    for r in range(len(grid)):\n"
+            "        for c in range(len(grid[0])):\n"
+            "            potential_island = traverse_island(grid, r, c, set())\n"
+            "            if len(potential_island) > 0:\n"
+            "                main_island = potential_island\n"
+            "                break\n"
+            "        if main_island:\n"
+            "            break\n\n"
+            "    visited = set(main_island)\n"
+            "    queue = deque([])\n"
+            "    for pos in main_island:\n"
+            "        r, c = pos\n"
+            "        queue.append((r, c, 0))\n\n"
+            "    while queue:\n"
+            "        row, col, distance = queue.popleft()\n"
+            "        if grid[row][col] == 'L' and (row, col) not in main_island:\n"
+            "            return distance - 1\n\n"
+            "        deltas = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n"
+            "        for delta in deltas:\n"
+            "            delta_row, delta_col = delta\n"
+            "            neighbor_row = row + delta_row\n"
+            "            neighbor_col = col + delta_col\n"
+            "            neighbor_pos = (neighbor_row, neighbor_col)\n"
+            "            if inbounds(grid, neighbor_row, neighbor_col) and neighbor_pos not in visited:\n"
+            "                visited.add(neighbor_pos)\n"
+            "                queue.append((neighbor_row, neighbor_col, distance + 1))\n\n"
+            "    return -1\n\n"
+            "def inbounds(grid, row, col):\n"
+            "    row_inbounds = 0 <= row < len(grid)\n"
+            "    col_inbounds = 0 <= col < len(grid[0])\n"
+            "    return row_inbounds and col_inbounds\n\n"
+            "def traverse_island(grid, row, col, visited):\n"
+            "    if not inbounds(grid, row, col) or grid[row][col] == 'W':\n"
+            "        return visited\n\n"
+            "    pos = (row, col)\n"
+            "    if pos in visited:\n"
+            "        return visited\n\n"
+            "    visited.add(pos)\n\n"
+            "    traverse_island(grid, row - 1, col, visited)\n"
+            "    traverse_island(grid, row + 1, col, visited)\n"
+            "    traverse_island(grid, row, col - 1, visited)\n"
+            "    traverse_island(grid, row, col + 1, visited)\n"
+            "    return visited\n\n\n"
+            "# === Example Test Cases ===\n"
+            "grid = [\n"
+            "    ['W', 'W', 'W', 'L', 'L'],\n"
+            "    ['L', 'L', 'W', 'W', 'L'],\n"
+            "    ['L', 'L', 'L', 'W', 'L'],\n"
+            "    ['W', 'L', 'W', 'W', 'W'],\n"
+            "    ['W', 'W', 'W', 'W', 'W'],\n"
+            "    ['W', 'W', 'W', 'W', 'W'],\n"
+            "]\n\n"
+            "print(best_bridge(grid)) # -> 1\n"
+        ),
+        "time_complexity": "O(r * c)",
+        "space_complexity": "O(r * c)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Isolates the first island via DFS, then launches a multi-source BFS from all its perimeter coordinates until touching the second island in O(r * c) time and O(r * c) space."
+        ),
+    },
+    {
+        "id": "has_cycle",
+        "title": "55. has cycle",
+        "raw_title": "has cycle",
+        "category": "Graph",
+        "description": (
+            "Write a function, has_cycle, that takes in an object representing the adjacency list "
+            "of a directed graph. The function should return a boolean indicating whether or not the graph contains a cycle."
+        ),
+        "examples": (
+            "has_cycle({\n"
+            "  'a': ['b'],\n"
+            "  'b': ['c'],\n"
+            "  'c': ['a'],\n"
+            "}) # -> True\n\n"
+            "has_cycle({\n"
+            "  'a': ['b', 'c'],\n"
+            "  'b': ['c'],\n"
+            "  'c': ['d'],\n"
+            "  'd': [],\n"
+            "}) # -> False"
+        ),
+        "starter_code": (
+            "def has_cycle(graph):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === White-Grey-Black Cycle Detection Algorithm ===\n"
+            "def has_cycle(graph):\n"
+            "    visited = set()\n"
+            "    for start_node in graph:\n"
+            "        if cycle_detect(graph, start_node, set(), visited):\n"
+            "            return True\n"
+            "    return False\n\n"
+            "def cycle_detect(graph, node, visiting, visited):\n"
+            "    if node in visited:\n"
+            "        return False\n\n"
+            "    if node in visiting:\n"
+            "        return True\n\n"
+            "    visiting.add(node)\n"
+            "    for neighbor in graph[node]:\n"
+            "        if cycle_detect(graph, neighbor, visiting, visited):\n"
+            "            return True\n\n"
+            "    visiting.remove(node)\n"
+            "    visited.add(node)\n"
+            "    return False\n\n\n"
+            "# === Example Test Cases ===\n"
+            "print(has_cycle({\n"
+            "    'a': ['b'],\n"
+            "    'b': ['c'],\n"
+            "    'c': ['a'],\n"
+            "})) # -> True\n\n"
+            "print(has_cycle({\n"
+            "    'a': ['b', 'c'],\n"
+            "    'b': ['c'],\n"
+            "    'c': ['d'],\n"
+            "    'd': [],\n"
+            "})) # -> False\n"
+        ),
+        "time_complexity": "O(n^2)",
+        "space_complexity": "O(n)",
+        "complexity_type": "O(n^2)",
+        "complexity_explanation": (
+            "Uses the White-Grey-Black algorithm: tracks nodes currently in the recursion path with a 'visiting' set to detect cycles, and caches fully verified non-cyclical nodes in a 'visited' set. Runs in O(n^2) worst-case time with O(n) space."
+        ),
+    },
+    {
+        "id": "prereqs_possible",
+        "title": "56. prereqs possible",
+        "raw_title": "prereqs possible",
+        "category": "Graph",
+        "description": (
+            "Write a function, prereqs_possible, that takes in a number of courses (n) and prerequisites as arguments. "
+            "Courses have ids ranging from 0 through n - 1. A single prerequisite of (A, B) means that course A must be "
+            "taken before course B. The function should return a boolean indicating whether or not it is possible to complete all courses."
+        ),
+        "examples": (
+            "numCourses = 6\n"
+            "prereqs = [\n"
+            "  (0, 1),\n"
+            "  (2, 3),\n"
+            "  (0, 2),\n"
+            "  (1, 3),\n"
+            "  (4, 5),\n"
+            "]\n"
+            "prereqs_possible(numCourses, prereqs) # -> True\n\n"
+            "numCourses = 6\n"
+            "prereqs = [\n"
+            "  (0, 1),\n"
+            "  (2, 3),\n"
+            "  (0, 2),\n"
+            "  (1, 3),\n"
+            "  (4, 5),\n"
+            "  (3, 0),\n"
+            "]\n"
+            "prereqs_possible(numCourses, prereqs) # -> False"
+        ),
+        "starter_code": (
+            "def prereqs_possible(num_courses, prereqs):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === White-Grey-Black Cycle Detection ===\n"
+            "def prereqs_possible(num_courses, prereqs):\n"
+            "    graph = build_graph(num_courses, prereqs)\n"
+            "    visiting = set()\n"
+            "    visited = set()\n\n"
+            "    for node in range(num_courses):\n"
+            "        if has_cycle(graph, node, visiting, visited):\n"
+            "            return False\n\n"
+            "    return True\n\n"
+            "def has_cycle(graph, node, visiting, visited):\n"
+            "    if node in visited:\n"
+            "        return False\n\n"
+            "    if node in visiting:\n"
+            "        return True\n\n"
+            "    visiting.add(node)\n"
+            "    for neighbor in graph[node]:\n"
+            "        if has_cycle(graph, neighbor, visiting, visited):\n"
+            "            return True\n\n"
+            "    visiting.remove(node)\n"
+            "    visited.add(node)\n"
+            "    return False\n\n"
+            "def build_graph(num_courses, prereqs):\n"
+            "    graph = {i: [] for i in range(num_courses)}\n"
+            "    for a, b in prereqs:\n"
+            "        graph[a].append(b)\n"
+            "    return graph\n\n\n"
+            "# === Example Test Cases ===\n"
+            "print(prereqs_possible(6, [\n"
+            "    (0, 1),\n"
+            "    (2, 3),\n"
+            "    (0, 2),\n"
+            "    (1, 3),\n"
+            "    (4, 5),\n"
+            "])) # -> True\n\n"
+            "print(prereqs_possible(6, [\n"
+            "    (0, 1),\n"
+            "    (2, 3),\n"
+            "    (0, 2),\n"
+            "    (1, 3),\n"
+            "    (4, 5),\n"
+            "    (3, 0),\n"
+            "])) # -> False\n"
+        ),
+        "time_complexity": "O(n + p)",
+        "space_complexity": "O(n + p)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Models prerequisite dependencies as directed edges. Detects topological cycles across n courses and p prerequisites in O(n + p) time and O(n + p) space."
+        ),
+    },
+    {
+        "id": "max_subarray_sum_size_k",
+        "title": "57. max subarray sum size k",
+        "raw_title": "max subarray sum size k",
+        "category": "Sliding Window",
+        "description": (
+            "Write a function, max_subarray_sum_size_k, that takes in a list of numbers and a size k as arguments. "
+            "The function should return the maximum sum of subarrays that contain exactly k elements.\n\n"
+            "You can assume that k is less than or equal to the length of the input list."
+        ),
+        "examples": (
+            "max_subarray_sum_size_k([3, 6, 9, 2, 1, 8, 7], 3) # -> 18\n"
+            "max_subarray_sum_size_k([1, 2, 3, 4, 5, 6], 2)       # -> 11\n"
+            "max_subarray_sum_size_k([10, -2, 5, 6, -1], 2)       # -> 11"
+        ),
+        "starter_code": (
+            "def max_subarray_sum_size_k(nums, k):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "# === Optimized Sliding Window ===\n"
+            "def max_subarray_sum_size_k(nums, k):\n"
+            "    current_sum = sum(nums[0:k])\n"
+            "    max_sum = current_sum\n"
+            "    for i in range(0, len(nums) - k):\n"
+            "        current_sum -= nums[i]\n"
+            "        current_sum += nums[i + k]\n"
+            "        if current_sum > max_sum:\n"
+            "            max_sum = current_sum\n"
+            "    return max_sum\n\n\n"
+            "# === Brute Force Slicing (O(n*k)) ===\n"
+            "def max_subarray_sum_size_k_brute(nums, k):\n"
+            "    max_sum = -float('inf')\n"
+            "    for i in range(0, len(nums) - k + 1):\n"
+            "        current_sum = sum(nums[i: i + k])\n"
+            "        if current_sum > max_sum:\n"
+            "            max_sum = current_sum\n"
+            "    return max_sum\n\n\n"
+            "# === Example Test Cases ===\n"
+            "print(max_subarray_sum_size_k([3, 6, 9, 2, 1, 8, 7], 3)) # -> 18\n"
+            "print(max_subarray_sum_size_k([1, 2, 3, 4, 5, 6], 2))       # -> 11\n"
+            "print(max_subarray_sum_size_k([10, -2, 5, 6, -1], 2))       # -> 11\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Maintains a sliding window of size k by subtracting the element that left the window and adding the newly entered element in O(1) time per shift, achieving linear O(n) total time and O(1) space."
+        ),
+    },
+    {
+        "id": "max_subarray_product_size_k",
+        "title": "58. max subarray product size k",
+        "raw_title": "max subarray product size k",
+        "category": "Sliding Window",
+        "description": (
+            "Write a function, max_subarray_product_size_k, that takes in a list of numbers and a size k as arguments. "
+            "The function should return the maximum product of subarrays that contain exactly k elements.\n\n"
+            "You can assume that k is less than or equal to the length of the input list.\n\n"
+            "You can assume that numbers of the list are non-zero."
+        ),
+        "examples": (
+            "max_subarray_product_size_k([2, 5, 3, 1, 8, 4], 2)  # -> 32\n"
+            "max_subarray_product_size_k([1, 2, 3, 4, 5], 3)     # -> 60\n"
+            "max_subarray_product_size_k([-2, -3, 4, -1, -2], 2) # -> 6"
+        ),
+        "starter_code": (
+            "def max_subarray_product_size_k(nums, k):\n"
+            "  pass # todo\n"
+        ),
+        "solution_code": (
+            "import math\n\n"
+            "# === Optimized Sliding Window ===\n"
+            "def max_subarray_product_size_k(nums, k):\n"
+            "    current_product = math.prod(nums[:k])\n"
+            "    max_product = current_product\n"
+            "    for i in range(0, len(nums) - k):\n"
+            "        current_product = (current_product // nums[i]) * nums[i + k] if current_product % nums[i] == 0 else (current_product / nums[i]) * nums[i + k]\n"
+            "        max_product = max(current_product, max_product)\n"
+            "    return int(max_product)\n\n\n"
+            "# === Slice Approach (O(n*k)) ===\n"
+            "def max_subarray_product_size_k_slice(nums, k):\n"
+            "    max_product = -float('inf')\n"
+            "    for i in range(0, len(nums) - k + 1):\n"
+            "        current_product = math.prod(nums[i: i + k])\n"
+            "        if current_product > max_product:\n"
+            "            max_product = current_product\n"
+            "    return int(max_product)\n\n\n"
+            "# === Example Test Cases ===\n"
+            "print(max_subarray_product_size_k([2, 5, 3, 1, 8, 4], 2))  # -> 32\n"
+            "print(max_subarray_product_size_k([1, 2, 3, 4, 5], 3))     # -> 60\n"
+            "print(max_subarray_product_size_k([-2, -3, 4, -1, -2], 2)) # -> 6\n"
+        ),
+        "time_complexity": "O(n)",
+        "space_complexity": "O(1)",
+        "complexity_type": "O(n)",
+        "complexity_explanation": (
+            "Computes the initial product of the first k elements, then updates the sliding window in O(1) time per element by dividing the outgoing term and multiplying the incoming term. Runs in O(n) time and O(1) space."
+        ),
+    },
 ]
 
 
@@ -3829,16 +4834,18 @@ class ProblemsListDialog(QDialog):
     def populate_list(self, problems):
         self.list_widget.clear()
 
-        # Group problems by section: "Basics" (1-6), "Hash Map" (7-14), "Recursion" (15-20), "Linked List" (21-31), "Tree" (32-39)
+        # Group problems by section: "Basics" (1-6), "Hash Map" (7-14), "Recursion" (15-20), "Linked List" (21-31), "Tree" (32-45), "Graph" (46-56), "Sliding Window" (57-58)
         sections = [
             ("Basics", [p for p in problems if p.get("category") == "Basics"]),
             ("Hash Map", [p for p in problems if p.get("category") == "Hash Map"]),
             ("Recursion", [p for p in problems if p.get("category") == "Recursion"]),
             ("Linked List", [p for p in problems if p.get("category") == "Linked List"]),
             ("Tree", [p for p in problems if p.get("category") == "Tree"]),
+            ("Graph", [p for p in problems if p.get("category") == "Graph"]),
+            ("Sliding Window", [p for p in problems if p.get("category") == "Sliding Window"]),
         ]
 
-        known_cats = ("Basics", "Hash Map", "Recursion", "Linked List", "Tree")
+        known_cats = ("Basics", "Hash Map", "Recursion", "Linked List", "Tree", "Graph", "Sliding Window")
         other_problems = [p for p in problems if p.get("category") not in known_cats]
         if other_problems:
             sections.append(("Other", other_problems))
