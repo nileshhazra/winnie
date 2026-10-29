@@ -6,6 +6,7 @@ python make_icon.py
 
 echo "=== 2. Compiling Standalone macOS App with PyInstaller ==="
 pyinstaller --noconsole \
+            --noconfirm \
             --onedir \
             --windowed \
             --name "Winnie" \
