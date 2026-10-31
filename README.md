@@ -2,29 +2,37 @@
   <img src="Winnie.png" width="128" height="128" alt="Winnie App Icon" />
   <h1>Winnie</h1>
   <p><strong>A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS</strong></p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Platform-macOS-black?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
+    <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
+    <img src="https://img.shields.io/badge/Framework-PySide6%20%2F%20Qt-41CD52?style=flat-square&logo=qt&logoColor=white" alt="Qt" />
+    <img src="https://img.shields.io/badge/Release-v1.3.3-orange?style=flat-square" alt="Release v1.3.3" />
+    <img src="https://img.shields.io/badge/License-MIT-amber?style=flat-square" alt="MIT License" />
+  </p>
 </div>
 
-Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, built-in practice problems, multi-tab editing, and an interactive shell within a clean, modern macOS interface.
+Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, 50+ built-in practice problems, multi-tab editing, and an interactive shell within a clean, modern macOS interface.
 
 ---
 
 ## Interface & Previews
 
-### Modern Dark Mode & Visual Step Debugger
-Statement-by-statement execution tracking with real-time instruction pointer, live variable scopes, and interactive terminal.
-![Winnie Dark Mode](assets/winnie-dark.png)
+### Visual Step Debugger & Scope Inspector
+Statement-by-statement runtime execution tracking with real-time instruction pointer highlights and dynamic variable inspection table.
+![Visual Step Debugger](assets/winnie-dark-showcase.png)
 
-### 58 Built-In Practice Problems
-Interactive problem descriptions, ASCII tree/data structure diagrams, Big-O time complexity curves, reference solutions, and one-click editor loading.
-![Winnie Practice Problems](assets/winnie-problems.png)
+### 50+ Curated Practice Problems & Big-O Complexity Curves
+Interactive data structure challenges (Graphs, Trees, Linked Lists, Recursion, Sliding Window) with animated Big-O curves and reference solutions.
+![Winnie Practice Problems](assets/winnie-problems-showcase.png)
 
-### Native Blended Light Mode
-Clean, high-contrast light theme with unified macOS blended title bar and monochromatic iconography.
-![Winnie Light Mode](assets/winnie-light.png)
+### Native macOS Blended Light Mode
+High-contrast daylight theme with full-height Cocoa content view and seamless title bar blending.
+![Winnie Light Mode](assets/winnie-light-showcase.png)
 
-### Graphical Package Manager (pip)
-Search, install, inspect, and uninstall PyPI packages directly without touching the terminal.
-![Winnie Package Manager](assets/winnie-packages.png)
+### Graphical Python Package Manager (pip)
+Search, install, inspect, and remove PyPI packages directly without touching the terminal.
+![Winnie Package Manager](assets/winnie-packages-showcase.png)
 
 ---
 
@@ -32,7 +40,7 @@ Search, install, inspect, and uninstall PyPI packages directly without touching 
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
 - **Multi-Tab Code Editor**: Full multi-file editing support with sleek tab navigation, drag re-ordering, inline `+` tab creation, and monochromatic close buttons.
-- **58 Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, Hash Maps, Graphs, and Sliding Window, complete with interactive Big-O complexity charts and reference solutions.
+- **50+ Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, Hash Maps, Graphs, and Sliding Window, complete with interactive Big-O complexity charts and reference solutions.
 - **Beginner Error Assistant**: Automatic traceback analysis engine. Intercepts runtime exceptions, highlights offending source lines, and translates technical errors into plain-English explanations with actionable fix suggestions.
 - **Graphical Package Manager**: Integrated pip GUI dialog for searching, installing, and uninstalling PyPI packages directly into the active Python environment with real-time log streaming.
 - **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.
