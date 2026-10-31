@@ -4,11 +4,7 @@
   <p><strong>A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS</strong></p>
 
   <p>
-    <img src="https://img.shields.io/badge/Platform-macOS-black?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
-    <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
-    <img src="https://img.shields.io/badge/Framework-PySide6%20%2F%20Qt-41CD52?style=flat-square&logo=qt&logoColor=white" alt="Qt" />
-    <img src="https://img.shields.io/badge/Release-v1.3.3-orange?style=flat-square" alt="Release v1.3.3" />
-    <img src="https://img.shields.io/badge/License-MIT-amber?style=flat-square" alt="MIT License" />
+    <img src="assets/badges.png" width="650" alt="macOS Native • Python 3.10+ • PySide6 / Qt • v1.3.3 • MIT License" />
   </p>
 </div>
 
