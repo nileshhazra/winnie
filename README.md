@@ -36,6 +36,36 @@ Search, install, inspect, and remove PyPI packages directly without touching the
 
 ---
 
+## Installation Guide (macOS)
+
+Follow these 4 simple steps to run Winnie natively on your Mac:
+
+![Quick macOS Installation](assets/installation-guide.png)
+
+### 1. Download Release
+Head to **[GitHub Releases](https://github.com/nileshhazra/winnie/releases/latest)** and download `Winnie.zip` under the **Assets** section.
+
+### 2. Extract Archive
+Double-click `Winnie.zip` in Finder to extract the `Winnie.app` application bundle.
+
+### 3. Move to Applications
+Drag and drop `Winnie.app` into your macOS `/Applications` folder:
+```
+Downloads/Winnie.app  ➔  /Applications/Winnie.app
+```
+
+### 4. Clear macOS Gatekeeper Quarantine
+Because Winnie is an open-source binary distributed outside the Mac App Store, macOS Gatekeeper initially flags downloaded applications with a quarantine attribute. Open **Terminal** and run this command once:
+
+```bash
+xattr -cr /Applications/Winnie.app
+```
+
+> [!TIP]
+> This safely strips the `com.apple.quarantine` extended attribute, allowing Winnie to launch immediately from Spotlight (`⌘ + Space`), Launchpad, or the Dock without security prompts.
+
+---
+
 ## Architectural Highlights
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
