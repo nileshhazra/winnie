@@ -4,11 +4,11 @@
   <p><strong>A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS</strong></p>
 
   <p>
-    <img src="assets/badges.png" width="650" alt="macOS Native • Python 3.10+ • PySide6 / Qt • v1.3.3 • MIT License" />
+    <img src="assets/badges.png" width="650" alt="macOS Native • Python 3.10+ • PySide6 / Qt • v1.4.0 • MIT License" />
   </p>
 </div>
 
-Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, 50+ built-in practice problems, multi-tab editing, and an interactive shell within a clean, modern macOS interface.
+Winnie implements a dual-process execution model inspired by educational environments like Thonny. It provides intuitive visual debugging, scope inspection, 160+ built-in practice problems, multi-tab editing, and an interactive shell within a clean, modern macOS interface.
 
 ---
 
@@ -18,7 +18,7 @@ Winnie implements a dual-process execution model inspired by educational environ
 Statement-by-statement runtime execution tracking with real-time instruction pointer highlights and dynamic variable inspection table.
 ![Visual Step Debugger](assets/winnie-dark-showcase.png)
 
-### 50+ Curated Practice Problems & Big-O Complexity Curves
+### 160+ Curated Practice Problems & Big-O Complexity Curves
 Interactive data structure challenges (Graphs, Trees, Linked Lists, Recursion, Sliding Window) with animated Big-O curves and reference solutions.
 ![Winnie Practice Problems](assets/winnie-problems-showcase.png)
 
@@ -66,7 +66,7 @@ xattr -cr /Applications/Winnie.app
 
 - **Visual Step Debugger**: Integrates directly with Python's runtime trace facility (`sys.settrace`) to provide statement-by-statement execution. Highlights the active instruction pointer in real-time and updates local/global scopes synchronously.
 - **Multi-Tab Code Editor**: Full multi-file editing support with sleek tab navigation, drag re-ordering, inline `+` tab creation, and monochromatic close buttons.
-- **50+ Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, Hash Maps, Graphs, and Sliding Window, complete with interactive Big-O complexity charts and reference solutions.
+- **160+ Practice Problems**: Built-in coding problems spanning Basics, Recursion, Linked Lists, Binary Trees, Hash Maps, Graphs, and Sliding Window, complete with interactive Big-O complexity charts and reference solutions.
 - **Beginner Error Assistant**: Automatic traceback analysis engine. Intercepts runtime exceptions, highlights offending source lines, and translates technical errors into plain-English explanations with actionable fix suggestions.
 - **Graphical Package Manager**: Integrated pip GUI dialog for searching, installing, and uninstalling PyPI packages directly into the active Python environment with real-time log streaming.
 - **Process-Isolated Execution Engine**: User code executes within an independent worker process managed via `QProcess`. Infinite loops, uncaught exceptions, and forced exits (`sys.exit()`) do not compromise the IDE interface or runtime state.

@@ -169,7 +169,7 @@ class AboutDialog(QDialog):
         title_label.setStyleSheet(f"color: {theme['brand_color']};")
         name_badge_layout.addWidget(title_label)
 
-        version_badge = QLabel("v1.3.3")
+        version_badge = QLabel("v1.4.0")
         version_badge.setFont(QFont("SF Pro Text", 10, QFont.Weight.Bold))
         version_badge.setStyleSheet(f"""
             background-color: {theme['btn_clear_bg']};
@@ -196,13 +196,6 @@ class AboutDialog(QDialog):
         divider.setFrameShadow(QFrame.Shadow.Plain)
         divider.setStyleSheet(f"background-color: {theme['border_color']}; border: none; max-height: 1px;")
         main_layout.addWidget(divider)
-
-        # 5. Author / "Made with love" credit
-        author_label = QLabel("Made with ❤️ by Nilesh Hazra")
-        author_label.setFont(QFont("SF Pro Text", 12, QFont.Weight.Medium))
-        author_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        author_label.setStyleSheet(f"color: {theme['editor_text']}; margin-top: 2px; margin-bottom: 2px;")
-        main_layout.addWidget(author_label)
 
         # 6. Monochromatic Social Links
         socials_layout = QVBoxLayout()
