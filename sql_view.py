@@ -52,7 +52,19 @@ from sql_highlighter import SqlHighlighter
 from sql_engine import SqlEngine, QueryResult
 from sql_challenges import SQL_CHALLENGES, get_challenges_by_schema, verify_challenge_solution
 from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
-from icons import render_svg_icon, RUN_SVG, CLEAR_SVG, DATABASE_SVG, LIGHTNING_SVG, TABLE_SVG
+from icons import (
+    render_svg_icon,
+    RUN_SVG,
+    CLEAR_SVG,
+    DATABASE_SVG,
+    LIGHTNING_SVG,
+    TABLE_SVG,
+    TARGET_SVG,
+    FLOW_SVG,
+    CHECK_SVG,
+    ALERT_SVG,
+    INFO_SVG,
+)
 
 
 class SqlCodeEditor(CodeEditor):
@@ -122,7 +134,11 @@ class SqlPlaygroundWidget(QWidget):
         self.schema_combo.setFixedHeight(30)
         self.schema_combo.setMinimumWidth(190)
         for key, s_info in SqlEngine.SCHEMAS.items():
-            self.schema_combo.addItem(f"{s_info['icon']}  {s_info['name']}", key)
+            self.schema_combo.addItem(
+                render_svg_icon(DATABASE_SVG, size=13, color=self.current_theme.get("editor_text", "#FFFFFF")),
+                s_info['name'],
+                key
+            )
         self.schema_combo.currentIndexChanged.connect(self._on_schema_changed)
         toolbar_layout.addWidget(self.schema_combo)
 
@@ -200,7 +216,7 @@ class SqlPlaygroundWidget(QWidget):
         self.schema_tree.customContextMenuRequested.connect(self._show_schema_context_menu)
         schema_layout.addWidget(self.schema_tree)
 
-        self.sidebar_tabs.addTab(schema_widget, "📁 Schema")
+        self.sidebar_tabs.addTab(schema_widget, "Schema")
 
         # Tab 2: Practice Challenges
         challenges_widget = QWidget(self)
@@ -213,7 +229,7 @@ class SqlPlaygroundWidget(QWidget):
         self.challenges_tree.itemClicked.connect(self._on_challenge_selected)
         challenges_layout.addWidget(self.challenges_tree)
 
-        self.sidebar_tabs.addTab(challenges_widget, "🎯 Challenges")
+        self.sidebar_tabs.addTab(challenges_widget, "Challenges")
 
         self.main_splitter.addWidget(self.sidebar_tabs)
 
@@ -258,7 +274,7 @@ class SqlPlaygroundWidget(QWidget):
         self.results_table.verticalHeader().setDefaultSectionSize(26)
         results_layout.addWidget(self.results_table)
 
-        self.bottom_tabs.addTab(results_widget, "📊 Query Results")
+        self.bottom_tabs.addTab(results_widget, "Results")
 
         # Tab 2: Physical Query Plan (EXPLAIN QUERY PLAN)
         plan_widget = QWidget(self)
@@ -279,7 +295,7 @@ class SqlPlaygroundWidget(QWidget):
         self.plan_scroll.setWidget(self.plan_content_widget)
         plan_layout.addWidget(self.plan_scroll)
 
-        self.bottom_tabs.addTab(plan_widget, "⚡ Physical Plan")
+        self.bottom_tabs.addTab(plan_widget, "Physical Plan")
 
         # Tab 3: Logical Order of Execution Pipeline
         logical_widget = QWidget(self)
@@ -308,7 +324,7 @@ class SqlPlaygroundWidget(QWidget):
         self.logical_scroll.setWidget(self.logical_content_widget)
         logical_layout.addWidget(self.logical_scroll)
 
-        self.bottom_tabs.addTab(logical_widget, "🧩 Execution Order")
+        self.bottom_tabs.addTab(logical_widget, "Execution Order")
 
         # Tab 4: Challenge Verification & Details
         challenge_tab_widget = QWidget(self)
@@ -343,7 +359,7 @@ class SqlPlaygroundWidget(QWidget):
         self.challenge_feedback_label.setWordWrap(True)
         challenge_tab_layout.addWidget(self.challenge_feedback_label)
 
-        self.bottom_tabs.addTab(challenge_tab_widget, "💡 Challenge Details")
+        self.bottom_tabs.addTab(challenge_tab_widget, "Challenge Details")
 
         self.workspace_splitter.addWidget(self.bottom_tabs)
 
@@ -484,7 +500,7 @@ class SqlPlaygroundWidget(QWidget):
         if not ch:
             return
         self.active_challenge = ch
-        self.challenge_title_label.setText(f"🎯 {ch['title']} ({ch['difficulty']})")
+        self.challenge_title_label.setText(f"{ch['title']}  •  {ch['difficulty']}")
         self.challenge_story_text.setPlainText(ch["story"])
         self.challenge_feedback_label.setText("Click 'Verify Solution' when ready to test.")
         self.challenge_feedback_label.setStyleSheet("")
@@ -495,7 +511,7 @@ class SqlPlaygroundWidget(QWidget):
         if not self.active_challenge:
             return
         hint = self.active_challenge.get("hint", "No hint available.")
-        self.challenge_feedback_label.setText(f"💡 Hint: {hint}")
+        self.challenge_feedback_label.setText(f"Hint: {hint}")
         self.challenge_feedback_label.setStyleSheet(f"color: {self.current_theme.get('accent_warning', '#F59E0B')};")
 
     def verify_active_challenge(self):
@@ -509,11 +525,11 @@ class SqlPlaygroundWidget(QWidget):
 
         if result["passed"]:
             opt_tip = self.active_challenge.get("optimization_tip", "")
-            msg = f"🎉 ALL TESTS PASSED! Great job!\n\nExecution Insight: {opt_tip}"
+            msg = f"All tests passed successfully.\n\nOptimization Insight: {opt_tip}"
             self.challenge_feedback_label.setText(msg)
             self.challenge_feedback_label.setStyleSheet("color: #10B981; font-weight: bold;")
         else:
-            self.challenge_feedback_label.setText(f"❌ Test Failed: {result['error']}")
+            self.challenge_feedback_label.setText(f"Test Failed: {result['error']}")
             self.challenge_feedback_label.setStyleSheet("color: #EF4444; font-weight: bold;")
 
         # Also display user query results in Tab 1
@@ -538,7 +554,7 @@ class SqlPlaygroundWidget(QWidget):
     def _render_query_results(self, result: QueryResult):
         """Renders query result columns and rows into QTableWidget."""
         if not result.is_success:
-            self.results_status_bar.setText(f"❌ Error: {result.error}")
+            self.results_status_bar.setText(f"Error: {result.error}")
             self.results_status_bar.setStyleSheet("color: #EF4444; font-weight: bold;")
             self.results_table.clear()
             self.results_table.setRowCount(0)
@@ -546,7 +562,7 @@ class SqlPlaygroundWidget(QWidget):
             return
 
         status_text = (
-            f"✅ Success • {result.row_count} row(s) returned • "
+            f"Success • {result.row_count} row(s) returned • "
             f"Executed in {result.execution_time_ms:.2f} ms"
         )
         self.results_status_bar.setText(status_text)
@@ -618,18 +634,20 @@ class SqlPlaygroundWidget(QWidget):
 
             header_row = QHBoxLayout()
             badge_label = QLabel(node["badge"], card)
-            badge_label.setFont(QFont("-apple-system", 11, QFont.Weight.Bold))
+            badge_label.setFont(QFont("-apple-system", 10, QFont.Weight.Bold))
 
-            # Color badge
+            # Modern minimal badge tag styling
             cls = node.get("classification")
             if cls == "SCAN":
-                badge_label.setStyleSheet("color: #F59E0B; font-weight: bold;")
+                badge_label.setStyleSheet("color: #F59E0B; background-color: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
             elif cls in ("INDEX_SEARCH", "COVERING_INDEX"):
-                badge_label.setStyleSheet("color: #10B981; font-weight: bold;")
+                badge_label.setStyleSheet("color: #10B981; background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
             elif cls == "TEMP_BTREE":
-                badge_label.setStyleSheet("color: #A855F7; font-weight: bold;")
+                badge_label.setStyleSheet("color: #C084FC; background-color: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
+            elif cls == "ERROR":
+                badge_label.setStyleSheet("color: #EF4444; background-color: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
             else:
-                badge_label.setStyleSheet("color: #38BDF8; font-weight: bold;")
+                badge_label.setStyleSheet("color: #38BDF8; background-color: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
 
             header_row.addWidget(badge_label)
             header_row.addStretch()
@@ -717,6 +735,16 @@ class SqlPlaygroundWidget(QWidget):
     def apply_theme(self, theme: Dict[str, Any]):
         self.current_theme = theme
         self.editor.apply_theme(theme)
+
+        # Monochromatic tab icons
+        tab_icon_color = theme.get("syntax_comment", "#9CA3AF")
+        self.sidebar_tabs.setTabIcon(0, render_svg_icon(TABLE_SVG, size=13, color=tab_icon_color))
+        self.sidebar_tabs.setTabIcon(1, render_svg_icon(TARGET_SVG, size=13, color=tab_icon_color))
+
+        self.bottom_tabs.setTabIcon(0, render_svg_icon(TABLE_SVG, size=13, color=tab_icon_color))
+        self.bottom_tabs.setTabIcon(1, render_svg_icon(LIGHTNING_SVG, size=13, color=tab_icon_color))
+        self.bottom_tabs.setTabIcon(2, render_svg_icon(FLOW_SVG, size=13, color=tab_icon_color))
+        self.bottom_tabs.setTabIcon(3, render_svg_icon(INFO_SVG, size=13, color=tab_icon_color))
 
         # Style toolbar
         self.toolbar.setStyleSheet(f"""

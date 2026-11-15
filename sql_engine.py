@@ -40,17 +40,17 @@ class SqlEngine:
     SCHEMAS = {
         "ecommerce": {
             "name": "E-Commerce & SaaS",
-            "icon": "🛒",
+            "code": "ECOM",
             "description": "Customers, Products, Categories, Orders, Order Items, Subscriptions, Payments"
         },
         "tech_hr": {
             "name": "Tech Enterprise / HR",
-            "icon": "🏢",
+            "code": "HR",
             "description": "Departments, Employees, Salaries History, Projects, Assignments, Reviews"
         },
         "fintech": {
             "name": "Fintech & Banking",
-            "icon": "💳",
+            "code": "FIN",
             "description": "Accounts, Cards, Merchants, Transactions, Fraud Alerts"
         }
     }
@@ -161,41 +161,41 @@ class SqlEngine:
 
                 # Analyze detail for educational insights
                 classification = "OTHER"
-                badge = "ℹ️ INFO"
+                badge = "INFO"
                 explanation = detail
 
                 detail_upper = detail.upper()
                 if "SCAN" in detail_upper:
                     classification = "SCAN"
-                    badge = "⚠️ FULL TABLE SCAN"
+                    badge = "FULL TABLE SCAN"
                     explanation = (
                         f"{detail} — Reads every single row in the table sequentially without an index. "
                         f"For large production tables, this is an O(N) operation and can cause query slowdowns."
                     )
                 elif "SEARCH" in detail_upper and "USING INDEX" in detail_upper:
                     classification = "INDEX_SEARCH"
-                    badge = "⚡ INDEX SEARCH"
+                    badge = "INDEX SEARCH"
                     explanation = (
                         f"{detail} — Efficiently uses a B-Tree index to pinpoint matching rows in O(log N) time, "
                         f"skipping irrelevant records."
                     )
                 elif "SEARCH" in detail_upper and "USING COVERING INDEX" in detail_upper:
                     classification = "COVERING_INDEX"
-                    badge = "🚀 COVERING INDEX"
+                    badge = "COVERING INDEX"
                     explanation = (
                         f"{detail} — Optimal performance: All requested columns are found directly inside the index itself, "
                         f"completely avoiding table row lookups."
                     )
                 elif "USE TEMP B-TREE" in detail_upper:
                     classification = "TEMP_BTREE"
-                    badge = "🔄 TEMP B-TREE SORT"
+                    badge = "TEMP B-TREE SORT"
                     explanation = (
                         f"{detail} — SQLite must allocate a temporary in-memory B-Tree to perform an ORDER BY, "
                         f"GROUP BY, or DISTINCT operation because no pre-sorted index is available."
                     )
                 elif "COMPOUND QUERY" in detail_upper or "UNION" in detail_upper:
                     classification = "UNION"
-                    badge = "🔗 COMPOUND QUERY"
+                    badge = "COMPOUND QUERY"
                     explanation = f"{detail} — Combines results from multiple subqueries."
 
                 plan_nodes.append({
@@ -215,7 +215,7 @@ class SqlEngine:
                 "parent": 0,
                 "detail": f"Could not generate query plan: {e}",
                 "classification": "ERROR",
-                "badge": "❌ ERROR",
+                "badge": "ERROR",
                 "explanation": str(e)
             }]
 

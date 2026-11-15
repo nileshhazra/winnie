@@ -182,6 +182,40 @@ TABLE_SVG = """
 </svg>
 """
 
+# 15. Target / Challenge Icon
+TARGET_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="12" cy="12" r="10"/>
+  <circle cx="12" cy="12" r="6"/>
+  <circle cx="12" cy="12" r="2"/>
+</svg>
+"""
+
+# 16. Flow / Pipeline Icon
+FLOW_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="6" cy="6" r="3"/>
+  <circle cx="18" cy="18" r="3"/>
+  <path d="M6 9v3a6 6 0 0 0 6 6h3"/>
+</svg>
+"""
+
+# 17. Minimal Check Icon
+CHECK_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <polyline points="20 6 9 17 4 12"/>
+</svg>
+"""
+
+# 18. Minimal Alert / Warning Icon
+ALERT_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="12" cy="12" r="10"/>
+  <line x1="12" y1="8" x2="12" y2="12"/>
+  <line x1="12" y1="16" x2="12.01" y2="16"/>
+</svg>
+"""
+
 def render_svg_icon(svg_str: str, size: int = 18, color: str = "#ffffff") -> QIcon:
     """Renders an SVG string into a crisp, color-tinted QIcon with Retina support."""
     colored_svg = svg_str.replace("currentColor", color)
