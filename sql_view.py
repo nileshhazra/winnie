@@ -3,11 +3,12 @@ SQL Playground UI Widget for Winnie.
 Features:
 - Multi-schema enterprise database selection (E-Commerce & SaaS, Tech HR, Fintech)
 - Interactive Schema Explorer with column definitions, keys, and 1-click sample data previews
+- Structured Step-by-Step Learning Plan / Curriculum with code examples and 1-click load into editor
 - SQL Editor with syntax highlighting (SqlHighlighter) and execution shortcuts (Cmd+Enter)
 - Query Results table with execution metrics (ms, row count)
 - Physical Query Plan visualizer (parsing SQLite EXPLAIN QUERY PLAN into Scan vs Index trees)
 - Logical Execution Order pipeline (FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY -> LIMIT)
-- Interactive Graded Practice Challenges with automated solution validation
+- Dynamic Font Zoom (Cmd + =, Cmd + -) across editor, results, and curriculum views
 - Dynamic Honey Dark & Honey Light theme support
 """
 
@@ -50,7 +51,12 @@ from PySide6.QtCore import Qt, Signal, QSize
 from editor import CodeEditor
 from sql_highlighter import SqlHighlighter
 from sql_engine import SqlEngine, QueryResult
-from sql_challenges import SQL_CHALLENGES, get_challenges_by_schema, verify_challenge_solution
+from sql_curriculum import (
+    SQL_CURRICULUM,
+    get_curriculum_modules,
+    get_topics_for_module,
+    get_topic_by_id,
+)
 from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 from icons import (
     render_svg_icon,
@@ -64,6 +70,8 @@ from icons import (
     CHECK_SVG,
     ALERT_SVG,
     INFO_SVG,
+    BOOK_SVG,
+    COPY_SVG,
 )
 
 
@@ -101,25 +109,29 @@ class SqlPlaygroundWidget(QWidget):
     """Complete SQL Playground interface embedded inside Winnie."""
 
     exit_requested = Signal()
+    zoom_in_requested = Signal()
+    zoom_out_requested = Signal()
+    reset_zoom_requested = Signal()
 
     def __init__(self, parent=None, theme=DARK_THEME):
         super().__init__(parent)
         self.current_theme = theme
+        self.font_size = 13
         self.engine = SqlEngine("ecommerce")
-        self.active_challenge: Optional[Dict[str, Any]] = None
+        self.active_topic: Optional[Dict[str, Any]] = None
         self._last_plan_nodes: List[Dict[str, Any]] = []
         self._last_logical_steps: List[Dict[str, str]] = []
 
         self._init_ui()
         self.apply_theme(self.current_theme)
         self.refresh_schema_browser()
-        self.refresh_challenges_list()
+        self.refresh_curriculum_list()
 
     def _is_light_theme(self) -> bool:
         """Determines if the active theme is light mode."""
         return (
             self.current_theme.get("name") == "light"
-            or str(self.current_theme.get("window_bg", "")).lower() in ("#f4f4f5", "#ffffff")
+            or self.current_theme.get("window_bg", "").upper() in ("#F9F9FB", "#FFFFFF")
         )
 
     def _init_ui(self):
@@ -127,118 +139,230 @@ class SqlPlaygroundWidget(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # 1. Top Action Toolbar
+        # ---------------------------------------------------------------------
+        # 1. Top SQL Toolbar
+        # ---------------------------------------------------------------------
         self.toolbar = QWidget(self)
-        self.toolbar.setFixedHeight(48)
+        self.toolbar.setFixedHeight(46)
         toolbar_layout = QHBoxLayout(self.toolbar)
-        toolbar_layout.setContentsMargins(14, 6, 14, 6)
+        toolbar_layout.setContentsMargins(12, 6, 12, 6)
         toolbar_layout.setSpacing(10)
 
-        # Database Schema Selector
-        schema_label = QLabel("Schema:", self)
-        schema_label.setFont(QFont("-apple-system", 12, QFont.Weight.DemiBold))
+        # Schema Selection Dropdown
+        schema_label = QLabel("Schema:", self.toolbar)
+        schema_label.setFont(QFont("-apple-system", 11, QFont.Weight.Bold))
         toolbar_layout.addWidget(schema_label)
 
-        self.schema_combo = QComboBox(self)
-        self.schema_combo.setFixedHeight(30)
-        self.schema_combo.setMinimumWidth(190)
-        for key, s_info in SqlEngine.SCHEMAS.items():
-            self.schema_combo.addItem(
-                render_svg_icon(DATABASE_SVG, size=13, color=self.current_theme.get("editor_text", "#FFFFFF")),
-                s_info['name'],
-                key
-            )
+        self.schema_combo = QComboBox(self.toolbar)
+        self.schema_combo.setFixedHeight(28)
+        self.schema_combo.setFont(QFont("-apple-system", 11))
+        for key, info in SqlEngine.SCHEMAS.items():
+            self.schema_combo.addItem(render_svg_icon(DATABASE_SVG, size=13, color="#F59E0B"), info["name"], key)
         self.schema_combo.currentIndexChanged.connect(self._on_schema_changed)
         toolbar_layout.addWidget(self.schema_combo)
 
-        # Separator
-        sep1 = QFrame(self)
-        sep1.setFrameShape(QFrame.Shape.VLine)
-        sep1.setFrameShadow(QFrame.Shadow.Sunken)
-        toolbar_layout.addWidget(sep1)
+        toolbar_layout.addSpacing(10)
 
-        # Action: Run Query Button
-        self.run_btn = QPushButton(" Run Query", self)
-        self.run_btn.setFixedHeight(32)
-        self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=14, color="#111827"))
-        self.run_btn.setToolTip("Execute SQL Query (⌘Return)")
+        # Run Query Button (Primary Action)
+        self.run_btn = QPushButton(" Run Query", self.toolbar)
+        self.run_btn.setFixedHeight(28)
+        self.run_btn.setFont(QFont("-apple-system", 11, QFont.Weight.Bold))
+        self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=14, color="#FFFFFF"))
+        self.run_btn.setToolTip("Execute SQL query (Cmd+Enter / Ctrl+Enter)")
         self.run_btn.clicked.connect(self.run_current_query)
         toolbar_layout.addWidget(self.run_btn)
 
-        # Action: Explain Plan Button
-        self.explain_btn = QPushButton(" Explain Plan", self)
-        self.explain_btn.setFixedHeight(32)
-        self.explain_btn.setIcon(render_svg_icon(LIGHTNING_SVG, size=14, color="#F59E0B"))
-        self.explain_btn.setToolTip("Analyze Physical & Logical Query Plan (⌘E)")
+        # Explain Plan Button
+        self.explain_btn = QPushButton(" Explain Plan", self.toolbar)
+        self.explain_btn.setFixedHeight(28)
+        self.explain_btn.setFont(QFont("-apple-system", 11))
+        self.explain_btn.setIcon(render_svg_icon(LIGHTNING_SVG, size=13, color="#F59E0B"))
+        self.explain_btn.setToolTip("Inspect Physical Plan & Execution Order (Cmd+E)")
         self.explain_btn.clicked.connect(self.explain_current_query)
         toolbar_layout.addWidget(self.explain_btn)
 
-        # Action: Reset Database Button
-        self.reset_btn = QPushButton(" Reset DB", self)
-        self.reset_btn.setFixedHeight(32)
-        self.reset_btn.setToolTip("Reset currently active schema to original seed state")
+        # Reset Database Button
+        self.reset_btn = QPushButton("Reset DB", self.toolbar)
+        self.reset_btn.setFixedHeight(28)
+        self.reset_btn.setFont(QFont("-apple-system", 11))
+        self.reset_btn.setToolTip("Restore pristine seed database data")
         self.reset_btn.clicked.connect(self.reset_database)
         toolbar_layout.addWidget(self.reset_btn)
 
-        # Action: Clear Editor
-        self.clear_btn = QPushButton(" Clear", self)
-        self.clear_btn.setFixedHeight(32)
-        self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=14, color="#9CA3AF"))
-        self.clear_btn.clicked.connect(self.clear_editor)
+        # Clear Query Button
+        self.clear_btn = QPushButton(" Clear", self.toolbar)
+        self.clear_btn.setFixedHeight(28)
+        self.clear_btn.setFont(QFont("-apple-system", 11))
+        self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=13, color="#9CA3AF"))
+        self.clear_btn.clicked.connect(lambda: self.editor.clear())
         toolbar_layout.addWidget(self.clear_btn)
 
         toolbar_layout.addStretch()
 
-        # Exit / Back to Python Button
-        self.exit_btn = QPushButton("← Back to Python IDE", self)
-        self.exit_btn.setFixedHeight(32)
+        # Switch back to Python IDE Button
+        self.exit_btn = QPushButton(" Back to Python IDE", self.toolbar)
+        self.exit_btn.setFixedHeight(28)
+        self.exit_btn.setFont(QFont("-apple-system", 11))
         self.exit_btn.clicked.connect(self.exit_requested.emit)
         toolbar_layout.addWidget(self.exit_btn)
 
         main_layout.addWidget(self.toolbar)
 
-        # 2. Main Horizontal Splitter (Sidebar on left, Workspace on right)
+        # ---------------------------------------------------------------------
+        # 2. Main Workspace Splitter (Left Sidebar vs Right Work Area)
+        # ---------------------------------------------------------------------
         self.main_splitter = QSplitter(Qt.Orientation.Horizontal, self)
         self.main_splitter.setHandleWidth(1)
 
-        # Left Sidebar (Schema Explorer & Challenges Tabs)
+        # Left Sidebar Tabs: Schema Explorer & Learning Plan
         self.sidebar_tabs = QTabWidget(self)
-        self.sidebar_tabs.setMinimumWidth(260)
-        self.sidebar_tabs.setMaximumWidth(420)
+        self.sidebar_tabs.setTabPosition(QTabWidget.TabPosition.North)
 
-        # Tab 1: Schema Explorer
+        # Tab 1: Database Schema Explorer
         schema_widget = QWidget(self)
         schema_layout = QVBoxLayout(schema_widget)
         schema_layout.setContentsMargins(8, 8, 8, 8)
         schema_layout.setSpacing(6)
 
-        self.schema_search = QLineEdit(self)
-        self.schema_search.setPlaceholderText("Filter tables & columns...")
-        self.schema_search.setFixedHeight(28)
-        self.schema_search.textChanged.connect(self._filter_schema_tree)
-        schema_layout.addWidget(self.schema_search)
+        self.schema_filter = QLineEdit(self)
+        self.schema_filter.setPlaceholderText("Filter tables & columns...")
+        self.schema_filter.textChanged.connect(self._filter_schema_tree)
+        schema_layout.addWidget(self.schema_filter)
 
         self.schema_tree = QTreeWidget(self)
         self.schema_tree.setHeaderHidden(True)
-        self.schema_tree.itemDoubleClicked.connect(self._on_tree_item_double_clicked)
         self.schema_tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.schema_tree.itemDoubleClicked.connect(self._on_tree_item_double_clicked)
         self.schema_tree.customContextMenuRequested.connect(self._show_schema_context_menu)
         schema_layout.addWidget(self.schema_tree)
 
         self.sidebar_tabs.addTab(schema_widget, "Schema")
 
-        # Tab 2: Practice Challenges
-        challenges_widget = QWidget(self)
-        challenges_layout = QVBoxLayout(challenges_widget)
-        challenges_layout.setContentsMargins(8, 8, 8, 8)
-        challenges_layout.setSpacing(6)
+        # Tab 2: Step-by-Step Learning Plan
+        curriculum_widget = QWidget(self)
+        curriculum_layout = QVBoxLayout(curriculum_widget)
+        curriculum_layout.setContentsMargins(8, 8, 8, 8)
+        curriculum_layout.setSpacing(6)
 
-        self.challenges_tree = QTreeWidget(self)
-        self.challenges_tree.setHeaderLabels(["Challenge", "Difficulty"])
-        self.challenges_tree.itemClicked.connect(self._on_challenge_selected)
-        challenges_layout.addWidget(self.challenges_tree)
+        self.curriculum_filter = QLineEdit(self)
+        self.curriculum_filter.setPlaceholderText("Filter learning topics...")
+        self.curriculum_filter.textChanged.connect(self._filter_curriculum_tree)
+        curriculum_layout.addWidget(self.curriculum_filter)
 
-        self.sidebar_tabs.addTab(challenges_widget, "Challenges")
+        # Splitter between topics list and topic detail/action card
+        self.curriculum_splitter = QSplitter(Qt.Orientation.Vertical, self)
+        self.curriculum_splitter.setHandleWidth(1)
+
+        self.curriculum_tree = QTreeWidget(self)
+        self.curriculum_tree.setHeaderLabels(["Curriculum Topics", "Schema"])
+        self.curriculum_tree.itemClicked.connect(self._on_topic_selected)
+        self.curriculum_splitter.addWidget(self.curriculum_tree)
+
+        # Topic Detail Panel (Scrollable Card)
+        self.topic_scroll = QScrollArea(self)
+        self.topic_scroll.setWidgetResizable(True)
+        self.topic_scroll.setFrameShape(QFrame.Shape.NoFrame)
+
+        self.topic_detail_widget = QWidget(self)
+        topic_detail_layout = QVBoxLayout(self.topic_detail_widget)
+        topic_detail_layout.setContentsMargins(10, 10, 10, 10)
+        topic_detail_layout.setSpacing(8)
+
+        # Header: Title + Schema Tag
+        self.topic_header_layout = QHBoxLayout()
+        self.topic_title_label = QLabel("Select a topic to start learning", self)
+        self.topic_title_label.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
+        self.topic_title_label.setWordWrap(True)
+        self.topic_header_layout.addWidget(self.topic_title_label, 1)
+
+        self.topic_schema_badge = QLabel("", self)
+        self.topic_schema_badge.setFont(QFont("-apple-system", 10, QFont.Weight.DemiBold))
+        self.topic_schema_badge.setStyleSheet("""
+            background: rgba(245, 158, 11, 0.15);
+            color: #F59E0B;
+            border-radius: 4px;
+            padding: 2px 6px;
+        """)
+        self.topic_header_layout.addWidget(self.topic_schema_badge)
+        topic_detail_layout.addLayout(self.topic_header_layout)
+
+        # Topic summary
+        self.topic_summary_label = QLabel("", self)
+        self.topic_summary_label.setWordWrap(True)
+        self.topic_summary_label.setFont(QFont("-apple-system", 11))
+        topic_detail_layout.addWidget(self.topic_summary_label)
+
+        # Key Takeaway Card (Enterprise Production Insight)
+        self.topic_takeaway_card = QFrame(self)
+        self.topic_takeaway_card.setObjectName("takeawayCard")
+        takeaway_layout = QVBoxLayout(self.topic_takeaway_card)
+        takeaway_layout.setContentsMargins(8, 8, 8, 8)
+        takeaway_layout.setSpacing(4)
+
+        takeaway_title = QLabel("PRODUCTION INSIGHT", self)
+        takeaway_title.setFont(QFont("-apple-system", 9, QFont.Weight.Bold))
+        takeaway_title.setStyleSheet("color: #F59E0B; letter-spacing: 0.5px;")
+        takeaway_layout.addWidget(takeaway_title)
+
+        self.topic_takeaway_text = QLabel("", self)
+        self.topic_takeaway_text.setWordWrap(True)
+        self.topic_takeaway_text.setFont(QFont("-apple-system", 11))
+        takeaway_layout.addWidget(self.topic_takeaway_text)
+        topic_detail_layout.addWidget(self.topic_takeaway_card)
+
+        # Action Buttons Row: "Copy to Editor" and "Run Query"
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(6)
+
+        self.copy_example_btn = QPushButton(" Copy to Editor", self)
+        self.copy_example_btn.setFixedHeight(28)
+        self.copy_example_btn.setFont(QFont("-apple-system", 11, QFont.Weight.DemiBold))
+        self.copy_example_btn.setIcon(render_svg_icon(COPY_SVG, size=13, color="#FFFFFF"))
+        self.copy_example_btn.clicked.connect(self.copy_active_topic_code)
+        btn_row.addWidget(self.copy_example_btn)
+
+        self.run_example_btn = QPushButton(" Run Query", self)
+        self.run_example_btn.setFixedHeight(28)
+        self.run_example_btn.setFont(QFont("-apple-system", 11, QFont.Weight.DemiBold))
+        self.run_example_btn.setStyleSheet("""
+            QPushButton {
+                background: #F59E0B;
+                color: #000000;
+                font-weight: 600;
+                border: none;
+                border-radius: 5px;
+                padding: 4px 10px;
+            }
+            QPushButton:hover {
+                background: #FBBF24;
+            }
+        """)
+        self.run_example_btn.setIcon(render_svg_icon(RUN_SVG, size=13, color="#000000"))
+        self.run_example_btn.clicked.connect(self.run_active_topic_code)
+        btn_row.addWidget(self.run_example_btn)
+
+        topic_detail_layout.addLayout(btn_row)
+
+        # Code Example Preview (Read-only styled snippet)
+        code_label = QLabel("CODE EXAMPLE", self)
+        code_label.setFont(QFont("-apple-system", 9, QFont.Weight.Bold))
+        code_label.setStyleSheet("color: #71717A; letter-spacing: 0.5px;")
+        topic_detail_layout.addWidget(code_label)
+
+        self.topic_code_preview = QTextEdit(self)
+        self.topic_code_preview.setReadOnly(True)
+        self.topic_code_preview.setFont(get_code_font(11))
+        self.topic_code_preview.setFixedHeight(115)
+        topic_detail_layout.addWidget(self.topic_code_preview)
+
+        topic_detail_layout.addStretch()
+        self.topic_scroll.setWidget(self.topic_detail_widget)
+        self.curriculum_splitter.addWidget(self.topic_scroll)
+
+        self.curriculum_splitter.setSizes([260, 300])
+        curriculum_layout.addWidget(self.curriculum_splitter)
+
+        self.sidebar_tabs.addTab(curriculum_widget, "Learning Plan")
 
         self.main_splitter.addWidget(self.sidebar_tabs)
 
@@ -248,47 +372,49 @@ class SqlPlaygroundWidget(QWidget):
 
         # SQL Editor
         self.editor = SqlCodeEditor(self, theme=self.current_theme)
-        default_welcome_sql = (
-            "-- Welcome to Winnie SQL Playground!\n"
-            "-- In-Memory SQLite with rich enterprise schemas.\n"
-            "-- Press Cmd+Enter (Ctrl+Enter) to run queries.\n\n"
-            "SELECT \n"
-            "  c.name AS category_name,\n"
-            "  COUNT(p.product_id) AS total_products,\n"
-            "  ROUND(AVG(p.price), 2) AS avg_product_price\n"
-            "FROM categories c\n"
-            "LEFT JOIN products p ON c.category_id = p.category_id\n"
-            "GROUP BY c.name\n"
-            "ORDER BY total_products DESC;\n"
-        )
+        default_welcome_sql = """-- Welcome to Winnie SQL Playground!
+-- In-Memory SQLite with rich enterprise schemas.
+-- Press Cmd+Enter (Ctrl+Enter) to run queries.
+
+SELECT 
+  c.name AS category_name,
+  COUNT(p.product_id) AS total_products,
+  ROUND(AVG(p.price), 2) AS avg_product_price
+FROM categories c
+LEFT JOIN products p ON c.category_id = p.category_id
+GROUP BY c.name
+ORDER BY total_products DESC;
+"""
         self.editor.setPlainText(default_welcome_sql)
         self.workspace_splitter.addWidget(self.editor)
 
-        # Bottom Inspector / Results Tab Widget
+        # Bottom Dock (Tabs: Results, Physical Plan, Execution Order)
         self.bottom_tabs = QTabWidget(self)
+        self.bottom_tabs.setTabPosition(QTabWidget.TabPosition.North)
 
         # Tab 1: Query Results
         results_widget = QWidget(self)
         results_layout = QVBoxLayout(results_widget)
         results_layout.setContentsMargins(6, 6, 6, 6)
-        results_layout.setSpacing(4)
+        results_layout.setSpacing(6)
 
-        self.results_status_bar = QLabel("Ready to execute query.", self)
+        self.results_status_bar = QLabel("Ready. Write or select a query to execute.", self)
         self.results_status_bar.setFont(QFont("-apple-system", 11))
         results_layout.addWidget(self.results_status_bar)
 
         self.results_table = QTableWidget(self)
+        self.results_table.setFont(get_code_font(12))
         self.results_table.setAlternatingRowColors(True)
+        self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         self.results_table.horizontalHeader().setStretchLastSection(True)
-        self.results_table.verticalHeader().setDefaultSectionSize(26)
         results_layout.addWidget(self.results_table)
 
         self.bottom_tabs.addTab(results_widget, "Results")
 
-        # Tab 2: Physical Query Plan (EXPLAIN QUERY PLAN)
+        # Tab 2: Physical Query Plan (Scan vs Index Analysis)
         plan_widget = QWidget(self)
         plan_layout = QVBoxLayout(plan_widget)
-        plan_layout.setContentsMargins(12, 12, 12, 12)
+        plan_layout.setContentsMargins(10, 10, 10, 10)
         plan_layout.setSpacing(8)
 
         self.plan_header = QLabel("Physical Query Plan & Optimization Analysis (EXPLAIN QUERY PLAN)", self)
@@ -297,6 +423,8 @@ class SqlPlaygroundWidget(QWidget):
 
         self.plan_scroll = QScrollArea(self)
         self.plan_scroll.setWidgetResizable(True)
+        self.plan_scroll.setFrameShape(QFrame.Shape.NoFrame)
+
         self.plan_content_widget = QWidget(self)
         self.plan_content_widget.setObjectName("planContentWidget")
         self.plan_content_layout = QVBoxLayout(self.plan_content_widget)
@@ -310,7 +438,7 @@ class SqlPlaygroundWidget(QWidget):
         # Tab 3: Logical Order of Execution Pipeline
         logical_widget = QWidget(self)
         logical_layout = QVBoxLayout(logical_widget)
-        logical_layout.setContentsMargins(12, 12, 12, 12)
+        logical_layout.setContentsMargins(10, 10, 10, 10)
         logical_layout.setSpacing(8)
 
         self.logical_header = QLabel("Logical Order of Execution Pipeline", self)
@@ -318,7 +446,8 @@ class SqlPlaygroundWidget(QWidget):
         logical_layout.addWidget(self.logical_header)
 
         self.logical_sub = QLabel(
-            "SQL is declarative: while you write SELECT first, the engine evaluates FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
+            "SQL is declarative: while you write SELECT first, the engine evaluates "
+            "FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
             self
         )
         self.logical_sub.setFont(QFont("-apple-system", 11))
@@ -327,6 +456,8 @@ class SqlPlaygroundWidget(QWidget):
 
         self.logical_scroll = QScrollArea(self)
         self.logical_scroll.setWidgetResizable(True)
+        self.logical_scroll.setFrameShape(QFrame.Shape.NoFrame)
+
         self.logical_content_widget = QWidget(self)
         self.logical_content_widget.setObjectName("logicalContentWidget")
         self.logical_content_layout = QVBoxLayout(self.logical_content_widget)
@@ -337,41 +468,6 @@ class SqlPlaygroundWidget(QWidget):
 
         self.bottom_tabs.addTab(logical_widget, "Execution Order")
 
-        # Tab 4: Challenge Verification & Details
-        challenge_tab_widget = QWidget(self)
-        challenge_tab_layout = QVBoxLayout(challenge_tab_widget)
-        challenge_tab_layout.setContentsMargins(12, 12, 12, 12)
-        challenge_tab_layout.setSpacing(8)
-
-        self.challenge_title_label = QLabel("No active challenge selected.", self)
-        self.challenge_title_label.setFont(QFont("-apple-system", 14, QFont.Weight.Bold))
-        challenge_tab_layout.addWidget(self.challenge_title_label)
-
-        self.challenge_story_text = QTextEdit(self)
-        self.challenge_story_text.setReadOnly(True)
-        self.challenge_story_text.setFixedHeight(95)
-        challenge_tab_layout.addWidget(self.challenge_story_text)
-
-        challenge_btn_row = QHBoxLayout()
-        self.test_challenge_btn = QPushButton(" Verify Solution (Run Tests)", self)
-        self.test_challenge_btn.setFixedHeight(30)
-        self.test_challenge_btn.clicked.connect(self.verify_active_challenge)
-        challenge_btn_row.addWidget(self.test_challenge_btn)
-
-        self.show_hint_btn = QPushButton("Show Hint", self)
-        self.show_hint_btn.setFixedHeight(30)
-        self.show_hint_btn.clicked.connect(self._toggle_hint)
-        challenge_btn_row.addWidget(self.show_hint_btn)
-        challenge_btn_row.addStretch()
-        challenge_tab_layout.addLayout(challenge_btn_row)
-
-        self.challenge_feedback_label = QLabel("", self)
-        self.challenge_feedback_label.setFont(QFont("-apple-system", 11))
-        self.challenge_feedback_label.setWordWrap(True)
-        challenge_tab_layout.addWidget(self.challenge_feedback_label)
-
-        self.bottom_tabs.addTab(challenge_tab_widget, "Challenge Details")
-
         self.workspace_splitter.addWidget(self.bottom_tabs)
 
         # Set split ratios
@@ -381,7 +477,7 @@ class SqlPlaygroundWidget(QWidget):
 
         main_layout.addWidget(self.main_splitter)
 
-        # Keyboard shortcuts
+        # Keyboard shortcuts for Execution
         self.run_shortcut = QShortcut(QKeySequence("Ctrl+Return"), self)
         self.run_shortcut.activated.connect(self.run_current_query)
         self.run_mac_shortcut = QShortcut(QKeySequence("Meta+Return"), self)
@@ -390,15 +486,56 @@ class SqlPlaygroundWidget(QWidget):
         self.explain_shortcut = QShortcut(QKeySequence("Meta+E"), self)
         self.explain_shortcut.activated.connect(self.explain_current_query)
 
+        # Keyboard shortcuts for Font Zoom (Cmd+=, Cmd+-, Cmd+0)
+        self.shortcut_zoom_in1 = QShortcut(QKeySequence("Ctrl++"), self)
+        self.shortcut_zoom_in1.activated.connect(self.zoom_in_requested.emit)
+        self.shortcut_zoom_in2 = QShortcut(QKeySequence("Ctrl+="), self)
+        self.shortcut_zoom_in2.activated.connect(self.zoom_in_requested.emit)
+        self.shortcut_zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        self.shortcut_zoom_out.activated.connect(self.zoom_out_requested.emit)
+        self.shortcut_zoom_reset = QShortcut(QKeySequence("Ctrl+0"), self)
+        self.shortcut_zoom_reset.activated.connect(self.reset_zoom_requested.emit)
+
     # -------------------------------------------------------------------------
-    # Schema Browser & Challenges Management
+    # Font Zoom Handling
+    # -------------------------------------------------------------------------
+
+    def apply_font_size(self, size: int):
+        """Applies dynamic font size across the SQL editor, results table, and curriculum."""
+        self.font_size = size
+
+        # 1. Update SQL Editor font & line numbers
+        editor_font = get_code_font(size)
+        self.editor.setFont(editor_font)
+        self.editor.document().setDefaultFont(editor_font)
+        self.editor.update_line_number_area_width(0)
+        self.editor.line_number_area.update()
+
+        # 2. Update Results Table font
+        table_font = get_code_font(max(10, size - 1))
+        self.results_table.setFont(table_font)
+        self.results_table.horizontalHeader().setFont(table_font)
+        self.results_table.resizeRowsToContents()
+
+        # 3. Update Curriculum Code Preview font
+        if hasattr(self, "topic_code_preview") and self.topic_code_preview:
+            preview_font = get_code_font(max(10, size - 2))
+            self.topic_code_preview.setFont(preview_font)
+
+        # 4. Update Schema & Curriculum Tree fonts
+        tree_font = QFont("-apple-system", max(10, size - 2))
+        self.schema_tree.setFont(tree_font)
+        if hasattr(self, "curriculum_tree") and self.curriculum_tree:
+            self.curriculum_tree.setFont(tree_font)
+
+    # -------------------------------------------------------------------------
+    # Schema Browser Management
     # -------------------------------------------------------------------------
 
     def _on_schema_changed(self, index: int):
         schema_key = self.schema_combo.currentData()
         self.engine.load_schema(schema_key)
         self.refresh_schema_browser()
-        self.refresh_challenges_list()
         self.results_status_bar.setText(f"Switched to schema: {SqlEngine.SCHEMAS[schema_key]['name']} (DB reloaded).")
 
     def reset_database(self):
@@ -483,69 +620,111 @@ class SqlPlaygroundWidget(QWidget):
             elif selected == act_copy:
                 QApplication.clipboard().setText(table_name)
 
-    def refresh_challenges_list(self):
-        """Populates the challenges tree for the active schema."""
-        self.challenges_tree.clear()
-        schema_key = self.schema_combo.currentData()
-        challenges = get_challenges_by_schema(schema_key)
+    # -------------------------------------------------------------------------
+    # Curriculum / Learning Plan Management
+    # -------------------------------------------------------------------------
 
-        for ch in challenges:
-            item = QTreeWidgetItem([ch["title"], ch["difficulty"]])
-            item.setData(0, Qt.ItemDataRole.UserRole, ch)
+    def refresh_curriculum_list(self):
+        """Populates the curriculum tree grouped by modules with topics as children."""
+        self.curriculum_tree.clear()
+        modules = get_curriculum_modules()
 
-            # Color difficulty column
-            diff = ch["difficulty"]
-            if diff == "Easy":
-                item.setForeground(1, QColor("#10B981"))
-            elif diff == "Medium":
-                item.setForeground(1, QColor("#F59E0B"))
-            elif diff == "Hard":
-                item.setForeground(1, QColor("#EF4444"))
+        schema_labels = {
+            "ecommerce": "E-Commerce",
+            "tech_hr": "Tech HR",
+            "fintech": "Fintech"
+        }
 
-            self.challenges_tree.addTopLevelItem(item)
+        for module_name in modules:
+            mod_item = QTreeWidgetItem([module_name, ""])
+            mod_item.setFont(0, QFont("-apple-system", 11, QFont.Weight.Bold))
+            mod_item.setFlags(mod_item.flags() & ~Qt.ItemFlag.ItemIsSelectable)
 
-        self.challenges_tree.resizeColumnToContents(0)
+            topics = get_topics_for_module(module_name)
+            for t in topics:
+                schema_name = schema_labels.get(t.get("schema", ""), "")
+                topic_item = QTreeWidgetItem([t["title"], schema_name])
+                topic_item.setData(0, Qt.ItemDataRole.UserRole, t["id"])
+                topic_item.setFont(0, QFont("-apple-system", 11))
+                topic_item.setFont(1, QFont("-apple-system", 10))
+                mod_item.addChild(topic_item)
 
-    def _on_challenge_selected(self, item: QTreeWidgetItem, column: int):
-        ch = item.data(0, Qt.ItemDataRole.UserRole)
-        if not ch:
+            self.curriculum_tree.addTopLevelItem(mod_item)
+
+        self.curriculum_tree.expandAll()
+        self.curriculum_tree.resizeColumnToContents(0)
+
+        # Select first topic by default
+        if self.curriculum_tree.topLevelItemCount() > 0:
+            first_mod = self.curriculum_tree.topLevelItem(0)
+            if first_mod.childCount() > 0:
+                first_topic_item = first_mod.child(0)
+                self.curriculum_tree.setCurrentItem(first_topic_item)
+                self._on_topic_selected(first_topic_item, 0)
+
+    def _filter_curriculum_tree(self, filter_text: str):
+        query = filter_text.strip().lower()
+        for i in range(self.curriculum_tree.topLevelItemCount()):
+            mod_item = self.curriculum_tree.topLevelItem(i)
+            mod_match = query in mod_item.text(0).lower()
+            any_child_match = False
+
+            for j in range(mod_item.childCount()):
+                topic_item = mod_item.child(j)
+                topic_match = (
+                    query in topic_item.text(0).lower()
+                    or query in topic_item.text(1).lower()
+                )
+                topic_item.setHidden(not (query == "" or topic_match or mod_match))
+                if topic_match:
+                    any_child_match = True
+
+            mod_item.setHidden(not (query == "" or mod_match or any_child_match))
+
+    def _on_topic_selected(self, item: QTreeWidgetItem, column: int):
+        topic_id = item.data(0, Qt.ItemDataRole.UserRole)
+        if not topic_id:
             return
-        self.active_challenge = ch
-        self.challenge_title_label.setText(f"{ch['title']}  •  {ch['difficulty']}")
-        self.challenge_story_text.setPlainText(ch["story"])
-        self.challenge_feedback_label.setText("Click 'Verify Solution' when ready to test.")
-        self.challenge_feedback_label.setStyleSheet("")
-        self.editor.setPlainText(ch["initial_sql"])
-        self.bottom_tabs.setCurrentIndex(3)  # Switch to Challenge Details tab
-
-    def _toggle_hint(self):
-        if not self.active_challenge:
-            return
-        hint = self.active_challenge.get("hint", "No hint available.")
-        self.challenge_feedback_label.setText(f"Hint: {hint}")
-        self.challenge_feedback_label.setStyleSheet(f"color: {self.current_theme.get('accent_warning', '#F59E0B')};")
-
-    def verify_active_challenge(self):
-        """Executes the user's current query and compares output with expected solution."""
-        if not self.active_challenge:
-            self.challenge_feedback_label.setText("Please select a challenge first from the left sidebar.")
+        topic = get_topic_by_id(topic_id)
+        if not topic:
             return
 
-        user_sql = self.editor.toPlainText().strip()
-        result = verify_challenge_solution(self.engine, user_sql, self.active_challenge)
+        self.active_topic = topic
+        self.topic_title_label.setText(topic["title"])
 
-        if result["passed"]:
-            opt_tip = self.active_challenge.get("optimization_tip", "")
-            msg = f"All tests passed successfully.\n\nOptimization Insight: {opt_tip}"
-            self.challenge_feedback_label.setText(msg)
-            self.challenge_feedback_label.setStyleSheet("color: #10B981; font-weight: bold;")
-        else:
-            self.challenge_feedback_label.setText(f"Test Failed: {result['error']}")
-            self.challenge_feedback_label.setStyleSheet("color: #EF4444; font-weight: bold;")
+        schema_labels = {
+            "ecommerce": "E-Commerce & SaaS",
+            "tech_hr": "Tech HR",
+            "fintech": "Fintech"
+        }
+        self.topic_schema_badge.setText(schema_labels.get(topic.get("schema", "ecommerce"), "DB"))
+        self.topic_summary_label.setText(topic["summary"])
+        self.topic_takeaway_text.setText(topic["takeaway"])
+        self.topic_code_preview.setPlainText(topic["code_example"])
 
-        # Also display user query results in Tab 1
-        if result.get("user_res") and result["user_res"].is_success:
-            self._render_query_results(result["user_res"])
+    def copy_active_topic_code(self):
+        """Copies the active topic SQL example into the SQL editor, matching the target schema."""
+        if not self.active_topic:
+            return
+
+        # Ensure schema matches topic target
+        target_schema = self.active_topic.get("schema")
+        if target_schema:
+            idx = self.schema_combo.findData(target_schema)
+            if idx != -1 and idx != self.schema_combo.currentIndex():
+                self.schema_combo.setCurrentIndex(idx)
+
+        self.editor.setPlainText(self.active_topic["code_example"])
+        self.editor.setFocus()
+        self.results_status_bar.setText(
+            f"Loaded '{self.active_topic['title']}' example into editor. Press Cmd+Enter to run."
+        )
+
+    def run_active_topic_code(self):
+        """Loads and immediately executes the active curriculum topic code."""
+        self.copy_active_topic_code()
+        self.run_current_query()
+        self.explain_current_query()
 
     # -------------------------------------------------------------------------
     # Execution & Query Plan Visualizers
@@ -577,7 +756,9 @@ class SqlPlaygroundWidget(QWidget):
             f"Executed in {result.execution_time_ms:.2f} ms"
         )
         self.results_status_bar.setText(status_text)
-        self.results_status_bar.setStyleSheet(f"color: {self.current_theme.get('syntax_builtin', '#10B981')}; font-weight: bold;")
+        self.results_status_bar.setStyleSheet(
+            f"color: {self.current_theme.get('syntax_builtin', '#10B981')}; font-weight: bold;"
+        )
 
         self.results_table.clear()
         self.results_table.setColumnCount(len(result.columns))
@@ -680,35 +861,48 @@ class SqlPlaygroundWidget(QWidget):
                 )
             else:
                 badge_style = (
-                    "color: #0369A1; background-color: #E0F2FE; border: 1px solid #7DD3FC;" if is_light
+                    "color: #1D4ED8; background-color: #DBEAFE; border: 1px solid #93C5FD;" if is_light
                     else "color: #38BDF8; background-color: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);"
                 )
 
-            badge_label.setStyleSheet(f"{badge_style} border-radius: 4px; padding: 2px 8px; font-weight: bold;")
+            badge_label.setStyleSheet(f"""
+                QLabel {{
+                    {badge_style}
+                    border-radius: 4px;
+                    padding: 2px 8px;
+                }}
+            """)
             header_row.addWidget(badge_label)
             header_row.addStretch()
             c_layout.addLayout(header_row)
 
-            detail_label = QLabel(
-                f"<span style='color: {text_primary};'><strong>Operation:</strong> "
-                f"<code style='background-color: {code_bg}; color: {text_primary}; padding: 2px 6px; border-radius: 4px;'>{node['detail']}</code></span>",
-                card
-            )
-            detail_label.setFont(QFont(get_code_font().family(), 11))
-            c_layout.addWidget(detail_label)
+            # Raw Detail / Operation
+            op_label = QLabel(f"Operation: {node['detail']}", card)
+            op_label.setFont(QFont(get_code_font().family(), 11))
+            op_label.setStyleSheet(f"""
+                QLabel {{
+                    color: {text_primary};
+                    background-color: {code_bg};
+                    padding: 4px 6px;
+                    border-radius: 4px;
+                }}
+            """)
+            c_layout.addWidget(op_label)
 
-            expl_label = QLabel(node["explanation"], card)
-            expl_label.setFont(QFont("-apple-system", 11))
-            expl_label.setWordWrap(True)
-            expl_label.setStyleSheet(f"color: {text_secondary}; line-height: 1.45;")
-            c_layout.addWidget(expl_label)
+            # Educational Insight
+            tip_label = QLabel(node.get("explanation", node.get("insight", "")), card)
+            tip_label.setWordWrap(True)
+            tip_label.setFont(QFont("-apple-system", 11))
+            tip_label.setStyleSheet(f"color: {text_secondary};")
+            c_layout.addWidget(tip_label)
 
             self.plan_content_layout.addWidget(card)
 
         self.plan_content_layout.addStretch()
 
     def _render_logical_steps(self, logical_steps: List[Dict[str, str]]):
-        """Builds step-by-step pipeline cards showing the exact logical order of execution."""
+        """Builds ordered pipeline flow cards showing stage-by-stage logical execution."""
+        # Clear existing layout
         while self.logical_content_layout.count():
             item = self.logical_content_layout.takeAt(0)
             widget = item.widget()
@@ -716,7 +910,7 @@ class SqlPlaygroundWidget(QWidget):
                 widget.deleteLater()
 
         if not logical_steps:
-            label = QLabel("Write a SELECT query to see the logical order of execution pipeline.", self)
+            label = QLabel("Enter a valid SELECT query to see its logical execution pipeline.", self)
             label.setStyleSheet(f"color: {self.current_theme['editor_text']};")
             self.logical_content_layout.addWidget(label)
             return
@@ -726,9 +920,7 @@ class SqlPlaygroundWidget(QWidget):
         card_border = self.current_theme.get("border_color", "#E4E4E7" if is_light else "#27272A")
         text_primary = self.current_theme.get("editor_text", "#18181B" if is_light else "#F4F4F5")
         text_secondary = "#52525B" if is_light else "#A1A1AA"
-        accent_bar = "#D97706" if is_light else "#F59E0B"
         code_bg = "#F4F4F5" if is_light else "#111218"
-        code_color = "#0F766E" if is_light else "#34D399"
 
         for step in logical_steps:
             card = QFrame(self.logical_content_widget)
@@ -736,68 +928,65 @@ class SqlPlaygroundWidget(QWidget):
             card.setStyleSheet(f"""
                 QFrame {{
                     background-color: {card_bg};
-                    border-left: 4px solid {accent_bar};
-                    border-top: 1px solid {card_border};
-                    border-right: 1px solid {card_border};
-                    border-bottom: 1px solid {card_border};
+                    border: 1px solid {card_border};
+                    border-left: 4px solid #F59E0B;
                     border-radius: 6px;
                 }}
             """)
             c_layout = QVBoxLayout(card)
             c_layout.setContentsMargins(12, 10, 12, 10)
-            c_layout.setSpacing(6)
+            c_layout.setSpacing(4)
 
-            title_row = QHBoxLayout()
-            title_lbl = QLabel(f"Stage {step['stage_num']}: {step['title']}", card)
-            title_lbl.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
-            title_lbl.setStyleSheet(f"color: {accent_bar};")
-            title_row.addWidget(title_lbl)
-            title_row.addStretch()
-            c_layout.addLayout(title_row)
+            # Step Title & Stage
+            stage_title = step.get("title") or f"Stage {step.get('stage_num', 1)}: {step.get('keyword', '')}"
+            title_label = QLabel(stage_title, card)
+            title_label.setFont(QFont("-apple-system", 11, QFont.Weight.Bold))
+            title_label.setStyleSheet(f"color: {self.current_theme.get('accent_honey', '#F59E0B')};")
+            c_layout.addWidget(title_label)
 
-            desc_lbl = QLabel(step["description"], card)
-            desc_lbl.setFont(QFont("-apple-system", 11))
-            desc_lbl.setWordWrap(True)
-            desc_lbl.setStyleSheet(f"color: {text_secondary}; line-height: 1.45;")
-            c_layout.addWidget(desc_lbl)
+            # Explanation
+            exp_text = step.get("description") or step.get("explanation", "")
+            exp_label = QLabel(exp_text, card)
+            exp_label.setWordWrap(True)
+            exp_label.setFont(QFont("-apple-system", 11))
+            exp_label.setStyleSheet(f"color: {text_secondary};")
+            c_layout.addWidget(exp_label)
 
-            if step.get("snippet"):
-                snip_lbl = QLabel(
-                    f"<span style='color: {text_primary};'>Query Clause: "
-                    f"<code style='background-color: {code_bg}; color: {code_color}; padding: 3px 8px; border-radius: 4px; border: 1px solid {card_border};'>{step['snippet']}</code></span>",
-                    card
-                )
-                snip_lbl.setFont(QFont(get_code_font().family(), 11))
-                c_layout.addWidget(snip_lbl)
+            # Associated Query Clause
+            clause_text = step.get("snippet") or step.get("clause", "")
+            clause_label = QLabel(f"Query Clause: {clause_text}", card)
+            clause_label.setWordWrap(True)
+            clause_label.setFont(QFont(get_code_font().family(), 10))
+            clause_label.setStyleSheet(f"""
+                QLabel {{
+                    color: {text_primary};
+                    background-color: {code_bg};
+                    padding: 4px 6px;
+                    border-radius: 4px;
+                }}
+            """)
+            c_layout.addWidget(clause_label)
 
             self.logical_content_layout.addWidget(card)
 
         self.logical_content_layout.addStretch()
 
-    def clear_editor(self):
-        self.editor.clear()
-        self.results_table.clear()
-        self.results_table.setRowCount(0)
-        self.results_table.setColumnCount(0)
-        self.results_status_bar.setText("Editor cleared.")
-
     # -------------------------------------------------------------------------
     # Theme Application
     # -------------------------------------------------------------------------
 
-    def apply_theme(self, theme: Dict[str, Any]):
+    def apply_theme(self, theme):
         self.current_theme = theme
         self.editor.apply_theme(theme)
 
-        # Monochromatic tab icons
-        tab_icon_color = theme.get("syntax_comment", "#9CA3AF")
+        # Tab icons styling
+        tab_icon_color = "#52525B" if self._is_light_theme() else "#A1A1AA"
         self.sidebar_tabs.setTabIcon(0, render_svg_icon(TABLE_SVG, size=13, color=tab_icon_color))
-        self.sidebar_tabs.setTabIcon(1, render_svg_icon(TARGET_SVG, size=13, color=tab_icon_color))
+        self.sidebar_tabs.setTabIcon(1, render_svg_icon(BOOK_SVG, size=13, color=tab_icon_color))
 
         self.bottom_tabs.setTabIcon(0, render_svg_icon(TABLE_SVG, size=13, color=tab_icon_color))
         self.bottom_tabs.setTabIcon(1, render_svg_icon(LIGHTNING_SVG, size=13, color=tab_icon_color))
         self.bottom_tabs.setTabIcon(2, render_svg_icon(FLOW_SVG, size=13, color=tab_icon_color))
-        self.bottom_tabs.setTabIcon(3, render_svg_icon(INFO_SVG, size=13, color=tab_icon_color))
 
         # Style toolbar
         self.toolbar.setStyleSheet(f"""
@@ -928,6 +1117,38 @@ class SqlPlaygroundWidget(QWidget):
             {get_scrollbar_stylesheet(theme)}
         """)
 
+        # Update topic takeaway card and code preview styling
+        is_light = self._is_light_theme()
+        card_border = "#E4E4E7" if is_light else "#27272A"
+        preview_bg = "#F4F4F5" if is_light else "#121214"
+        text_color = theme['editor_text']
+        takeaway_bg = "rgba(245, 158, 11, 0.12)" if is_light else "rgba(245, 158, 11, 0.08)"
+        takeaway_border = "#FDE68A" if is_light else "rgba(245, 158, 11, 0.25)"
+        takeaway_text = "#78350F" if is_light else "#FDE68A"
+
+        if hasattr(self, "topic_takeaway_card") and self.topic_takeaway_card:
+            self.topic_takeaway_card.setStyleSheet(f"""
+                QFrame#takeawayCard {{
+                    background-color: {takeaway_bg};
+                    border: 1px solid {takeaway_border};
+                    border-radius: 6px;
+                }}
+            """)
+        if hasattr(self, "topic_takeaway_text") and self.topic_takeaway_text:
+            self.topic_takeaway_text.setStyleSheet(f"color: {takeaway_text};")
+        if hasattr(self, "topic_code_preview") and self.topic_code_preview:
+            self.topic_code_preview.setStyleSheet(f"""
+                QTextEdit {{
+                    background-color: {preview_bg};
+                    color: {text_color};
+                    border: 1px solid {card_border};
+                    border-radius: 6px;
+                    padding: 6px;
+                }}
+            """)
+        if hasattr(self, "copy_example_btn") and self.copy_example_btn:
+            self.copy_example_btn.setIcon(render_svg_icon(COPY_SVG, size=13, color=tab_icon_color))
+
         # Update plan & execution order header labels
         if hasattr(self, "plan_header") and self.plan_header:
             self.plan_header.setStyleSheet(f"color: {theme['editor_text']};")
@@ -950,6 +1171,8 @@ class SqlPlaygroundWidget(QWidget):
         """
         self.plan_scroll.setStyleSheet(scroll_style)
         self.logical_scroll.setStyleSheet(scroll_style)
+        if hasattr(self, "topic_scroll") and self.topic_scroll:
+            self.topic_scroll.setStyleSheet(scroll_style)
 
         # Re-render active cards with the new theme colors if present
         if hasattr(self, "_last_plan_nodes") and self._last_plan_nodes:

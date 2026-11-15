@@ -291,6 +291,9 @@ class WinnieIDE(QMainWindow):
         self.is_sql_mode = False
         self.sql_playground = SqlPlaygroundWidget(self, theme=self.current_theme)
         self.sql_playground.exit_requested.connect(self.exit_sql_mode)
+        self.sql_playground.zoom_in_requested.connect(self.zoom_in)
+        self.sql_playground.zoom_out_requested.connect(self.zoom_out)
+        self.sql_playground.reset_zoom_requested.connect(self.reset_zoom)
 
         self.content_stack = QStackedWidget(self)
         self.content_stack.addWidget(self.main_splitter)      # Index 0: Python IDE
@@ -347,16 +350,20 @@ class WinnieIDE(QMainWindow):
         self.font_size = 13
         self.apply_font_size(self.font_size)
         self.shortcut_zoom_in1 = QShortcut(QKeySequence("Ctrl++"), self)
+        self.shortcut_zoom_in1.setContext(Qt.ShortcutContext.ApplicationShortcut)
         self.shortcut_zoom_in1.activated.connect(self.zoom_in)
         self.shortcut_zoom_in2 = QShortcut(QKeySequence("Ctrl+="), self)
+        self.shortcut_zoom_in2.setContext(Qt.ShortcutContext.ApplicationShortcut)
         self.shortcut_zoom_in2.activated.connect(self.zoom_in)
 
         # Cmd + -: Zoom out font
         self.shortcut_zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        self.shortcut_zoom_out.setContext(Qt.ShortcutContext.ApplicationShortcut)
         self.shortcut_zoom_out.activated.connect(self.zoom_out)
 
         # Cmd + 0: Reset font zoom
         self.shortcut_zoom_reset = QShortcut(QKeySequence("Ctrl+0"), self)
+        self.shortcut_zoom_reset.setContext(Qt.ShortcutContext.ApplicationShortcut)
         self.shortcut_zoom_reset.activated.connect(self.reset_zoom)
 
         # Cmd + Return / Cmd + Enter: Run Code
@@ -1073,6 +1080,10 @@ class WinnieIDE(QMainWindow):
         # 4. Update Problem Views fonts (Solution code & Description examples)
         self.problem_sol_widget.apply_font_size(size)
         self.problem_desc_widget.apply_font_size(size)
+
+        # 5. Update SQL Playground font if present
+        if hasattr(self, "sql_playground") and self.sql_playground:
+            self.sql_playground.apply_font_size(size)
 
     def toggle_terminal(self):
         """Toggles the bottom terminal / console visibility (Cmd + J)."""

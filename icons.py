@@ -216,6 +216,22 @@ ALERT_SVG = """
 </svg>
 """
 
+# 19. Minimal Book / Learning Plan Icon
+BOOK_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+</svg>
+"""
+
+# 20. Minimal Clipboard / Copy Icon
+COPY_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+</svg>
+"""
+
 def render_svg_icon(svg_str: str, size: int = 18, color: str = "#ffffff") -> QIcon:
     """Renders an SVG string into a crisp, color-tinted QIcon with Retina support."""
     colored_svg = svg_str.replace("currentColor", color)
