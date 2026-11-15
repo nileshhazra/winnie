@@ -140,6 +140,10 @@ class PackageManagerDialog(QDialog):
 
     def apply_theme(self, theme):
         self.current_theme = theme
+        is_dark = theme.get("name") == "dark"
+        glass_border = theme.get("border_glass", "rgba(255, 255, 255, 0.08)" if is_dark else "rgba(0, 0, 0, 0.08)")
+        glass_highlight = theme.get("border_glass_highlight", "rgba(255, 255, 255, 0.16)" if is_dark else "rgba(0, 0, 0, 0.14)")
+
         self.setStyleSheet(f"""
             QDialog {{
                 background-color: {theme['window_bg']};
@@ -148,30 +152,33 @@ class PackageManagerDialog(QDialog):
             QLineEdit {{
                 background-color: {theme['table_bg']};
                 color: {theme['table_text']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
-                padding: 6px 10px;
+                border: 1px solid {glass_border};
+                border-radius: 12px;
+                padding: 6px 12px;
             }}
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 6px;
-                padding: 6px 12px;
+                border-radius: 12px;
+                padding: 5px 14px;
+                font-weight: 500;
             }}
             QPushButton:hover {{
                 background-color: {theme['btn_clear_hover']};
+                border: 1px solid {glass_highlight};
             }}
             QPushButton:disabled {{
                 color: #52525b;
                 background-color: transparent;
+                border-color: {glass_border};
             }}
             QTableWidget {{
                 background-color: {theme['table_bg']};
                 color: {theme['table_text']};
-                gridline-color: {theme['table_border']};
-                border: 1px solid {theme['table_border']};
-                border-radius: 6px;
+                gridline-color: {glass_border};
+                border: 1px solid {glass_border};
+                border-radius: 10px;
             }}
             QHeaderView::section {{
                 background-color: {theme['table_header_bg']};
@@ -179,36 +186,59 @@ class PackageManagerDialog(QDialog):
                 font-size: 11px;
                 font-weight: bold;
                 border: none;
-                border-bottom: 1px solid {theme['table_border']};
-                padding: 4px;
+                border-bottom: 1px solid {glass_border};
+                padding: 6px;
             }}
             QPlainTextEdit {{
                 background-color: {theme['console_bg']};
                 color: {theme['console_text']};
-                border: 1px solid {theme['console_border']};
-                border-radius: 6px;
-                padding: 6px;
+                border: 1px solid {glass_border};
+                border-radius: 10px;
+                padding: 8px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
 
-        # Install button emerald styling
-        self.install_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #10b981;
-                color: #ffffff;
-                border: none;
-                border-radius: 6px;
-                padding: 6px 16px;
-            }
-            QPushButton:hover {
-                background-color: #059669;
-            }
-            QPushButton:disabled {
-                background-color: #27272a;
-                color: #52525b;
-            }
-        """)
+        # Install button liquid glass emerald styling
+        if is_dark:
+            self.install_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.30), stop:1 rgba(5, 150, 105, 0.45));
+                    color: #6EE7B7;
+                    border: 1px solid rgba(52, 211, 153, 0.45);
+                    border-radius: 12px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                }
+                QPushButton:hover {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.50), stop:1 rgba(5, 150, 105, 0.65));
+                    color: #FFFFFF;
+                }
+                QPushButton:disabled {
+                    background-color: rgba(255, 255, 255, 0.04);
+                    color: #52525B;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                }
+            """)
+        else:
+            self.install_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #10B981, stop:1 #059669);
+                    color: #FFFFFF;
+                    border: 1px solid #047857;
+                    border-radius: 12px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                }
+                QPushButton:hover {
+                    background: #047857;
+                }
+                QPushButton:disabled {
+                    background-color: #E4E4E7;
+                    color: #A1A1AA;
+                    border: 1px solid #D4D4D8;
+                }
+            """)
 
     def refresh_installed_packages(self):
         """Runs `pip list --format=json` to fetch installed packages."""

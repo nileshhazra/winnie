@@ -10608,14 +10608,16 @@ class ProblemSolutionWidget(QWidget):
             QFrame#timePill {{
                 background-color: {theme['btn_clear_bg']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 6px;
+                border-radius: 12px;
+                padding: 2px 6px;
             }}
         """)
         self.space_pill.setStyleSheet(f"""
             QFrame#spacePill {{
                 background-color: {theme['btn_clear_bg']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 6px;
+                border-radius: 12px;
+                padding: 2px 6px;
             }}
         """)
         self.time_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600; background: transparent;")
@@ -10626,7 +10628,7 @@ class ProblemSolutionWidget(QWidget):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 6px;
+                border-radius: 12px;
                 padding: 5px 12px;
                 font-size: 11px;
             }}
@@ -10641,7 +10643,7 @@ class ProblemSolutionWidget(QWidget):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 6px;
+                border-radius: 12px;
                 padding: 4px 10px;
             }}
             QPushButton:hover {{

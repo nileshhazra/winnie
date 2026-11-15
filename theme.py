@@ -2,45 +2,75 @@ from PySide6.QtGui import QFont
 
 DARK_THEME = {
     "name": "dark",
-    "window_bg": "#18181b",
-    "border_color": "#27272a",
-    "brand_color": "#f4f4f5",
-    "btn_clear_bg": "#27272a",
-    "btn_clear_hover": "#3f3f46",
-    "btn_clear_text": "#d4d4d8",
-    "btn_clear_border": "#3f3f46",
+    # macOS Liquid Glass Canvas & Surfaces
+    "window_bg": "#0e0f12",
+    "surface_glass": "rgba(255, 255, 255, 0.05)",
+    "surface_glass_hover": "rgba(255, 255, 255, 0.09)",
+    "surface_glass_active": "rgba(255, 255, 255, 0.13)",
+    "border_color": "rgba(255, 255, 255, 0.08)",
+    "border_glass": "rgba(255, 255, 255, 0.08)",
+    "border_glass_highlight": "rgba(255, 255, 255, 0.16)",
+    "brand_color": "#ffffff",
     
-    # Editor
-    "editor_bg": "#141416",
-    "editor_text": "#e4e4e7",
-    "editor_selection": "#2e384d",
-    "gutter_bg": "#18181b",
-    "gutter_border": "#27272a",
+    # Liquid Glass Pill Buttons
+    "btn_clear_bg": "rgba(255, 255, 255, 0.05)",
+    "btn_clear_hover": "rgba(255, 255, 255, 0.10)",
+    "btn_clear_text": "#e4e4e7",
+    "btn_clear_border": "rgba(255, 255, 255, 0.09)",
+    
+    # Accent Glass Highlights
+    "accent_emerald": "#10b981",
+    "accent_emerald_glass": "rgba(16, 185, 129, 0.22)",
+    "accent_emerald_border": "rgba(52, 211, 153, 0.45)",
+    "accent_emerald_text": "#6ee7b7",
+
+    "accent_amber": "#f59e0b",
+    "accent_honey": "#f59e0b",
+    "accent_amber_glass": "rgba(245, 158, 11, 0.20)",
+    "accent_amber_border": "rgba(251, 191, 36, 0.45)",
+    "accent_amber_text": "#fcd34d",
+
+    "accent_rose": "#ef4444",
+    "accent_rose_glass": "rgba(239, 68, 68, 0.20)",
+    "accent_rose_border": "rgba(248, 113, 113, 0.45)",
+    "accent_rose_text": "#fca5a5",
+
+    "accent_violet": "#a855f7",
+    "accent_violet_glass": "rgba(168, 85, 247, 0.20)",
+    "accent_violet_border": "rgba(192, 132, 252, 0.45)",
+    "accent_violet_text": "#d8b4fe",
+
+    # Floating Editor Glass Panel
+    "editor_bg": "#141518",
+    "editor_text": "#f4f4f5",
+    "editor_selection": "#28344e",
+    "gutter_bg": "#141518",
+    "gutter_border": "rgba(255, 255, 255, 0.06)",
     "gutter_text": "#52525b",
-    "current_line": "#1e1e24",
-    "debug_line_bg": "#3f2e00",
+    "current_line": "rgba(255, 255, 255, 0.04)",
+    "debug_line_bg": "rgba(245, 158, 11, 0.22)",
 
-    # Console
-    "console_bg": "#0f0f11",
+    # Floating Terminal / Console Glass Panel
+    "console_bg": "#0c0d10",
     "console_text": "#f4f4f5",
-    "console_border": "#27272a",
+    "console_border": "rgba(255, 255, 255, 0.07)",
 
-    # Variables Inspector
-    "table_bg": "#141416",
-    "table_header_bg": "#18181b",
-    "table_header_text": "#71717a",
-    "table_text": "#e4e4e7",
-    "table_border": "#27272a",
+    # Variables & Data Inspector Glass Panel
+    "table_bg": "#121316",
+    "table_header_bg": "rgba(255, 255, 255, 0.03)",
+    "table_header_text": "#8e8e93",
+    "table_text": "#f4f4f5",
+    "table_border": "rgba(255, 255, 255, 0.06)",
     "var_name": "#38bdf8",
     "var_type": "#fbbf24",
     "var_str": "#34d399",
 
-    # Scrollbar
-    "scrollbar_track": "#141416",
-    "scrollbar_handle": "#3f3f46",
-    "scrollbar_handle_hover": "#52525b",
+    # Sleek Rounded Glass Scrollbar
+    "scrollbar_track": "transparent",
+    "scrollbar_handle": "rgba(255, 255, 255, 0.18)",
+    "scrollbar_handle_hover": "rgba(255, 255, 255, 0.32)",
     
-    # Syntax Highlighting
+    # Modern VS Code / Tokyo Night Syntax Palette
     "syntax_keyword": "#C586C0",
     "syntax_constant": "#569CD6",
     "syntax_builtin": "#DCDCAA",
@@ -51,45 +81,75 @@ DARK_THEME = {
 
 LIGHT_THEME = {
     "name": "light",
-    "window_bg": "#f4f4f5",
-    "border_color": "#e4e4e7",
+    # macOS Liquid Glass Porcelain Canvas
+    "window_bg": "#f7f7f8",
+    "surface_glass": "#ffffff",
+    "surface_glass_hover": "#f0f0f2",
+    "surface_glass_active": "#e8e8ea",
+    "border_color": "rgba(0, 0, 0, 0.08)",
+    "border_glass": "rgba(0, 0, 0, 0.08)",
+    "border_glass_highlight": "rgba(0, 0, 0, 0.14)",
     "brand_color": "#18181b",
-    "btn_clear_bg": "#ffffff",
-    "btn_clear_hover": "#e4e4e7",
-    "btn_clear_text": "#27272a",
-    "btn_clear_border": "#d4d4d8",
 
-    # Editor
+    # Liquid Glass Pill Buttons
+    "btn_clear_bg": "#ffffff",
+    "btn_clear_hover": "#f2f2f4",
+    "btn_clear_text": "#18181b",
+    "btn_clear_border": "rgba(0, 0, 0, 0.10)",
+
+    # Accent Glass Highlights
+    "accent_emerald": "#059669",
+    "accent_emerald_glass": "#ecfdf5",
+    "accent_emerald_border": "#a7f3d0",
+    "accent_emerald_text": "#065f46",
+
+    "accent_amber": "#d97706",
+    "accent_honey": "#d97706",
+    "accent_amber_glass": "#fffbeb",
+    "accent_amber_border": "#fde68a",
+    "accent_amber_text": "#92400e",
+
+    "accent_rose": "#dc2626",
+    "accent_rose_glass": "#fef2f2",
+    "accent_rose_border": "#fecaca",
+    "accent_rose_text": "#991b1b",
+
+    "accent_violet": "#7c3aed",
+    "accent_violet_glass": "#f5f3ff",
+    "accent_violet_border": "#ddd6fe",
+    "accent_violet_text": "#5b21b6",
+
+    # Floating Editor Glass Panel
     "editor_bg": "#ffffff",
     "editor_text": "#18181b",
-    "editor_selection": "#b4d5fe",
-    "gutter_bg": "#f4f4f5",
-    "gutter_border": "#e4e4e7",
+    "editor_selection": "#cfe2ff",
+    "gutter_bg": "#fcfcfd",
+    "gutter_border": "rgba(0, 0, 0, 0.06)",
     "gutter_text": "#a1a1aa",
-    "current_line": "#f5f5f7",
+    "current_line": "rgba(0, 0, 0, 0.03)",
     "debug_line_bg": "#fef08a",
 
-    # Console
-    "console_bg": "#fcfcfd",
+    # Floating Terminal / Console Glass Panel
+    "console_bg": "#fafafa",
     "console_text": "#18181b",
-    "console_border": "#e4e4e7",
+    "console_border": "rgba(0, 0, 0, 0.08)",
 
-    # Variables Inspector
+    # Variables & Data Inspector Glass Panel
     "table_bg": "#ffffff",
-    "table_header_bg": "#f4f4f5",
+    "table_header_bg": "#f8f8fa",
     "table_header_text": "#71717a",
     "table_text": "#18181b",
-    "table_border": "#e4e4e7",
+    "table_border": "rgba(0, 0, 0, 0.07)",
     "var_name": "#0284c7",
     "var_type": "#b45309",
     "var_str": "#059669",
 
-    # Scrollbar
-    "scrollbar_track": "#ffffff",
-    "scrollbar_handle": "#d4d4d8",
-    "scrollbar_handle_hover": "#a1a1aa",
+    # Sleek Rounded Glass Scrollbar
+    "scrollbar_track": "transparent",
+    "scrollbar_handle": "rgba(0, 0, 0, 0.16)",
+    "scrollbar_handle_hover": "rgba(0, 0, 0, 0.28)",
     
-    # Syntax Highlighting
+    # Clean Light Syntax Highlighting
     "syntax_keyword": "#AF00DB",
     "syntax_constant": "#0000FF",
     "syntax_builtin": "#795E26",
@@ -100,21 +160,21 @@ LIGHT_THEME = {
 
 
 def get_scrollbar_stylesheet(theme: dict) -> str:
-    """Returns modern, sleek, rounded scrollbar styling consistent with the active theme."""
-    handle = theme.get("scrollbar_handle", "#3f3f46")
-    handle_hover = theme.get("scrollbar_handle_hover", "#52525b")
+    """Returns modern, sleek, rounded glass scrollbar styling consistent with the active theme."""
+    handle = theme.get("scrollbar_handle", "rgba(255, 255, 255, 0.18)")
+    handle_hover = theme.get("scrollbar_handle_hover", "rgba(255, 255, 255, 0.32)")
     return f"""
         QScrollBar:vertical {{
             border: none;
             background: transparent;
-            width: 10px;
+            width: 8px;
             margin: 0px;
         }}
         QScrollBar::handle:vertical {{
             background-color: {handle};
-            min-height: 24px;
+            min-height: 28px;
             border-radius: 4px;
-            margin: 1px 2px;
+            margin: 2px 1px;
         }}
         QScrollBar::handle:vertical:hover {{
             background-color: {handle_hover};
@@ -131,14 +191,14 @@ def get_scrollbar_stylesheet(theme: dict) -> str:
         QScrollBar:horizontal {{
             border: none;
             background: transparent;
-            height: 10px;
+            height: 8px;
             margin: 0px;
         }}
         QScrollBar::handle:horizontal {{
             background-color: {handle};
-            min-width: 24px;
+            min-width: 28px;
             border-radius: 4px;
-            margin: 2px 1px;
+            margin: 1px 2px;
         }}
         QScrollBar::handle:horizontal:hover {{
             background-color: {handle_hover};
@@ -178,5 +238,3 @@ def get_code_font(size: int = 13, bold: bool = False, family: str = "SF Mono") -
     font.setFamilies([family, "SF Mono", "Menlo", "Monaco", "Courier New", "monospace"])
     configure_no_ligatures(font)
     return font
-
-

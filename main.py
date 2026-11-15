@@ -1124,7 +1124,7 @@ class WinnieIDE(QMainWindow):
 
         # 1. Clean Minimal Brand Name
         self.brand = QLabel("Winnie")
-        self.brand.setFont(QFont("SF Pro Display", 16, QFont.Weight.Bold))
+        self.brand.setFont(QFont("SF Pro Display", 17, QFont.Weight.Bold))
         self.brand.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         layout.addWidget(self.brand)
 
@@ -1326,85 +1326,244 @@ class WinnieIDE(QMainWindow):
                 pass
 
         # Main window and splitters + sleek global scrollbars
+        is_dark = theme.get("name") == "dark"
+        glass_border = theme.get("border_glass", "rgba(255, 255, 255, 0.08)" if is_dark else "rgba(0, 0, 0, 0.08)")
+        glass_highlight = theme.get("border_glass_highlight", "rgba(255, 255, 255, 0.16)" if is_dark else "rgba(0, 0, 0, 0.14)")
+        glass_surface = theme.get("surface_glass", "rgba(255, 255, 255, 0.05)" if is_dark else "#FFFFFF")
+        glass_hover = theme.get("surface_glass_hover", "rgba(255, 255, 255, 0.09)" if is_dark else "#F0F0F2")
+        glass_active = theme.get("surface_glass_active", "rgba(255, 255, 255, 0.13)" if is_dark else "#E8E8EA")
+        accent_honey = theme.get("accent_honey", "#F59E0B" if is_dark else "#D97706")
+
         self.setStyleSheet(f"""
             QMainWindow {{
                 background-color: {theme['window_bg']};
             }}
             QSplitter::handle {{
-                background-color: {theme['border_color']};
+                background-color: transparent;
+                width: 4px;
+                height: 4px;
             }}
             QSplitter::handle:hover {{
-                background-color: #3b82f6;
+                background-color: {accent_honey};
+                border-radius: 2px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
 
         # Brand styling
-        self.brand.setStyleSheet(f"color: {theme['brand_color']}; margin-right: 12px;")
+        self.brand.setStyleSheet(f"color: {theme['brand_color']}; margin-right: 10px; letter-spacing: -0.3px;")
 
-        # Clear button styling & icon
-        self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=14, color=theme["btn_clear_text"]))
-        self.clear_btn.setStyleSheet(f"""
+        # 1. Liquid Glass Action Buttons (Run, Step, Stop)
+        if is_dark:
+            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=11, color="#6EE7B7"))
+            self.run_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.28), stop:1 rgba(5, 150, 105, 0.40));
+                    color: #6EE7B7;
+                    border: 1px solid rgba(52, 211, 153, 0.45);
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.45), stop:1 rgba(5, 150, 105, 0.60));
+                    border: 1px solid rgba(110, 231, 183, 0.70);
+                    color: #FFFFFF;
+                }
+                QPushButton:pressed {
+                    background: rgba(4, 120, 87, 0.6);
+                }
+                QPushButton:disabled {
+                    background-color: rgba(255, 255, 255, 0.04);
+                    color: #52525B;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                }
+            """)
+
+            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=12, color="#FCD34D"))
+            self.step_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.24), stop:1 rgba(217, 119, 6, 0.36));
+                    color: #FCD34D;
+                    border: 1px solid rgba(251, 191, 36, 0.45);
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.40), stop:1 rgba(217, 119, 6, 0.55));
+                    border: 1px solid rgba(252, 211, 77, 0.70);
+                    color: #FFFFFF;
+                }
+                QPushButton:pressed {
+                    background: rgba(180, 83, 9, 0.6);
+                }
+                QPushButton:disabled {
+                    background-color: rgba(255, 255, 255, 0.04);
+                    color: #52525B;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                }
+            """)
+
+            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=11, color="#FCA5A5"))
+            self.stop_btn.setStyleSheet("""
+                QPushButton {
+                    background: rgba(239, 68, 68, 0.20);
+                    color: #FCA5A5;
+                    border: 1px solid rgba(248, 113, 113, 0.35);
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: rgba(239, 68, 68, 0.38);
+                    border: 1px solid rgba(252, 165, 165, 0.65);
+                    color: #FFFFFF;
+                }
+                QPushButton:pressed {
+                    background: rgba(185, 28, 28, 0.6);
+                }
+                QPushButton:disabled {
+                    background-color: rgba(255, 255, 255, 0.04);
+                    color: #52525B;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                }
+            """)
+        else:
+            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=11, color="#FFFFFF"))
+            self.run_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #10B981, stop:1 #059669);
+                    color: #FFFFFF;
+                    border: 1px solid #047857;
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: #047857;
+                }
+                QPushButton:disabled {
+                    background-color: #E4E4E7;
+                    color: #A1A1AA;
+                    border: 1px solid #D4D4D8;
+                }
+            """)
+
+            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=12, color="#FFFFFF"))
+            self.step_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
+                    color: #FFFFFF;
+                    border: 1px solid #B45309;
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: #B45309;
+                }
+                QPushButton:disabled {
+                    background-color: #E4E4E7;
+                    color: #A1A1AA;
+                    border: 1px solid #D4D4D8;
+                }
+            """)
+
+            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=11, color="#FFFFFF"))
+            self.stop_btn.setStyleSheet("""
+                QPushButton {
+                    background: #EF4444;
+                    color: #FFFFFF;
+                    border: 1px solid #DC2626;
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: #DC2626;
+                }
+                QPushButton:disabled {
+                    background-color: #E4E4E7;
+                    color: #A1A1AA;
+                    border: 1px solid #D4D4D8;
+                }
+            """)
+
+        # Liquid Glass Secondary Pill Buttons (Clear, Packages, Problems, SQL, Theme, Info)
+        pill_style = f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 8px;
-                padding: 6px 14px;
+                border-radius: 14px;
+                padding: 5px 13px;
+                font-size: 12px;
+                font-weight: 500;
             }}
             QPushButton:hover {{
                 background-color: {theme['btn_clear_hover']};
+                border: 1px solid {glass_highlight};
             }}
-        """)
+        """
 
-        # Packages button styling & icon
+        self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=13, color=theme["btn_clear_text"]))
+        self.clear_btn.setStyleSheet(pill_style)
+
         self.packages_btn.setIcon(render_svg_icon(PACKAGE_SVG, size=13, color=theme["btn_clear_text"]))
-        self.packages_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {theme['btn_clear_bg']};
-                color: {theme['btn_clear_text']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 8px;
-                padding: 6px 14px;
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
-            }}
-        """)
+        self.packages_btn.setStyleSheet(pill_style)
 
-        # Problems button styling & icon
         self.problems_btn.setIcon(render_svg_icon(PROBLEMS_SVG, size=13, color=theme["btn_clear_text"]))
-        self.problems_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {theme['btn_clear_bg']};
-                color: {theme['btn_clear_text']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 8px;
-                padding: 6px 14px;
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
-            }}
-        """)
+        self.problems_btn.setStyleSheet(pill_style)
 
-        # SQL button styling & icon
+        # SQL Button (Luminous Amber Capsule when Active)
         is_sql_active = getattr(self, "is_sql_mode", False)
-        sql_bg = theme.get("accent_honey", "#F59E0B") if is_sql_active else theme["btn_clear_bg"]
-        sql_text_color = "#111827" if is_sql_active else theme["btn_clear_text"]
-        self.sql_btn.setIcon(render_svg_icon(DATABASE_SVG, size=13, color=sql_text_color))
-        self.sql_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {sql_bg};
-                color: {sql_text_color};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 8px;
-                padding: 6px 14px;
-                font-weight: {"bold" if is_sql_active else "normal"};
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover'] if not is_sql_active else '#FBBF24'};
-            }}
-        """)
+        if is_sql_active:
+            if is_dark:
+                sql_style = """
+                    QPushButton {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.28), stop:1 rgba(217, 119, 6, 0.40));
+                        color: #FCD34D;
+                        border: 1px solid rgba(251, 191, 36, 0.55);
+                        border-radius: 14px;
+                        padding: 5px 13px;
+                        font-size: 12px;
+                        font-weight: 600;
+                    }
+                    QPushButton:hover {
+                        background: rgba(245, 158, 11, 0.45);
+                        color: #FFFFFF;
+                    }
+                """
+                sql_icon_color = "#FCD34D"
+            else:
+                sql_style = """
+                    QPushButton {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
+                        color: #FFFFFF;
+                        border: 1px solid #B45309;
+                        border-radius: 14px;
+                        padding: 5px 13px;
+                        font-size: 12px;
+                        font-weight: 600;
+                    }
+                    QPushButton:hover {
+                        background: #B45309;
+                    }
+                """
+                sql_icon_color = "#FFFFFF"
+        else:
+            sql_style = pill_style
+            sql_icon_color = theme["btn_clear_text"]
+
+        self.sql_btn.setIcon(render_svg_icon(DATABASE_SVG, size=13, color=sql_icon_color))
+        self.sql_btn.setStyleSheet(sql_style)
 
         # Tab corner controls (Toggle Variables / Problem + Exit button)
         self.tab_toggle_btn.setStyleSheet(f"""
@@ -1412,8 +1571,8 @@ class WinnieIDE(QMainWindow):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 5px;
-                padding: 3px 8px;
+                border-radius: 7px;
+                padding: 3px 9px;
                 font-size: 11px;
                 font-weight: 500;
             }}
@@ -1427,8 +1586,8 @@ class WinnieIDE(QMainWindow):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 5px;
-                padding: 3px 7px;
+                border-radius: 7px;
+                padding: 3px 8px;
                 font-size: 11px;
                 font-weight: bold;
             }}
@@ -1442,72 +1601,48 @@ class WinnieIDE(QMainWindow):
         # Theme toggle button styling & monochromatic icon
         if theme["name"] == "dark":
             self.theme_btn.setText(" Light")
-            self.theme_btn.setIcon(render_svg_icon(SUN_SVG, size=15, color=theme["btn_clear_text"]))
+            self.theme_btn.setIcon(render_svg_icon(SUN_SVG, size=13, color=theme["btn_clear_text"]))
         else:
             self.theme_btn.setText(" Dark")
-            self.theme_btn.setIcon(render_svg_icon(MOON_SVG, size=15, color=theme["btn_clear_text"]))
-
-        self.theme_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {theme['btn_clear_bg']};
-                color: {theme['btn_clear_text']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 8px;
-                padding: 6px 14px;
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
-            }}
-        """)
+            self.theme_btn.setIcon(render_svg_icon(MOON_SVG, size=13, color=theme["btn_clear_text"]))
+        self.theme_btn.setStyleSheet(pill_style)
 
         # Info (About Winnie) button styling & monochromatic icon
-        self.info_btn.setIcon(render_svg_icon(INFO_SVG, size=15, color=theme["btn_clear_text"]))
-        self.info_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {theme['btn_clear_bg']};
-                color: {theme['btn_clear_text']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 8px;
-                padding: 6px 10px;
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
-            }}
-        """)
+        self.info_btn.setIcon(render_svg_icon(INFO_SVG, size=14, color=theme["btn_clear_text"]))
+        self.info_btn.setStyleSheet(pill_style)
 
-        # Editor Tabs Styling (VS Code / Sublime-like sleek tabs)
+        # Floating Liquid Glass Editor Tabs (Inspired by macOS Finder & Developer Tools)
+        selected_tab_bg = "rgba(255, 255, 255, 0.08)" if is_dark else "#FFFFFF"
+        selected_tab_border = glass_highlight if is_dark else "rgba(0, 0, 0, 0.10)"
         self.editor_tabs.setStyleSheet(f"""
             QTabWidget#editorTabs::pane {{
-                border: 1px solid {theme['border_color']};
+                border: 1px solid {glass_border};
                 background-color: {theme['editor_bg']};
-                border-top: none;
+                border-radius: 10px;
             }}
             QTabWidget#editorTabs QTabBar {{
                 qproperty-drawBase: 0;
-                background-color: {theme['console_bg']};
-                border-bottom: 1px solid {theme['border_color']};
+                background-color: transparent;
+                margin-bottom: 3px;
             }}
             QTabWidget#editorTabs QTabBar::tab {{
-                background-color: {theme['console_bg']};
+                background-color: transparent;
                 color: {theme['table_header_text']};
-                padding: 5px 6px 5px 12px;
-                margin-right: 2px;
+                padding: 5px 12px;
+                margin-right: 3px;
                 border: 1px solid transparent;
-                border-bottom: none;
-                border-top-left-radius: 6px;
-                border-top-right-radius: 6px;
+                border-radius: 7px;
                 font-size: 11px;
                 font-weight: 500;
             }}
             QTabWidget#editorTabs QTabBar::tab:hover {{
-                background-color: {theme['btn_clear_hover']};
+                background-color: {glass_hover};
                 color: {theme['brand_color']};
             }}
             QTabWidget#editorTabs QTabBar::tab:selected {{
-                background-color: {theme['editor_bg']};
+                background-color: {selected_tab_bg};
                 color: {theme['brand_color']};
-                border: 1px solid {theme['border_color']};
-                border-bottom: 1px solid {theme['editor_bg']};
+                border: 1px solid {selected_tab_border};
                 font-weight: 600;
             }}
             {get_scrollbar_stylesheet(theme)}
@@ -1543,35 +1678,40 @@ class WinnieIDE(QMainWindow):
                         }}
                     """)
 
-        # Tab styling
+        # Right Tab Panel Styling (Variables, Problems)
         self.right_tabs.setStyleSheet(f"""
             QTabWidget::pane {{
-                border: 1px solid {theme['border_color']};
+                border: 1px solid {glass_border};
                 background-color: {theme['table_bg']};
-                border-radius: 8px;
+                border-radius: 10px;
             }}
             QTabWidget > QStackedWidget, QTabWidget > QStackedWidget > QWidget {{
                 background-color: {theme['table_bg']};
+                border-radius: 10px;
             }}
             QTabBar {{
                 qproperty-drawBase: 0;
+                background-color: transparent;
+                margin-bottom: 3px;
             }}
             QTabBar::tab {{
                 background-color: transparent;
                 color: {theme['table_header_text']};
-                padding: 5px 8px;
-                margin-right: 2px;
+                padding: 5px 12px;
+                margin-right: 3px;
                 font-size: 11px;
-                font-weight: bold;
-                border: none;
-                border-bottom: 2px solid transparent;
-            }}
-            QTabBar::tab:selected {{
-                color: {theme['brand_color']};
-                border-bottom: 2px solid #10b981;
+                font-weight: 600;
+                border: 1px solid transparent;
+                border-radius: 7px;
             }}
             QTabBar::tab:hover {{
+                background-color: {glass_hover};
                 color: {theme['brand_color']};
+            }}
+            QTabBar::tab:selected {{
+                background-color: {selected_tab_bg};
+                color: {theme['brand_color']};
+                border: 1px solid {selected_tab_border};
             }}
             {get_scrollbar_stylesheet(theme)}
         """)

@@ -20,13 +20,15 @@ class InteractiveConsole(QPlainTextEdit):
         self.apply_theme(theme)
 
     def apply_theme(self, theme):
+        is_dark = theme.get("name") == "dark"
+        glass_border = theme.get("border_glass", "rgba(255, 255, 255, 0.08)" if is_dark else "rgba(0, 0, 0, 0.08)")
         self.setStyleSheet(f"""
             QPlainTextEdit {{
                 background-color: {theme['console_bg']};
                 color: {theme['console_text']};
                 padding: 10px;
-                border: none;
-                border-top: 1px solid {theme['console_border']};
+                border: 1px solid {glass_border};
+                border-radius: 10px;
                 selection-background-color: {theme['editor_selection']};
             }}
             {get_scrollbar_stylesheet(theme)}

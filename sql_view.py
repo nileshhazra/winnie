@@ -988,130 +988,184 @@ ORDER BY total_products DESC;
         self.bottom_tabs.setTabIcon(1, render_svg_icon(LIGHTNING_SVG, size=13, color=tab_icon_color))
         self.bottom_tabs.setTabIcon(2, render_svg_icon(FLOW_SVG, size=13, color=tab_icon_color))
 
-        # Style toolbar
+        is_dark = not self._is_light_theme()
+        glass_border = theme.get("border_glass", "rgba(255, 255, 255, 0.08)" if is_dark else "rgba(0, 0, 0, 0.08)")
+        glass_highlight = theme.get("border_glass_highlight", "rgba(255, 255, 255, 0.16)" if is_dark else "rgba(0, 0, 0, 0.14)")
+        glass_hover = theme.get("surface_glass_hover", "rgba(255, 255, 255, 0.09)" if is_dark else "#F0F0F2")
+        selected_tab_bg = "rgba(255, 255, 255, 0.08)" if is_dark else "#FFFFFF"
+        selected_tab_border = glass_highlight if is_dark else "rgba(0, 0, 0, 0.10)"
+
+        # Style toolbar (Liquid Glass Pill Toolbar)
         self.toolbar.setStyleSheet(f"""
             QWidget {{
-                background-color: {theme['window_bg']};
-                border-bottom: 1px solid {theme['border_color']};
+                background-color: transparent;
+                border-bottom: 1px solid {glass_border};
             }}
             QLabel {{
                 color: {theme['editor_text']};
             }}
             QComboBox {{
-                background-color: {theme['console_bg']};
+                background-color: {theme['btn_clear_bg']};
                 color: {theme['editor_text']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
-                padding: 4px 8px;
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 14px;
+                padding: 4px 12px;
+                font-size: 12px;
+                font-weight: 500;
             }}
             QComboBox::drop-down {{
                 border: none;
             }}
             QPushButton {{
-                background-color: {theme['console_bg']};
-                color: {theme['editor_text']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
-                padding: 4px 12px;
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-radius: 14px;
+                padding: 5px 13px;
                 font-size: 12px;
                 font-weight: 500;
             }}
             QPushButton:hover {{
-                background-color: {theme.get('accent_honey', '#F59E0B')};
-                color: #111827;
-                border-color: {theme.get('accent_honey', '#F59E0B')};
+                background-color: {theme['btn_clear_hover']};
+                border: 1px solid {glass_highlight};
             }}
         """)
 
-        # Style Run button with brand amber accent
-        self.run_btn.setStyleSheet(f"""
-            QPushButton {{
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F59E0B, stop:1 #D97706);
-                color: #FFFFFF;
-                border: 1px solid #D97706;
-                border-radius: 6px;
-                padding: 4px 14px;
-                font-weight: 600;
-            }}
-            QPushButton:hover {{
-                background: #FBBF24;
-                color: #111827;
-            }}
-        """)
+        # Style Run Query button with luminous amber glass capsule
+        if is_dark:
+            self.run_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.30), stop:1 rgba(217, 119, 6, 0.42));
+                    color: #FCD34D;
+                    border: 1px solid rgba(251, 191, 36, 0.55);
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: rgba(245, 158, 11, 0.50);
+                    color: #FFFFFF;
+                }
+            """)
+        else:
+            self.run_btn.setStyleSheet("""
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
+                    color: #FFFFFF;
+                    border: 1px solid #B45309;
+                    border-radius: 14px;
+                    padding: 5px 16px;
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+                QPushButton:hover {
+                    background: #B45309;
+                }
+            """)
 
-        # Style Sidebar Tabs & Trees
+        # Style Sidebar Tabs & Trees (Floating Glass Tabs)
         self.sidebar_tabs.setStyleSheet(f"""
             QTabWidget::pane {{
-                border: none;
-                background-color: {theme['window_bg']};
+                border: 1px solid {glass_border};
+                background-color: {theme['editor_bg']};
+                border-radius: 10px;
+            }}
+            QTabBar {{
+                qproperty-drawBase: 0;
+                background-color: transparent;
+                margin-bottom: 3px;
             }}
             QTabBar::tab {{
-                background: {theme['window_bg']};
-                color: {theme['syntax_comment']};
-                padding: 8px 14px;
-                border: none;
+                background: transparent;
+                color: {theme['table_header_text']};
+                padding: 5px 12px;
+                margin-right: 3px;
+                border: 1px solid transparent;
+                border-radius: 7px;
                 font-weight: 500;
-                font-size: 12px;
+                font-size: 11px;
+            }}
+            QTabBar::tab:hover {{
+                background-color: {glass_hover};
+                color: {theme['brand_color']};
             }}
             QTabBar::tab:selected {{
-                color: {theme['editor_text']};
-                border-bottom: 2px solid {theme.get('accent_honey', '#F59E0B')};
+                background-color: {selected_tab_bg};
+                color: {theme['brand_color']};
+                border: 1px solid {selected_tab_border};
+                font-weight: 600;
             }}
             QTreeWidget {{
-                background-color: {theme['editor_bg']};
+                background-color: {theme['table_bg']};
                 color: {theme['editor_text']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
+                border: 1px solid {glass_border};
+                border-radius: 8px;
                 padding: 4px;
             }}
             QLineEdit {{
-                background-color: {theme['editor_bg']};
+                background-color: {theme['console_bg']};
                 color: {theme['editor_text']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
-                padding: 4px 8px;
+                border: 1px solid {glass_border};
+                border-radius: 8px;
+                padding: 5px 10px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
 
-        # Style Bottom Results & Plan Tabs
+        # Style Bottom Results & Plan Tabs (Floating Glass Tabs)
         self.bottom_tabs.setStyleSheet(f"""
             QTabWidget::pane {{
-                border-top: 1px solid {theme['border_color']};
-                background-color: {theme['window_bg']};
+                border: 1px solid {glass_border};
+                background-color: {theme['editor_bg']};
+                border-radius: 10px;
+            }}
+            QTabBar {{
+                qproperty-drawBase: 0;
+                background-color: transparent;
+                margin-bottom: 3px;
             }}
             QTabBar::tab {{
-                background: {theme['window_bg']};
-                color: {theme['syntax_comment']};
-                padding: 8px 14px;
-                border: none;
+                background: transparent;
+                color: {theme['table_header_text']};
+                padding: 5px 12px;
+                margin-right: 3px;
+                border: 1px solid transparent;
+                border-radius: 7px;
                 font-weight: 500;
-                font-size: 12px;
+                font-size: 11px;
+            }}
+            QTabBar::tab:hover {{
+                background-color: {glass_hover};
+                color: {theme['brand_color']};
             }}
             QTabBar::tab:selected {{
-                color: {theme['editor_text']};
-                border-bottom: 2px solid {theme.get('accent_honey', '#F59E0B')};
+                background-color: {selected_tab_bg};
+                color: {theme['brand_color']};
+                border: 1px solid {selected_tab_border};
+                font-weight: 600;
             }}
             QTableWidget {{
-                background-color: {theme['editor_bg']};
+                background-color: {theme['table_bg']};
                 color: {theme['editor_text']};
-                gridline-color: {theme['border_color']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
+                gridline-color: {glass_border};
+                border: 1px solid {glass_border};
+                border-radius: 8px;
             }}
             QHeaderView::section {{
-                background-color: {theme['window_bg']};
-                color: {theme['editor_text']};
+                background-color: {theme['table_header_bg']};
+                color: {theme['table_header_text']};
                 padding: 5px;
-                border: 1px solid {theme['border_color']};
+                border: none;
+                border-bottom: 1px solid {glass_border};
                 font-weight: 600;
                 font-size: 11px;
             }}
             QTextEdit {{
-                background-color: {theme['editor_bg']};
+                background-color: {theme['table_bg']};
                 color: {theme['editor_text']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 6px;
+                border: 1px solid {glass_border};
+                border-radius: 8px;
                 padding: 6px;
             }}
             {get_scrollbar_stylesheet(theme)}

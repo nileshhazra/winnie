@@ -45,14 +45,16 @@ class VariablesView(QWidget):
 
     def apply_theme(self, theme):
         self.current_theme = theme
+        is_dark = theme.get("name") == "dark"
+        glass_border = theme.get("border_glass", "rgba(255, 255, 255, 0.08)" if is_dark else "rgba(0, 0, 0, 0.08)")
         self.setStyleSheet(f"QWidget#variablesView {{ background-color: {theme['table_bg']}; }}")
-        self.title.setStyleSheet(f"color: {theme['table_header_text']}; letter-spacing: 1px; padding: 2px;")
+        self.title.setStyleSheet(f"color: {theme['table_header_text']}; letter-spacing: 0.8px; padding: 2px;")
         self.table.setStyleSheet(f"""
             QTableWidget {{
                 background-color: {theme['table_bg']};
                 color: {theme['table_text']};
                 gridline-color: {theme['table_border']};
-                border: 1px solid {theme['table_border']};
+                border: 1px solid {glass_border};
                 border-radius: 8px;
             }}
             QHeaderView::section {{
@@ -61,7 +63,7 @@ class VariablesView(QWidget):
                 font-size: 11px;
                 font-weight: bold;
                 border: none;
-                border-bottom: 1px solid {theme['table_border']};
+                border-bottom: 1px solid {glass_border};
                 padding: 6px;
             }}
             {get_scrollbar_stylesheet(theme)}

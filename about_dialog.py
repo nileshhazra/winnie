@@ -97,8 +97,8 @@ class SocialLinkButton(QPushButton):
         self.setStyleSheet(f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
-                border: 1px solid {theme['border_color']};
-                border-radius: 10px;
+                border: 1px solid {theme.get('border_glass', theme['border_color'])};
+                border-radius: 12px;
                 text-align: left;
             }}
             QPushButton:hover {{
@@ -174,8 +174,8 @@ class AboutDialog(QDialog):
         version_badge.setStyleSheet(f"""
             background-color: {theme['btn_clear_bg']};
             color: {theme['btn_clear_text']};
-            border: 1px solid {theme['border_color']};
-            border-radius: 9px;
+            border: 1px solid {theme.get('border_glass', theme['border_color'])};
+            border-radius: 12px;
             padding: 2px 7px;
         """)
         name_badge_layout.addWidget(version_badge)
