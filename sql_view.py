@@ -107,11 +107,20 @@ class SqlPlaygroundWidget(QWidget):
         self.current_theme = theme
         self.engine = SqlEngine("ecommerce")
         self.active_challenge: Optional[Dict[str, Any]] = None
+        self._last_plan_nodes: List[Dict[str, Any]] = []
+        self._last_logical_steps: List[Dict[str, str]] = []
 
         self._init_ui()
         self.apply_theme(self.current_theme)
         self.refresh_schema_browser()
         self.refresh_challenges_list()
+
+    def _is_light_theme(self) -> bool:
+        """Determines if the active theme is light mode."""
+        return (
+            self.current_theme.get("name") == "light"
+            or str(self.current_theme.get("window_bg", "")).lower() in ("#f4f4f5", "#ffffff")
+        )
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
@@ -282,13 +291,14 @@ class SqlPlaygroundWidget(QWidget):
         plan_layout.setContentsMargins(12, 12, 12, 12)
         plan_layout.setSpacing(8)
 
-        plan_header = QLabel("Physical Query Plan & Optimization Analysis (EXPLAIN QUERY PLAN)", self)
-        plan_header.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
-        plan_layout.addWidget(plan_header)
+        self.plan_header = QLabel("Physical Query Plan & Optimization Analysis (EXPLAIN QUERY PLAN)", self)
+        self.plan_header.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
+        plan_layout.addWidget(self.plan_header)
 
         self.plan_scroll = QScrollArea(self)
         self.plan_scroll.setWidgetResizable(True)
         self.plan_content_widget = QWidget(self)
+        self.plan_content_widget.setObjectName("planContentWidget")
         self.plan_content_layout = QVBoxLayout(self.plan_content_widget)
         self.plan_content_layout.setContentsMargins(0, 0, 0, 0)
         self.plan_content_layout.setSpacing(8)
@@ -303,21 +313,22 @@ class SqlPlaygroundWidget(QWidget):
         logical_layout.setContentsMargins(12, 12, 12, 12)
         logical_layout.setSpacing(8)
 
-        logical_header = QLabel("Logical Order of Execution Pipeline", self)
-        logical_header.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
-        logical_layout.addWidget(logical_header)
+        self.logical_header = QLabel("Logical Order of Execution Pipeline", self)
+        self.logical_header.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
+        logical_layout.addWidget(self.logical_header)
 
-        logical_sub = QLabel(
+        self.logical_sub = QLabel(
             "SQL is declarative: while you write SELECT first, the engine evaluates FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
             self
         )
-        logical_sub.setFont(QFont("-apple-system", 11))
-        logical_sub.setWordWrap(True)
-        logical_layout.addWidget(logical_sub)
+        self.logical_sub.setFont(QFont("-apple-system", 11))
+        self.logical_sub.setWordWrap(True)
+        logical_layout.addWidget(self.logical_sub)
 
         self.logical_scroll = QScrollArea(self)
         self.logical_scroll.setWidgetResizable(True)
         self.logical_content_widget = QWidget(self)
+        self.logical_content_widget.setObjectName("logicalContentWidget")
         self.logical_content_layout = QVBoxLayout(self.logical_content_widget)
         self.logical_content_layout.setContentsMargins(0, 0, 0, 0)
         self.logical_content_layout.setSpacing(8)
@@ -594,10 +605,12 @@ class SqlPlaygroundWidget(QWidget):
 
         # 1. Physical Query Plan
         plan_nodes = self.engine.get_execution_plan(sql_text)
+        self._last_plan_nodes = plan_nodes
         self._render_physical_plan(plan_nodes)
 
         # 2. Logical Order of Execution Pipeline
         logical_steps = self.engine.get_logical_execution_steps(sql_text)
+        self._last_logical_steps = logical_steps
         self._render_logical_steps(logical_steps)
 
         # Switch to Physical Plan tab
@@ -614,23 +627,30 @@ class SqlPlaygroundWidget(QWidget):
 
         if not plan_nodes:
             label = QLabel("No query plan available for this statement.", self)
+            label.setStyleSheet(f"color: {self.current_theme['editor_text']};")
             self.plan_content_layout.addWidget(label)
             return
+
+        is_light = self._is_light_theme()
+        card_bg = "#FFFFFF" if is_light else self.current_theme.get("table_bg", "#181922")
+        card_border = self.current_theme.get("border_color", "#E4E4E7" if is_light else "#27272A")
+        text_primary = self.current_theme.get("editor_text", "#18181B" if is_light else "#F4F4F5")
+        text_secondary = "#52525B" if is_light else "#A1A1AA"
+        code_bg = "#F4F4F5" if is_light else "#111218"
 
         for node in plan_nodes:
             card = QFrame(self.plan_content_widget)
             card.setFrameShape(QFrame.Shape.StyledPanel)
             card.setStyleSheet(f"""
                 QFrame {{
-                    background-color: {self.current_theme.get('bg_card', '#1E202B')};
-                    border: 1px solid {self.current_theme.get('border_card', 'rgba(255,255,255,0.08)')};
+                    background-color: {card_bg};
+                    border: 1px solid {card_border};
                     border-radius: 8px;
-                    padding: 8px;
                 }}
             """)
             c_layout = QVBoxLayout(card)
-            c_layout.setContentsMargins(10, 8, 10, 8)
-            c_layout.setSpacing(4)
+            c_layout.setContentsMargins(12, 10, 12, 10)
+            c_layout.setSpacing(6)
 
             header_row = QHBoxLayout()
             badge_label = QLabel(node["badge"], card)
@@ -639,28 +659,48 @@ class SqlPlaygroundWidget(QWidget):
             # Modern minimal badge tag styling
             cls = node.get("classification")
             if cls == "SCAN":
-                badge_label.setStyleSheet("color: #F59E0B; background-color: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
+                badge_style = (
+                    "color: #B45309; background-color: #FEF3C7; border: 1px solid #FCD34D;" if is_light
+                    else "color: #F59E0B; background-color: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4);"
+                )
             elif cls in ("INDEX_SEARCH", "COVERING_INDEX"):
-                badge_label.setStyleSheet("color: #10B981; background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
+                badge_style = (
+                    "color: #047857; background-color: #D1FAE5; border: 1px solid #6EE7B7;" if is_light
+                    else "color: #10B981; background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);"
+                )
             elif cls == "TEMP_BTREE":
-                badge_label.setStyleSheet("color: #C084FC; background-color: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
+                badge_style = (
+                    "color: #6D28D9; background-color: #EDE9FE; border: 1px solid #C4B5FD;" if is_light
+                    else "color: #C084FC; background-color: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4);"
+                )
             elif cls == "ERROR":
-                badge_label.setStyleSheet("color: #EF4444; background-color: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
+                badge_style = (
+                    "color: #B91C1C; background-color: #FEE2E2; border: 1px solid #FCA5A5;" if is_light
+                    else "color: #EF4444; background-color: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4);"
+                )
             else:
-                badge_label.setStyleSheet("color: #38BDF8; background-color: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 4px; padding: 2px 7px; font-weight: bold;")
+                badge_style = (
+                    "color: #0369A1; background-color: #E0F2FE; border: 1px solid #7DD3FC;" if is_light
+                    else "color: #38BDF8; background-color: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);"
+                )
 
+            badge_label.setStyleSheet(f"{badge_style} border-radius: 4px; padding: 2px 8px; font-weight: bold;")
             header_row.addWidget(badge_label)
             header_row.addStretch()
             c_layout.addLayout(header_row)
 
-            detail_label = QLabel(f"<strong>Operation:</strong> <code>{node['detail']}</code>", card)
+            detail_label = QLabel(
+                f"<span style='color: {text_primary};'><strong>Operation:</strong> "
+                f"<code style='background-color: {code_bg}; color: {text_primary}; padding: 2px 6px; border-radius: 4px;'>{node['detail']}</code></span>",
+                card
+            )
             detail_label.setFont(QFont(get_code_font().family(), 11))
             c_layout.addWidget(detail_label)
 
             expl_label = QLabel(node["explanation"], card)
             expl_label.setFont(QFont("-apple-system", 11))
             expl_label.setWordWrap(True)
-            expl_label.setStyleSheet(f"color: {self.current_theme.get('syntax_comment', '#9CA3AF')};")
+            expl_label.setStyleSheet(f"color: {text_secondary}; line-height: 1.45;")
             c_layout.addWidget(expl_label)
 
             self.plan_content_layout.addWidget(card)
@@ -677,31 +717,40 @@ class SqlPlaygroundWidget(QWidget):
 
         if not logical_steps:
             label = QLabel("Write a SELECT query to see the logical order of execution pipeline.", self)
+            label.setStyleSheet(f"color: {self.current_theme['editor_text']};")
             self.logical_content_layout.addWidget(label)
             return
+
+        is_light = self._is_light_theme()
+        card_bg = "#FFFFFF" if is_light else self.current_theme.get("table_bg", "#181922")
+        card_border = self.current_theme.get("border_color", "#E4E4E7" if is_light else "#27272A")
+        text_primary = self.current_theme.get("editor_text", "#18181B" if is_light else "#F4F4F5")
+        text_secondary = "#52525B" if is_light else "#A1A1AA"
+        accent_bar = "#D97706" if is_light else "#F59E0B"
+        code_bg = "#F4F4F5" if is_light else "#111218"
+        code_color = "#0F766E" if is_light else "#34D399"
 
         for step in logical_steps:
             card = QFrame(self.logical_content_widget)
             card.setFrameShape(QFrame.Shape.StyledPanel)
             card.setStyleSheet(f"""
                 QFrame {{
-                    background-color: {self.current_theme.get('bg_card', '#1E202B')};
-                    border-left: 4px solid {self.current_theme.get('accent_honey', '#F59E0B')};
-                    border-top: 1px solid {self.current_theme.get('border_card', 'rgba(255,255,255,0.08)')};
-                    border-right: 1px solid {self.current_theme.get('border_card', 'rgba(255,255,255,0.08)')};
-                    border-bottom: 1px solid {self.current_theme.get('border_card', 'rgba(255,255,255,0.08)')};
+                    background-color: {card_bg};
+                    border-left: 4px solid {accent_bar};
+                    border-top: 1px solid {card_border};
+                    border-right: 1px solid {card_border};
+                    border-bottom: 1px solid {card_border};
                     border-radius: 6px;
-                    padding: 8px;
                 }}
             """)
             c_layout = QVBoxLayout(card)
-            c_layout.setContentsMargins(10, 8, 10, 8)
-            c_layout.setSpacing(4)
+            c_layout.setContentsMargins(12, 10, 12, 10)
+            c_layout.setSpacing(6)
 
             title_row = QHBoxLayout()
             title_lbl = QLabel(f"Stage {step['stage_num']}: {step['title']}", card)
             title_lbl.setFont(QFont("-apple-system", 12, QFont.Weight.Bold))
-            title_lbl.setStyleSheet(f"color: {self.current_theme.get('accent_honey', '#F59E0B')};")
+            title_lbl.setStyleSheet(f"color: {accent_bar};")
             title_row.addWidget(title_lbl)
             title_row.addStretch()
             c_layout.addLayout(title_row)
@@ -709,12 +758,16 @@ class SqlPlaygroundWidget(QWidget):
             desc_lbl = QLabel(step["description"], card)
             desc_lbl.setFont(QFont("-apple-system", 11))
             desc_lbl.setWordWrap(True)
+            desc_lbl.setStyleSheet(f"color: {text_secondary}; line-height: 1.45;")
             c_layout.addWidget(desc_lbl)
 
             if step.get("snippet"):
-                snip_lbl = QLabel(f"Query Clause: <code>{step['snippet']}</code>", card)
+                snip_lbl = QLabel(
+                    f"<span style='color: {text_primary};'>Query Clause: "
+                    f"<code style='background-color: {code_bg}; color: {code_color}; padding: 3px 8px; border-radius: 4px; border: 1px solid {card_border};'>{step['snippet']}</code></span>",
+                    card
+                )
                 snip_lbl.setFont(QFont(get_code_font().family(), 11))
-                snip_lbl.setStyleSheet(f"color: {self.current_theme.get('syntax_string', '#34D399')};")
                 c_layout.addWidget(snip_lbl)
 
             self.logical_content_layout.addWidget(card)
@@ -874,3 +927,32 @@ class SqlPlaygroundWidget(QWidget):
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
+
+        # Update plan & execution order header labels
+        if hasattr(self, "plan_header") and self.plan_header:
+            self.plan_header.setStyleSheet(f"color: {theme['editor_text']};")
+        if hasattr(self, "logical_header") and self.logical_header:
+            self.logical_header.setStyleSheet(f"color: {theme['editor_text']};")
+        if hasattr(self, "logical_sub") and self.logical_sub:
+            sub_color = "#52525B" if self._is_light_theme() else "#A1A1AA"
+            self.logical_sub.setStyleSheet(f"color: {sub_color};")
+
+        # Scroll areas background & styling
+        scroll_style = f"""
+            QScrollArea {{
+                border: none;
+                background-color: {theme['window_bg']};
+            }}
+            QWidget#planContentWidget, QWidget#logicalContentWidget {{
+                background-color: {theme['window_bg']};
+            }}
+            {get_scrollbar_stylesheet(theme)}
+        """
+        self.plan_scroll.setStyleSheet(scroll_style)
+        self.logical_scroll.setStyleSheet(scroll_style)
+
+        # Re-render active cards with the new theme colors if present
+        if hasattr(self, "_last_plan_nodes") and self._last_plan_nodes:
+            self._render_physical_plan(self._last_plan_nodes)
+        if hasattr(self, "_last_logical_steps") and self._last_logical_steps:
+            self._render_logical_steps(self._last_logical_steps)
