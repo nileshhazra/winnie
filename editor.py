@@ -30,7 +30,7 @@ class CodeEditor(QPlainTextEdit):
         self.problem_data = None
         self.untitled_title = "Untitled"
 
-        # Dank Mono with Menlo fallback, font ligatures explicitly turned off
+        # SF Mono with Menlo fallback, font ligatures explicitly turned off
         font = get_code_font(size=13)
         self.setFont(font)
         self.document().setDefaultFont(font)

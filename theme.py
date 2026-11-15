@@ -169,13 +169,13 @@ def configure_no_ligatures(font: QFont) -> QFont:
     return font
 
 
-def get_code_font(size: int = 13, bold: bool = False, family: str = "Dank Mono") -> QFont:
+def get_code_font(size: int = 13, bold: bool = False, family: str = "SF Mono") -> QFont:
     """Returns a programming font with ligatures explicitly disabled and native fallbacks."""
     font = QFont(family, size)
     if bold:
         font.setBold(True)
     font.setStyleHint(QFont.StyleHint.Monospace)
-    font.setFamilies([family, "Menlo", "Monaco", "Courier New", "monospace"])
+    font.setFamilies([family, "SF Mono", "Menlo", "Monaco", "Courier New", "monospace"])
     configure_no_ligatures(font)
     return font
 

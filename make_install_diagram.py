@@ -177,7 +177,7 @@ def generate_installation_diagram(out_path: str):
             p.drawText(file_box, Qt.AlignmentFlag.AlignCenter, "↓")
 
             # File label
-            p.setFont(QFont("Dank Mono", 15, QFont.Weight.Bold))
+            p.setFont(QFont("SF Mono", 15, QFont.Weight.Bold))
             p.setPen(QColor("#e0f2fe"))
             p.drawText(QRectF(cx + 40, cy + 415, card_w - 80, 40), Qt.AlignmentFlag.AlignCenter, "Winnie-v1.3.3.zip")
 
@@ -189,7 +189,7 @@ def generate_installation_diagram(out_path: str):
             p.fillPath(zp_path, QColor(245, 158, 11, 20))
             p.setPen(QPen(QColor(245, 158, 11, 100), 1.5))
             p.drawPath(zp_path)
-            p.setFont(QFont("Dank Mono", 14, QFont.Weight.Bold))
+            p.setFont(QFont("SF Mono", 14, QFont.Weight.Bold))
             p.setPen(QColor("#fbbf24"))
             p.drawText(zip_box, Qt.AlignmentFlag.AlignCenter, ".ZIP")
 
@@ -253,7 +253,7 @@ def generate_installation_diagram(out_path: str):
             p.setBrush(Qt.BrushStyle.NoBrush)
 
             # Terminal Command line
-            p.setFont(QFont("Dank Mono", 13, QFont.Weight.Bold))
+            p.setFont(QFont("SF Mono", 13, QFont.Weight.Bold))
             p.setPen(QColor("#c084fc"))
             p.drawText(int(cx + 60), int(cy + 315), "$ ")
             p.setPen(QColor("#f4f4f5"))
@@ -275,7 +275,7 @@ def generate_installation_diagram(out_path: str):
         p.setPen(QPen(QColor(255, 255, 255, 18), 1))
         p.drawPath(act_path)
 
-        p.setFont(QFont("Dank Mono", 13, QFont.Weight.DemiBold))
+        p.setFont(QFont("SF Mono", 13, QFont.Weight.DemiBold))
         p.setPen(QColor("#e4e4e7"))
         p.drawText(act_rect, Qt.AlignmentFlag.AlignCenter, s["action_text"])
 
