@@ -261,3 +261,50 @@ if (copyBtn) {
     });
   });
 }
+
+
+// 6. Generic Code Block Copy Buttons
+document.querySelectorAll('.code-copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const container = btn.closest('.docs-code-container');
+    if (!container) return;
+    const codePre = container.querySelector('.docs-code-body pre');
+    if (!codePre) return;
+    const textToCopy = codePre.innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#27C93F" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Copied!
+      `;
+      setTimeout(() => {
+        btn.innerHTML = origHtml;
+      }, 2000);
+    });
+  });
+});
+
+// 7. Active Sidebar ScrollSpy for Documentation
+const docSections = document.querySelectorAll('.docs-section');
+const docSidebarLinks = document.querySelectorAll('.docs-sidebar-link');
+
+if (docSections.length > 0 && docSidebarLinks.length > 0) {
+  window.addEventListener('scroll', () => {
+    let currentId = '';
+    const scrollPos = window.scrollY + 130;
+    docSections.forEach(sec => {
+      if (sec.offsetTop <= scrollPos) {
+        currentId = sec.getAttribute('id');
+      }
+    });
+    if (currentId) {
+      docSidebarLinks.forEach(link => {
+        if (link.getAttribute('href') === `#${currentId}`) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+  }, { passive: true });
+}
