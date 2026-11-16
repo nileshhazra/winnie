@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor, QPainter, QPainterPath, QPen, QBrush, QLinearGradient
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF
-from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font, configure_no_ligatures
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font, get_ui_font, configure_no_ligatures
 from highlighter import PythonHighlighter
 from icons import TIME_SVG, SPACE_SVG, render_svg_pixmap
 
@@ -10365,13 +10365,17 @@ class ProblemDescriptionWidget(QWidget):
 
         # Badge Pill
         self.badge_label = QLabel("Practice Problem")
-        self.badge_label.setFont(QFont("SF Pro Text", 10, QFont.Weight.Bold))
+        self.badge_label.setObjectName("practiceProblemBadge")
+        self.badge_label.setFont(get_ui_font(size=11, bold=True))
+        self.badge_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.badge_label.setStyleSheet("""
-            background-color: #0284c7;
-            color: #ffffff;
-            border-radius: 6px;
-            padding: 4px 10px;
-            font-weight: 600;
+            QLabel#practiceProblemBadge {
+                background-color: #0284c7;
+                color: #ffffff;
+                border-radius: 8px;
+                padding: 7px 15px;
+                font-weight: 600;
+            }
         """)
         self.container_layout.addWidget(self.badge_label, alignment=Qt.AlignmentFlag.AlignLeft)
 
@@ -10437,6 +10441,15 @@ class ProblemDescriptionWidget(QWidget):
             {get_scrollbar_stylesheet(theme)}
         """)
         self.title_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; background: transparent;")
+        self.badge_label.setStyleSheet("""
+            QLabel#practiceProblemBadge {
+                background-color: #0284c7;
+                color: #ffffff;
+                border-radius: 8px;
+                padding: 7px 15px;
+                font-weight: 600;
+            }
+        """)
         self.desc_label.setStyleSheet(f"color: {theme['table_text']}; font-size: 13px; line-height: 1.4; background: transparent;")
         self.examples_header.setStyleSheet(f"color: {theme['brand_color']}; font-weight: bold; margin-top: 6px; background: transparent;")
         self.examples_highlighter.apply_theme(theme)
