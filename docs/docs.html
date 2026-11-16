@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started with Python & Packages — Winnie Documentation</title>
+  <meta name="description" content="Learn how to get started with Python, install packages like Pandas using Winnie's graphical package manager, and master data analysis step-by-step.">
+  <link rel="icon" type="image/png" href="assets/Winnie.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Site Header / Navigation -->
+  <header class="site-header">
+    <div class="page-wrap nav-container">
+      <a href="index.html" class="brand-logo" title="Winnie">
+        <img src="assets/Winnie.png" alt="Winnie Logo">
+        <span>Winnie</span>
+        <span class="brand-badge">Docs</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#getting-started">Getting Started</a>
+        <a href="#package-manager">Package Manager</a>
+        <a href="#pandas-tutorial">Learning Pandas</a>
+        <a href="#shortcuts">Shortcuts</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
+          <span id="theme-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+        </button>
+        <a href="https://github.com/nileshhazra/winnie/releases/latest/download/Winnie-macOS.zip" class="button-brand" title="Download Winnie for macOS">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.87-.9.04-1.99.6-2.63 1.35-.58.67-1.09 1.74-.95 2.78 1 .08 2.04-.51 2.66-1.26z"/>
+          </svg>
+          Download for Mac
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="docs-hero">
+    <div class="page-wrap docs-hero-inner">
+      <div class="docs-breadcrumb">
+        <a href="index.html">Winnie</a>
+        <span>/</span>
+        <span>Documentation</span>
+        <span>/</span>
+        <span>Guides &amp; Tutorials</span>
+      </div>
+      <h1 class="docs-title">Getting Started with Python &amp; Packages in Winnie</h1>
+      <p class="docs-subtitle">
+        A step-by-step visual guide to writing Python, managing packages with pip, and learning data science with Pandas using Winnie's visual debugger and interactive inspector.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Documentation Content with Sticky Sidebar -->
+  <main class="page-wrap">
+    <div class="docs-layout-wrap">
+      
+      <!-- Sticky Sidebar Navigation -->
+      <aside class="docs-sidebar">
+        <div class="docs-sidebar-group">
+          <div class="docs-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Getting Started
+          </div>
+          <ul class="docs-sidebar-nav">
+            <li><a href="#getting-started" class="docs-sidebar-link active">Overview &amp; Interface</a></li>
+            <li><a href="#first-script" class="docs-sidebar-link">Your First Script</a></li>
+            <li><a href="#visual-stepper" class="docs-sidebar-link">Visual Step Debugger</a></li>
+            <li><a href="#variables-tab" class="docs-sidebar-link">Live Variables Scope</a></li>
+            <li><a href="#assistant-tab" class="docs-sidebar-link">Assistant &amp; Errors</a></li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar-group">
+          <div class="docs-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            Package Manager
+          </div>
+          <ul class="docs-sidebar-nav">
+            <li><a href="#package-manager" class="docs-sidebar-link">Why Packages Matter</a></li>
+            <li><a href="#installing-packages" class="docs-sidebar-link">Installing with pip</a></li>
+            <li><a href="#package-actions" class="docs-sidebar-link">Search &amp; Uninstall</a></li>
+            <li><a href="#virtual-environments" class="docs-sidebar-link">Virtual Environments</a></li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar-group">
+          <div class="docs-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            Learning Pandas
+          </div>
+          <ul class="docs-sidebar-nav">
+            <li><a href="#pandas-intro" class="docs-sidebar-link">What is Pandas?</a></li>
+            <li><a href="#pandas-install" class="docs-sidebar-link">1. Install in Winnie</a></li>
+            <li><a href="#pandas-dataframe" class="docs-sidebar-link">2. Create First DataFrame</a></li>
+            <li><a href="#pandas-stepping" class="docs-sidebar-link">3. Step-by-Step Transformations</a></li>
+            <li><a href="#pandas-inspect" class="docs-sidebar-link">4. Inspecting in Variables</a></li>
+            <li><a href="#pandas-pitfalls" class="docs-sidebar-link">5. Common Gotchas &amp; Fixes</a></li>
+            <li><a href="#pandas-project" class="docs-sidebar-link">6. Complete Hands-on Project</a></li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar-group">
+          <div class="docs-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            Reference
+          </div>
+          <ul class="docs-sidebar-nav">
+            <li><a href="#shortcuts" class="docs-sidebar-link">Keyboard Shortcuts</a></li>
+            <li><a href="#next-libraries" class="docs-sidebar-link">Recommended Packages</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Documentation Content -->
+      <article class="docs-content">
+
+        <!-- Section 1: Getting Started -->
+        <section id="getting-started" class="docs-section">
+          <h2>
+            <span>🚀 Getting Started with Python in Winnie</span>
+          </h2>
+          <p class="docs-lead">
+            Winnie is a native macOS Python Integrated Development Environment (IDE) engineered from the ground up for <strong>visual clarity</strong> and <strong>zero-friction learning</strong>. Unlike heavyweight industrial editors that demand complex launch configs, virtual environment toggles, and terminal gymnastics, Winnie is ready to run your Python code immediately after launch.
+          </p>
+
+          <div class="callout callout-tip">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body">
+              <strong>Zero Configuration Needed</strong>
+              Winnie automatically detects your macOS Python 3 installation, Homebrew Python, or project virtual environment. Launch Winnie, type code, and hit Run.
+            </div>
+          </div>
+
+          <h3 id="interface-walkthrough">The Winnie Interface Anatomy</h3>
+          <p class="docs-paragraph">
+            The Winnie workspace is cleanly split into four interconnected zones designed around the human visual learning loop:
+          </p>
+
+          <div class="step-cards-grid">
+            <div class="step-card">
+              <div class="step-card-num">1</div>
+              <h4>Top Action Bar</h4>
+              <p>Execute scripts with <strong>Run</strong>, single-step with <strong>Step</strong>, halt with <strong>Stop</strong>, open <strong>Packages</strong>, browse <strong>160+ Problems</strong>, or switch between <strong>Dark &amp; Light</strong> modes.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">2</div>
+              <h4>Multi-Tab Editor</h4>
+              <p>Fast, distraction-free Python editor featuring the high-contrast <strong>CodeSandbox Black</strong> syntax theme, line numbers, active line highlight, and auto-indentation.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">3</div>
+              <h4>Output Console &amp; REPL</h4>
+              <p>Direct output stream for standard output and errors, plus an interactive scratchpad console at the bottom for testing one-liners on the fly.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">4</div>
+              <h4>Right Inspector Tabs</h4>
+              <p>Switch between <strong>Description</strong> (problem brief), <strong>Solution</strong> (reference answers), <strong>Variables</strong> (live scope memory), and <strong>Assistant</strong> (friendly error diagnosis).</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Your First Script -->
+        <section id="first-script" class="docs-section">
+          <h2>Writing &amp; Executing Your First Python Program</h2>
+          <p class="docs-paragraph">
+            Let's start by writing a fundamental Python script that calculates student scores and formats the results. Type the following code into the Winnie editor:
+          </p>
+
+          <div class="docs-code-container">
+            <div class="docs-code-header">
+              <div class="docs-code-title">
+                <span class="dot-file"></span>
+                <span>grades.py — Python Script</span>
+              </div>
+              <button class="code-copy-btn" title="Copy code">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <div class="docs-code-body">
+<pre><span class="syn-cm"># Calculate student grade averages and determine honors status</span>
+<span class="syn-kw">def</span> <span class="syn-fn">calculate_status</span>(<span class="syn-num">name</span>, <span class="syn-num">scores</span>):
+    <span class="syn-op">total</span> <span class="syn-op">=</span> <span class="syn-fn">sum</span>(<span class="syn-op">scores</span>)
+    <span class="syn-op">average</span> <span class="syn-op">=</span> <span class="syn-op">total</span> <span class="syn-op">/</span> <span class="syn-fn">len</span>(<span class="syn-op">scores</span>)
+    <span class="syn-kw">if</span> <span class="syn-op">average</span> <span class="syn-op">&gt;=</span> <span class="syn-num">90</span>:
+        <span class="syn-op">status</span> <span class="syn-op">=</span> <span class="syn-str">"High Honors"</span>
+    <span class="syn-kw">elif</span> <span class="syn-op">average</span> <span class="syn-op">&gt;=</span> <span class="syn-num">80</span>:
+        <span class="syn-op">status</span> <span class="syn-op">=</span> <span class="syn-str">"Honors"</span>
+    <span class="syn-kw">else</span>:
+        <span class="syn-op">status</span> <span class="syn-op">=</span> <span class="syn-str">"Standard"</span>
+    <span class="syn-kw">return</span> <span class="syn-op">average</span>, <span class="syn-op">status</span>
+
+<span class="syn-op">students</span> <span class="syn-op">=</span> {
+    <span class="syn-str">"Maya"</span>: [<span class="syn-num">94</span>, <span class="syn-num">98</span>, <span class="syn-num">91</span>],
+    <span class="syn-str">"Leo"</span>: [<span class="syn-num">82</span>, <span class="syn-num">79</span>, <span class="syn-num">88</span>],
+    <span class="syn-str">"Zara"</span>: [<span class="syn-num">70</span>, <span class="syn-num">75</span>, <span class="syn-num">72</span>]
+}
+
+<span class="syn-kw">for</span> <span class="syn-op">student</span>, <span class="syn-op">scores</span> <span class="syn-kw">in</span> <span class="syn-op">students</span>.<span class="syn-fn">items</span>():
+    <span class="syn-op">avg</span>, <span class="syn-op">standing</span> <span class="syn-op">=</span> <span class="syn-fn">calculate_status</span>(<span class="syn-op">student</span>, <span class="syn-op">scores</span>)
+    <span class="syn-fn">print</span>(<span class="syn-str">f"Student: </span>{<span class="syn-op">student</span>}<span class="syn-str"> | Avg: </span>{<span class="syn-op">avg</span>:<span class="syn-num">.1f</span>}<span class="syn-str"> | Standing: </span>{<span class="syn-op">standing</span>}<span class="syn-str">"</span>)
+</pre>
+            </div>
+          </div>
+
+          <p class="docs-paragraph">
+            To run this script:
+          </p>
+          <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+            <li>Click the green <strong>▶ Run</strong> button in the top action bar, or press <kbd>Cmd</kbd> + <kbd>R</kbd> (or <kbd>F5</kbd>).</li>
+            <li>Observe the formatted results stream instantly into the <strong>Console</strong> panel at the bottom.</li>
+          </ul>
+        </section>
+
+        <!-- Section: Visual Stepper -->
+        <section id="visual-stepper" class="docs-section">
+          <h2>Understanding Code with the Visual Step Debugger</h2>
+          <p class="docs-paragraph">
+            When learning to code, reading static lines of text is not enough. You need to see <strong>time and state flow</strong>. Winnie provides an integrated step-by-step execution tracer powered by Python's native tracing hooks.
+          </p>
+
+          <div class="walkthrough-box">
+            <span class="walkthrough-badge">Interactive Stepping</span>
+            <h4>How to Step Through Code:</h4>
+            <ol style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary); margin-top: 0.5rem;">
+              <li>Instead of clicking Run, click the orange <strong>↓ Step</strong> button (or press <kbd>F6</kbd> / <kbd>Cmd</kbd> + <kbd>E</kbd>).</li>
+              <li>Winnie enters debug mode. An <strong>orange arrow pointer</strong> and a highlighted background indicate the current statement about to execute.</li>
+              <li>Click <strong>Step</strong> again. Watch execution flow into function bodies, evaluate <code>if/elif/else</code> branches, and loop through items one at a time.</li>
+              <li>Click <strong>Stop</strong> (<kbd>F8</kbd>) anytime to exit stepping and return to editing.</li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Section: Variables Tab -->
+        <section id="variables-tab" class="docs-section">
+          <h2>Live Variable Scope &amp; Memory Inspection</h2>
+          <p class="docs-paragraph">
+            Click the <strong>Variables</strong> tab in the right panel while stepping. As you advance through your program line-by-line, Winnie continuously updates an intuitive tabular view of your runtime memory:
+          </p>
+
+          <table class="shortcut-table">
+            <thead>
+              <tr>
+                <th>Column</th>
+                <th>Description</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Name</strong></td>
+                <td>Identifier of the local or global variable</td>
+                <td><code>average</code>, <code>scores</code>, <code>students</code></td>
+              </tr>
+              <tr>
+                <td><strong>Type</strong></td>
+                <td>Python data type pill with distinct color badges</td>
+                <td><code>int</code>, <code>float</code>, <code>str</code>, <code>list</code>, <code>dict</code></td>
+              </tr>
+              <tr>
+                <td><strong>Value</strong></td>
+                <td>Human-readable snapshot of the variable's current state</td>
+                <td><code>94.3</code>, <code>['High Honors']</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout-info">
+            <div class="callout-icon">🔍</div>
+            <div class="callout-body">
+              <strong>No Print-Statement Debugging Needed</strong>
+              You don't need to litter your code with temporary <code>print()</code> calls just to check if a variable changed. Winnie tracks the exact value of every variable at each point in time.
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Assistant & Errors -->
+        <section id="assistant-tab" class="docs-section">
+          <h2>Beginner-Friendly Error Diagnosis with Winnie Assistant</h2>
+          <p class="docs-paragraph">
+            Traditional Python traceback messages can be intimidating for beginners, with dense file paths and obscure syntax warnings. Winnie includes an intelligent <strong>Assistant</strong> tab that catches exceptions and translates them into understandable guidance.
+          </p>
+
+          <div class="walkthrough-box">
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+              <span style="background: #EF4444; color: white; padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8125rem;">IndentationError</span>
+              <span style="background: rgba(255, 255, 255, 0.1); color: #F59E0B; padding: 4px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8125rem;">Line 5 →</span>
+            </div>
+            <h4>What the Assistant Provides:</h4>
+            <ul style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary);">
+              <li><strong>Clickable Jump Badge (<code>Line X →</code>):</strong> Click to jump directly to the exact offending line in the editor tabs.</li>
+              <li><strong>What Happened:</strong> A plain-English explanation of why Python stopped (e.g. mismatched indentation spaces, missing colon, or undeclared variable name).</li>
+              <li><strong>How to Fix:</strong> Concrete, runnable suggestions and code snippets demonstrating the correct syntax.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Section 2: Package Manager -->
+        <section id="package-manager" class="docs-section">
+          <h2>
+            <span>📦 Managing Python Packages with pip in Winnie</span>
+          </h2>
+          <p class="docs-lead">
+            Python's real strength lies in its vast global ecosystem of packages published on the Python Package Index (PyPI). Whether you want to build data science pipelines with <code>pandas</code>, train neural networks with <code>torch</code>, plot graphs with <code>matplotlib</code>, or query APIs with <code>requests</code>, Winnie provides a fully native <strong>Graphical Package Manager</strong>.
+          </p>
+
+          <div class="callout callout-warning">
+            <div class="callout-icon">⚡</div>
+            <div class="callout-body">
+              <strong>No Terminal or pip Commands Required</strong>
+              You do not need to open Terminal.app, run <code>pip3 install</code>, or navigate path environments. Everything is managed through a clean visual window inside Winnie.
+            </div>
+          </div>
+
+          <h3 id="installing-packages">Opening the Package Manager</h3>
+          <p class="docs-paragraph">
+            To open the Package Manager:
+          </p>
+          <ol style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            <li>Click the <strong>📦 Packages</strong> button in the top action bar (or press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>).</li>
+            <li>A window titled <strong>Manage Python Packages (pip)</strong> opens up.</li>
+            <li>At the top, Winnie displays the currently active <strong>Python Environment</strong> path (such as your project's virtualenv or macOS interpreter).</li>
+          </ol>
+
+          <h3 id="package-actions">Installing a Package</h3>
+          <div class="step-cards-grid">
+            <div class="step-card">
+              <div class="step-card-num">1</div>
+              <h4>Enter Package Name</h4>
+              <p>Type the name of any package from PyPI into the input bar (e.g. <code>pandas</code>, <code>numpy</code>, <code>requests</code>).</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">2</div>
+              <h4>Click Install</h4>
+              <p>Click the <strong>Install</strong> button (or press Return). Winnie spawns a background pip sub-process safely.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">3</div>
+              <h4>Live Terminal Stream</h4>
+              <p>Watch the real-time installation output log as wheels are downloaded and dependencies are automatically configured.</p>
+            </div>
+          </div>
+
+          <h3 id="virtual-environments">Searching, Filtering &amp; Uninstalling</h3>
+          <p class="docs-paragraph">
+            The Package Manager dialog displays all installed packages in a clear two-column table showing <strong>Package Name</strong> and <strong>Installed Version</strong>:
+          </p>
+          <ul style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary);">
+            <li><strong>Filter in Real Time:</strong> Type in the <em>Filter installed...</em> search box to instantly search through your packages (e.g. type <code>pan</code> to find <code>pandas</code>).</li>
+            <li><strong>Refresh:</strong> Click the <strong>Refresh</strong> button to rescan the environment.</li>
+            <li><strong>Uninstall:</strong> Select any package row in the table and click <strong>Uninstall Selected</strong> to cleanly remove it.</li>
+          </ul>
+        </section>
+
+        <!-- Section 3: Learning Pandas -->
+        <section id="pandas-tutorial" class="docs-section">
+          <h2>
+            <span>🐼 Hands-On Guide: Learning Pandas in Winnie</span>
+          </h2>
+          <p class="docs-lead">
+            <strong>Pandas</strong> is the industry-standard Python library for working with structured, tabular data (like spreadsheets, CSV files, and SQL tables). If you want to get into data analytics, machine learning, or scientific computing, Pandas is the foundational tool to master.
+          </p>
+
+          <h3 id="pandas-intro">What is Pandas? Core Concepts</h3>
+          <p class="docs-paragraph">
+            Pandas provides two primary data structures:
+          </p>
+          <ul style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            <li><strong>Series:</strong> A 1-dimensional labeled array capable of holding data of any type (like a single column in Excel).</li>
+            <li><strong>DataFrame:</strong> A 2-dimensional labeled data structure with columns of potentially different types (like a complete spreadsheet or database table).</li>
+          </ul>
+
+          <h3 id="pandas-install">Step 1: Install Pandas in Winnie</h3>
+          <p class="docs-paragraph">
+            First, ensure Pandas is installed in your Winnie environment:
+          </p>
+          <ol style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            <li>Click <strong>Packages</strong> in Winnie's top toolbar.</li>
+            <li>In the input field, type: <code>pandas</code></li>
+            <li>Click <strong>Install</strong>.</li>
+            <li>Wait for the confirmation message: <code>Successfully installed pandas numpy ...</code></li>
+          </ol>
+
+          <h3 id="pandas-dataframe">Step 2: Creating Your First DataFrame</h3>
+          <p class="docs-paragraph">
+            Open a new tab in Winnie (<kbd>Cmd</kbd> + <kbd>T</kbd>) and write the following code:
+          </p>
+
+          <div class="docs-code-container">
+            <div class="docs-code-header">
+              <div class="docs-code-title">
+                <span class="dot-file"></span>
+                <span>pandas_intro.py — Creating a DataFrame</span>
+              </div>
+              <button class="code-copy-btn" title="Copy code">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <div class="docs-code-body">
+<pre><span class="syn-kw">import</span> <span class="syn-op">pandas</span> <span class="syn-kw">as</span> <span class="syn-op">pd</span>
+
+<span class="syn-cm"># 1. Prepare raw structured data as a dictionary of lists</span>
+<span class="syn-op">data</span> <span class="syn-op">=</span> {
+    <span class="syn-str">"Name"</span>: [<span class="syn-str">"Alice"</span>, <span class="syn-str">"Bob"</span>, <span class="syn-str">"Charlie"</span>, <span class="syn-str">"Diana"</span>, <span class="syn-str">"Evan"</span>],
+    <span class="syn-str">"Department"</span>: [<span class="syn-str">"Engineering"</span>, <span class="syn-str">"Design"</span>, <span class="syn-str">"Engineering"</span>, <span class="syn-str">"Marketing"</span>, <span class="syn-str">"Design"</span>],
+    <span class="syn-str">"Salary"</span>: [<span class="syn-num">125000</span>, <span class="syn-num">95000</span>, <span class="syn-num">135000</span>, <span class="syn-num">88000</span>, <span class="syn-num">102000</span>],
+    <span class="syn-str">"Experience_Years"</span>: [<span class="syn-num">5</span>, <span class="syn-num">3</span>, <span class="syn-num">7</span>, <span class="syn-num">2</span>, <span class="syn-num">4</span>]
+}
+
+<span class="syn-cm"># 2. Convert dictionary into a Pandas DataFrame</span>
+<span class="syn-op">df</span> <span class="syn-op">=</span> <span class="syn-op">pd</span>.<span class="syn-cls">DataFrame</span>(<span class="syn-op">data</span>)
+
+<span class="syn-fn">print</span>(<span class="syn-str">"--- Original DataFrame ---"</span>)
+<span class="syn-fn">print</span>(<span class="syn-op">df</span>)
+</pre>
+            </div>
+          </div>
+
+          <p class="docs-paragraph">
+            Press <strong>Run</strong> (<kbd>Cmd</kbd> + <kbd>R</kbd>). You will see the beautiful tabular output in the bottom console with numbered row indices (<code>0</code> to <code>4</code>) and labeled column headers.
+          </p>
+
+          <h3 id="pandas-stepping">Step 3: Stepping Through Data Transformations</h3>
+          <p class="docs-paragraph">
+            Now let's perform real data analytics transformations. We will filter rows, calculate bonuses, group by departments, and find average compensation. Copy the following code into your editor:
+          </p>
+
+          <div class="docs-code-container">
+            <div class="docs-code-header">
+              <div class="docs-code-title">
+                <span class="dot-file"></span>
+                <span>pandas_transforms.py — Filtering, Mutation &amp; Aggregation</span>
+              </div>
+              <button class="code-copy-btn" title="Copy code">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <div class="docs-code-body">
+<pre><span class="syn-kw">import</span> <span class="syn-op">pandas</span> <span class="syn-kw">as</span> <span class="syn-op">pd</span>
+
+<span class="syn-op">df</span> <span class="syn-op">=</span> <span class="syn-op">pd</span>.<span class="syn-cls">DataFrame</span>({
+    <span class="syn-str">"Name"</span>: [<span class="syn-str">"Alice"</span>, <span class="syn-str">"Bob"</span>, <span class="syn-str">"Charlie"</span>, <span class="syn-str">"Diana"</span>, <span class="syn-str">"Evan"</span>],
+    <span class="syn-str">"Department"</span>: [<span class="syn-str">"Engineering"</span>, <span class="syn-str">"Design"</span>, <span class="syn-str">"Engineering"</span>, <span class="syn-str">"Marketing"</span>, <span class="syn-str">"Design"</span>],
+    <span class="syn-str">"Salary"</span>: [<span class="syn-num">125000</span>, <span class="syn-num">95000</span>, <span class="syn-num">135000</span>, <span class="syn-num">88000</span>, <span class="syn-num">102000</span>],
+    <span class="syn-str">"Experience_Years"</span>: [<span class="syn-num">5</span>, <span class="syn-num">3</span>, <span class="syn-num">7</span>, <span class="syn-num">2</span>, <span class="syn-num">4</span>]
+})
+
+<span class="syn-cm"># Transformation 1: Filter engineers earning over $100k</span>
+<span class="syn-op">senior_eng</span> <span class="syn-op">=</span> <span class="syn-op">df</span>[(<span class="syn-op">df</span>[<span class="syn-str">"Department"</span>] <span class="syn-op">==</span> <span class="syn-str">"Engineering"</span>) <span class="syn-op">&amp;</span> (<span class="syn-op">df</span>[<span class="syn-str">"Salary"</span>] <span class="syn-op">&gt;</span> <span class="syn-num">100000</span>)]
+
+<span class="syn-cm"># Transformation 2: Add a new computed column (15% performance bonus)</span>
+<span class="syn-op">df</span>[<span class="syn-str">"Bonus"</span>] <span class="syn-op">=</span> <span class="syn-op">df</span>[<span class="syn-str">"Salary"</span>] <span class="syn-op">*</span> <span class="syn-num">0.15</span>
+<span class="syn-op">df</span>[<span class="syn-str">"Total_Compensation"</span>] <span class="syn-op">=</span> <span class="syn-op">df</span>[<span class="syn-str">"Salary"</span>] <span class="syn-op">+</span> <span class="syn-op">df</span>[<span class="syn-str">"Bonus"</span>]
+
+<span class="syn-cm"># Transformation 3: Group by department and find average compensation</span>
+<span class="syn-op">dept_averages</span> <span class="syn-op">=</span> <span class="syn-op">df</span>.<span class="syn-fn">groupby</span>(<span class="syn-str">"Department"</span>)[[<span class="syn-str">"Salary"</span>, <span class="syn-str">"Total_Compensation"</span>]].<span class="syn-fn">mean</span>()
+
+<span class="syn-cm"># Transformation 4: Sort departments by highest average compensation</span>
+<span class="syn-op">sorted_summary</span> <span class="syn-op">=</span> <span class="syn-op">dept_averages</span>.<span class="syn-fn">sort_values</span>(<span class="syn-num">by</span><span class="syn-op">=</span><span class="syn-str">"Total_Compensation"</span>, <span class="syn-num">ascending</span><span class="syn-op">=</span><span class="syn-kw">False</span>)
+
+<span class="syn-fn">print</span>(<span class="syn-str">"=== Department Salary Rankings ==="</span>)
+<span class="syn-fn">print</span>(<span class="syn-op">sorted_summary</span>)
+</pre>
+            </div>
+          </div>
+
+          <p class="docs-paragraph">
+            <strong>Now, try stepping!</strong> Press the <strong>↓ Step</strong> button (<kbd>F6</kbd>).
+            Watch as Winnie evaluates each transformation statement individually. You can see exactly when <code>senior_eng</code> is created, when <code>Bonus</code> is appended to the DataFrame, and how <code>dept_averages</code> calculates group statistics!
+          </p>
+
+          <h3 id="pandas-inspect">Step 4: Inspecting DataFrames in the Variables Tab &amp; REPL</h3>
+          <p class="docs-paragraph">
+            While stopped at any point during stepping:
+          </p>
+          <ul style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            <li>Click the <strong>Variables</strong> tab on the right. You will see <code>df</code> listed with type <code>DataFrame</code>, and its shape summary (e.g. <code>5 rows × 6 cols</code>).</li>
+            <li>In the interactive <strong>Console</strong> at the bottom of Winnie, you can type live commands like:
+              <br><code>df.columns</code> — lists all column names.
+              <br><code>df.describe()</code> — displays summary statistics (mean, std, min, max).
+              <br><code>df['Total_Compensation'].sum()</code> — sums company-wide payroll.
+            </li>
+          </ul>
+
+          <h3 id="pandas-pitfalls">Step 5: Common Pandas Pitfalls &amp; Winnie Assistant</h3>
+          <p class="docs-paragraph">
+            When beginners start with Pandas, a few errors happen frequently. Here is how Winnie helps you diagnose and resolve them:
+          </p>
+
+          <div class="step-cards-grid">
+            <div class="step-card">
+              <div class="step-card-num">!</div>
+              <h4>KeyError: 'salary'</h4>
+              <p><strong>Cause:</strong> Column names in Pandas are case-sensitive. If your column is <code>"Salary"</code> and you write <code>df["salary"]</code>, a KeyError is raised.<br><strong>Winnie Fix:</strong> Winnie Assistant points directly to the line and suggests checking available columns via <code>df.columns</code>.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">!</div>
+              <h4>SettingWithCopyWarning</h4>
+              <p><strong>Cause:</strong> Attempting to assign values to a filtered slice using chained indexing like <code>df[df['Salary'] &gt; 100k]['Bonus'] = 5000</code>.<br><strong>Winnie Fix:</strong> Assistant explains chained indexing and demonstrates the proper <code>.loc[condition, 'column'] = value</code> pattern.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">!</div>
+              <h4>Missing Values (NaN)</h4>
+              <p><strong>Cause:</strong> When calculating sums or averages on datasets with empty cells, calculations may produce unexpected <code>NaN</code> results.<br><strong>Winnie Fix:</strong> Use <code>df.fillna(0)</code> to replace blanks or <code>df.dropna()</code> to discard incomplete rows.</p>
+            </div>
+          </div>
+
+          <h3 id="pandas-project">Step 6: Complete Hands-On Analytics Project</h3>
+          <p class="docs-paragraph">
+            Here is a complete, self-contained data analytics script you can run directly inside Winnie. It reads raw sales transaction data, calculates revenue and margins, and prints out top-performing product categories:
+          </p>
+
+          <div class="docs-code-container">
+            <div class="docs-code-header">
+              <div class="docs-code-title">
+                <span class="dot-file"></span>
+                <span>sales_analytics.py — Complete Hands-on Project</span>
+              </div>
+              <button class="code-copy-btn" title="Copy code">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <div class="docs-code-body">
+<pre><span class="syn-kw">import</span> <span class="syn-op">pandas</span> <span class="syn-kw">as</span> <span class="syn-op">pd</span>
+
+<span class="syn-cm"># Raw store transaction records</span>
+<span class="syn-op">transactions</span> <span class="syn-op">=</span> [
+    {<span class="syn-str">"Order_ID"</span>: <span class="syn-num">101</span>, <span class="syn-str">"Category"</span>: <span class="syn-str">"Laptops"</span>, <span class="syn-str">"Price"</span>: <span class="syn-num">1200</span>, <span class="syn-str">"Quantity"</span>: <span class="syn-num">2</span>, <span class="syn-str">"Cost"</span>: <span class="syn-num">900</span>},
+    {<span class="syn-str">"Order_ID"</span>: <span class="syn-num">102</span>, <span class="syn-str">"Category"</span>: <span class="syn-str">"Phones"</span>, <span class="syn-str">"Price"</span>: <span class="syn-num">800</span>, <span class="syn-str">"Quantity"</span>: <span class="syn-num">5</span>, <span class="syn-str">"Cost"</span>: <span class="syn-num">550</span>},
+    {<span class="syn-str">"Order_ID"</span>: <span class="syn-num">103</span>, <span class="syn-str">"Category"</span>: <span class="syn-str">"Accessories"</span>, <span class="syn-str">"Price"</span>: <span class="syn-num">45</span>, <span class="syn-str">"Quantity"</span>: <span class="syn-num">20</span>, <span class="syn-str">"Cost"</span>: <span class="syn-num">15</span>},
+    {<span class="syn-str">"Order_ID"</span>: <span class="syn-num">104</span>, <span class="syn-str">"Category"</span>: <span class="syn-str">"Laptops"</span>, <span class="syn-str">"Price"</span>: <span class="syn-num">1500</span>, <span class="syn-str">"Quantity"</span>: <span class="syn-num">3</span>, <span class="syn-str">"Cost"</span>: <span class="syn-num">1100</span>},
+    {<span class="syn-str">"Order_ID"</span>: <span class="syn-num">105</span>, <span class="syn-str">"Category"</span>: <span class="syn-str">"Phones"</span>, <span class="syn-str">"Price"</span>: <span class="syn-num">950</span>, <span class="syn-str">"Quantity"</span>: <span class="syn-num">4</span>, <span class="syn-str">"Cost"</span>: <span class="syn-num">650</span>},
+    {<span class="syn-str">"Order_ID"</span>: <span class="syn-num">106</span>, <span class="syn-str">"Category"</span>: <span class="syn-str">"Accessories"</span>, <span class="syn-str">"Price"</span>: <span class="syn-num">80</span>, <span class="syn-str">"Quantity"</span>: <span class="syn-num">12</span>, <span class="syn-str">"Cost"</span>: <span class="syn-num">30</span>}
+]
+
+<span class="syn-op">df</span> <span class="syn-op">=</span> <span class="syn-op">pd</span>.<span class="syn-cls">DataFrame</span>(<span class="syn-op">transactions</span>)
+
+<span class="syn-cm"># 1. Calculate Gross Revenue and Total Cost</span>
+<span class="syn-op">df</span>[<span class="syn-str">"Revenue"</span>] <span class="syn-op">=</span> <span class="syn-op">df</span>[<span class="syn-str">"Price"</span>] <span class="syn-op">*</span> <span class="syn-op">df</span>[<span class="syn-str">"Quantity"</span>]
+<span class="syn-op">df</span>[<span class="syn-str">"Total_Cost"</span>] <span class="syn-op">=</span> <span class="syn-op">df</span>[<span class="syn-str">"Cost"</span>] <span class="syn-op">*</span> <span class="syn-op">df</span>[<span class="syn-str">"Quantity"</span>]
+
+<span class="syn-cm"># 2. Calculate Profit and Profit Margin (%)</span>
+<span class="syn-op">df</span>[<span class="syn-str">"Profit"</span>] <span class="syn-op">=</span> <span class="syn-op">df</span>[<span class="syn-str">"Revenue"</span>] <span class="syn-op">-</span> <span class="syn-op">df</span>[<span class="syn-str">"Total_Cost"</span>]
+<span class="syn-op">df</span>[<span class="syn-str">"Margin_Pct"</span>] <span class="syn-op">=</span> (<span class="syn-op">df</span>[<span class="syn-str">"Profit"</span>] <span class="syn-op">/</span> <span class="syn-op">df</span>[<span class="syn-str">"Revenue"</span>]) <span class="syn-op">*</span> <span class="syn-num">100</span>
+
+<span class="syn-cm"># 3. Summarize by Category</span>
+<span class="syn-op">summary</span> <span class="syn-op">=</span> <span class="syn-op">df</span>.<span class="syn-fn">groupby</span>(<span class="syn-str">"Category"</span>).<span class="syn-fn">agg</span>({
+    <span class="syn-str">"Quantity"</span>: <span class="syn-str">"sum"</span>,
+    <span class="syn-str">"Revenue"</span>: <span class="syn-str">"sum"</span>,
+    <span class="syn-str">"Profit"</span>: <span class="syn-str">"sum"</span>
+})
+
+<span class="syn-cm"># Calculate Category-Level Profit Margin</span>
+<span class="syn-op">summary</span>[<span class="syn-str">"Overall_Margin_Pct"</span>] <span class="syn-op">=</span> (<span class="syn-op">summary</span>[<span class="syn-str">"Profit"</span>] <span class="syn-op">/</span> <span class="syn-op">summary</span>[<span class="syn-str">"Revenue"</span>]) <span class="syn-op">*</span> <span class="syn-num">100</span>
+<span class="syn-op">summary</span> <span class="syn-op">=</span> <span class="syn-op">summary</span>.<span class="syn-fn">sort_values</span>(<span class="syn-num">by</span><span class="syn-op">=</span><span class="syn-str">"Profit"</span>, <span class="syn-num">ascending</span><span class="syn-op">=</span><span class="syn-kw">False</span>)
+
+<span class="syn-fn">print</span>(<span class="syn-str">"================ STORE SALES SUMMARY ================"</span>)
+<span class="syn-fn">print</span>(<span class="syn-op">summary</span>.<span class="syn-fn">round</span>(<span class="syn-num">2</span>))
+</pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4: Keyboard Shortcuts & Reference -->
+        <section id="shortcuts" class="docs-section">
+          <h2>
+            <span>💡 Keyboard Shortcuts &amp; Reference</span>
+          </h2>
+          <p class="docs-lead">
+            Speed up your daily workflow with these macOS native shortcuts built right into Winnie:
+          </p>
+
+          <table class="shortcut-table">
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Shortcut</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Run Program</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>R</kbd> &nbsp;or&nbsp; <kbd>F5</kbd></td>
+                <td>Executes the active script from beginning to end</td>
+              </tr>
+              <tr>
+                <td><strong>Step Next Statement</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>E</kbd> &nbsp;or&nbsp; <kbd>F6</kbd></td>
+                <td>Advances execution by one statement and updates Variables</td>
+              </tr>
+              <tr>
+                <td><strong>Stop Execution</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>.</kbd> &nbsp;or&nbsp; <kbd>F8</kbd></td>
+                <td>Terminates the running process or exits stepper mode</td>
+              </tr>
+              <tr>
+                <td><strong>Clear Console</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>K</kbd></td>
+                <td>Clears all output text from the execution console</td>
+              </tr>
+              <tr>
+                <td><strong>New Tab</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>T</kbd></td>
+                <td>Opens a new blank editor tab with default filename</td>
+              </tr>
+              <tr>
+                <td><strong>Close Tab</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>W</kbd></td>
+                <td>Closes the currently active editor tab</td>
+              </tr>
+              <tr>
+                <td><strong>Package Manager</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd></td>
+                <td>Opens the graphical pip package installer dialog</td>
+              </tr>
+              <tr>
+                <td><strong>Toggle Theme</strong></td>
+                <td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd></td>
+                <td>Instantly switches between Honey Dark and Honey Light themes</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 id="next-libraries">Recommended Packages to Explore Next</h3>
+          <p class="docs-paragraph">
+            Once you feel comfortable with <code>pandas</code>, expand your toolkit by installing these powerful libraries via Winnie's Package Manager:
+          </p>
+
+          <div class="step-cards-grid">
+            <div class="step-card">
+              <div class="step-card-num">📈</div>
+              <h4>matplotlib</h4>
+              <p>The standard 2D data plotting library. Generate line charts, bar graphs, histograms, and scatter plots from your Pandas DataFrames.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">🌐</div>
+              <h4>requests</h4>
+              <p>Simple, human-friendly HTTP library for fetching live data from web APIs (e.g. weather, GitHub repos, currency rates).</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">📊</div>
+              <h4>seaborn</h4>
+              <p>Statistical data visualization built on top of Matplotlib with elegant default themes and color palettes for heatmaps and pair plots.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-card-num">📁</div>
+              <h4>openpyxl</h4>
+              <p>Enables reading and writing Excel (<code>.xlsx</code>) spreadsheets directly in Pandas via <code>pd.read_excel()</code>.</p>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="page-wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <img src="assets/Winnie.png" alt="Winnie">
+            <span>Winnie</span>
+          </div>
+          <p>The native macOS Python IDE built for visual learning, step-by-step execution, and frictionless problem solving.</p>
+        </div>
+
+        <div class="footer-columns">
+          <div class="footer-column">
+            <h5>Navigation</h5>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="#getting-started">Getting Started</a></li>
+              <li><a href="#package-manager">Package Manager</a></li>
+              <li><a href="#pandas-tutorial">Learning Pandas</a></li>
+              <li><a href="#shortcuts">Shortcuts</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h5>Download</h5>
+            <ul>
+              <li><a href="https://github.com/nileshhazra/winnie/releases/latest/download/Winnie-macOS.zip">macOS Universal</a></li>
+              <li><a href="https://github.com/nileshhazra/winnie/releases">Release Notes (v1.5.0)</a></li>
+              <li><a href="https://github.com/nileshhazra/winnie/blob/main/LICENSE">MIT License</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h5>Community</h5>
+            <ul>
+              <li><a href="https://github.com/nileshhazra/winnie" target="_blank" rel="noopener">GitHub Repository</a></li>
+              <li><a href="https://github.com/nileshhazra/winnie/issues" target="_blank" rel="noopener">Report an Issue</a></li>
+              <li><a href="https://github.com/nileshhazra/winnie/pulls" target="_blank" rel="noopener">Contribute</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Winnie. Free and open source under the MIT License.</span>
+        <span>Designed with care for macOS.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
