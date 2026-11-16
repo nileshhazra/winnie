@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt, Signal
-from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font, get_ui_font
 
 
 # ==========================================================
@@ -227,32 +227,37 @@ class AssistantView(QWidget):
             "tip": "Check the highlighted line for unexpected values or unhandled edge cases."
         })
 
-        # 1. Error Badge & Line Button Header
+        # 1. Error Badge & Line Button Header (Consistent with Practice Problem pill)
         header = QHBoxLayout()
-        badge = QLabel(f"  {err_type}  ")
-        badge.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        header.setSpacing(8)
+        badge = QLabel(err_type)
+        badge.setFont(get_ui_font(size=11, bold=True))
+        badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
         badge.setStyleSheet("""
             background-color: #ef4444;
             color: #ffffff;
-            border-radius: 6px;
-            padding: 3px 8px;
+            border-radius: 8px;
+            padding: 7px 15px;
+            font-weight: 600;
         """)
         header.addWidget(badge)
 
         if line_num:
             line_btn = QPushButton(f"Line {line_num}  →")
-            line_btn.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+            line_btn.setFont(get_ui_font(size=11, bold=True))
             line_btn.setCursor(Qt.CursorShape.PointingHandCursor)
             line_btn.setStyleSheet("""
                 QPushButton {
                     background-color: #3f3f46;
                     color: #fbbf24;
                     border: none;
-                    border-radius: 6px;
-                    padding: 3px 8px;
+                    border-radius: 8px;
+                    padding: 7px 15px;
+                    font-weight: 600;
                 }
                 QPushButton:hover {
                     background-color: #52525b;
+                    color: #fde047;
                 }
             """)
             line_btn.clicked.connect(lambda: self.jump_to_line_requested.emit(line_num))
