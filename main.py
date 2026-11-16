@@ -278,6 +278,7 @@ class WinnieIDE(QMainWindow):
         corner_layout.addWidget(self.exit_problem_btn)
 
         self.right_tabs = QTabWidget()
+        self.right_tabs.setObjectName("rightTabs")
         self.right_tabs.tabBar().setElideMode(Qt.TextElideMode.ElideNone)
         self.right_tabs.setMinimumWidth(260)
         self.right_tabs.addTab(self.variables_view, "Variables")
@@ -1323,15 +1324,14 @@ class WinnieIDE(QMainWindow):
                 }}
             """)
 
-        # Apple Liquid Glass Unified Pill Controls (Visually quiet by default per Apple HIG)
+        # Apple Liquid Glass Unified Buttons (Modern Rounded Corners)
         pill_style = f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-top: 1px solid {glass_highlight};
-                border-radius: 16px;
-                padding: 6px 16px;
+                border-radius: 9px;
+                padding: 6px 15px;
                 font-size: 12.5px;
                 font-weight: 500;
             }}
@@ -1358,9 +1358,8 @@ class WinnieIDE(QMainWindow):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-top: 1px solid {glass_highlight};
-                border-radius: 16px;
-                padding: 6px 16px;
+                border-radius: 9px;
+                padding: 6px 15px;
                 font-size: 12.5px;
                 font-weight: 500;
             }}
@@ -1387,9 +1386,8 @@ class WinnieIDE(QMainWindow):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-top: 1px solid {glass_highlight};
-                border-radius: 16px;
-                padding: 6px 16px;
+                border-radius: 9px;
+                padding: 6px 15px;
                 font-size: 12.5px;
                 font-weight: 500;
             }}
@@ -1416,9 +1414,8 @@ class WinnieIDE(QMainWindow):
                 background-color: {'rgba(239, 68, 68, 0.18)' if is_dark else '#fef2f2'};
                 color: {'#FCA5A5' if is_dark else '#DC2626'};
                 border: 1px solid {'rgba(248, 113, 113, 0.38)' if is_dark else '#fecaca'};
-                border-top: 1px solid {glass_highlight};
-                border-radius: 16px;
-                padding: 6px 16px;
+                border-radius: 9px;
+                padding: 6px 15px;
                 font-size: 12.5px;
                 font-weight: 500;
             }}
@@ -1499,11 +1496,11 @@ class WinnieIDE(QMainWindow):
                 border: 1px solid {glass_border};
                 background-color: {theme['editor_bg']};
                 border-radius: 12px;
+                margin-top: 7px;
             }}
             QTabWidget#editorTabs QTabBar {{
                 qproperty-drawBase: 0;
                 background-color: transparent;
-                margin-bottom: 6px;
             }}
             QTabWidget#editorTabs QTabBar::tab {{
                 background-color: transparent;
@@ -1523,6 +1520,7 @@ class WinnieIDE(QMainWindow):
                 background-color: {selected_tab_bg};
                 color: {theme['brand_color']};
                 border: 1px solid {selected_tab_border};
+                border-radius: 9px;
                 font-weight: 600;
             }}
             {get_scrollbar_stylesheet(theme)}
@@ -1560,11 +1558,13 @@ class WinnieIDE(QMainWindow):
 
         # Right Tab Panel Styling (Variables, Problems)
         self.right_tabs.setStyleSheet(f"""
-            QTabWidget::pane {{
+            QTabWidget#rightTabs::pane, QTabWidget::pane {{
                 border: 1px solid {glass_border};
                 background-color: {theme['table_bg']};
                 border-radius: 12px;
+                margin-top: 7px;
             }}
+            QTabWidget#rightTabs > QStackedWidget, QTabWidget#rightTabs > QStackedWidget > QWidget,
             QTabWidget > QStackedWidget, QTabWidget > QStackedWidget > QWidget {{
                 background-color: {theme['table_bg']};
                 border-radius: 12px;
@@ -1572,7 +1572,6 @@ class WinnieIDE(QMainWindow):
             QTabBar {{
                 qproperty-drawBase: 0;
                 background-color: transparent;
-                margin-bottom: 6px;
             }}
             QTabBar::tab {{
                 background-color: transparent;
@@ -1592,6 +1591,7 @@ class WinnieIDE(QMainWindow):
                 background-color: {selected_tab_bg};
                 color: {theme['brand_color']};
                 border: 1px solid {selected_tab_border};
+                border-radius: 9px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
