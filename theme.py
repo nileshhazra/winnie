@@ -18,8 +18,8 @@ def safe_qcolor(color_val, fallback="#1E2026") -> QColor:
 
 DARK_THEME = {
     "name": "dark",
-    # CodeSandbox Black - Deep Pitch Black Obsidian Canvas
-    "window_bg": "#0a0a0c",
+    # CodeSandbox Black (https://github.com/ziadyjo/codesandbox-black-theme)
+    "window_bg": "#111111",
     "surface_glass": "rgba(255, 255, 255, 0.05)",
     "surface_glass_hover": "rgba(255, 255, 255, 0.09)",
     "surface_glass_active": "rgba(255, 255, 255, 0.14)",
@@ -31,71 +31,76 @@ DARK_THEME = {
     # Liquid Glass Pill Buttons
     "btn_clear_bg": "rgba(255, 255, 255, 0.05)",
     "btn_clear_hover": "rgba(255, 255, 255, 0.10)",
-    "btn_clear_text": "#e4e4e7",
+    "btn_clear_text": "#ABB2BF",
     "btn_clear_border": "rgba(255, 255, 255, 0.09)",
     
     # Accent Glass Highlights
-    "accent_emerald": "#50fa7b",
-    "accent_emerald_glass": "rgba(80, 250, 123, 0.18)",
-    "accent_emerald_border": "rgba(80, 250, 123, 0.40)",
-    "accent_emerald_text": "#50fa7b",
+    "accent_emerald": "#41B883",
+    "accent_emerald_glass": "rgba(65, 184, 131, 0.18)",
+    "accent_emerald_border": "rgba(65, 184, 131, 0.40)",
+    "accent_emerald_text": "#41B883",
 
-    "accent_amber": "#ffb86c",
-    "accent_honey": "#ffb86c",
-    "accent_amber_glass": "rgba(255, 184, 108, 0.18)",
-    "accent_amber_border": "rgba(255, 184, 108, 0.40)",
-    "accent_amber_text": "#ffb86c",
+    "accent_amber": "#D19A66",
+    "accent_honey": "#D19A66",
+    "accent_amber_glass": "rgba(209, 154, 102, 0.18)",
+    "accent_amber_border": "rgba(209, 154, 102, 0.40)",
+    "accent_amber_text": "#D19A66",
 
-    "accent_rose": "#ff5555",
-    "accent_rose_glass": "rgba(255, 85, 85, 0.18)",
-    "accent_rose_border": "rgba(255, 85, 85, 0.40)",
-    "accent_rose_text": "#ff6e6e",
+    "accent_rose": "#E06C75",
+    "accent_rose_glass": "rgba(224, 108, 117, 0.18)",
+    "accent_rose_border": "rgba(224, 108, 117, 0.40)",
+    "accent_rose_text": "#E06C75",
 
-    "accent_violet": "#bd93f9",
-    "accent_violet_glass": "rgba(189, 147, 249, 0.18)",
-    "accent_violet_border": "rgba(189, 147, 249, 0.40)",
-    "accent_violet_text": "#bd93f9",
+    "accent_violet": "#C678DD",
+    "accent_violet_glass": "rgba(198, 120, 221, 0.18)",
+    "accent_violet_border": "rgba(198, 120, 221, 0.40)",
+    "accent_violet_text": "#C678DD",
 
-    # CodeSandbox Black - Pure Pitch Black Editor
-    "editor_bg": "#000000",
-    "editor_text": "#f8f8f2",
-    "editor_selection": "#282a36",
-    "gutter_bg": "#000000",
-    "gutter_border": "#1a1a1f",
-    "gutter_text": "#6272a4",
+    # CodeSandbox Black - Deep Obsidian Editor Canvas
+    "editor_bg": "#151515",
+    "editor_text": "#ABB2BF",
+    "editor_selection": "#1D2F3E",
+    "gutter_bg": "#151515",
+    "gutter_border": "#242424",
+    "gutter_text": "#5C6370",
     
-    # Active Line (Subtle slate highlight against pitch black)
-    "current_line": "#141418",
+    # Active Line & Debug Line
+    "current_line": "#1E1E1E",
     "debug_line_bg": "#2d2006",
 
     # Pure Black Terminal / Console
-    "console_bg": "#000000",
-    "console_text": "#f8f8f2",
-    "console_border": "rgba(255, 255, 255, 0.08)",
+    "console_bg": "#151515",
+    "console_text": "#ABB2BF",
+    "console_border": "#242424",
 
     # Variables & Data Inspector Panel
-    "table_bg": "#08080a",
+    "table_bg": "#151515",
     "table_header_bg": "rgba(255, 255, 255, 0.03)",
-    "table_header_text": "#6272a4",
-    "table_text": "#f8f8f2",
+    "table_header_text": "#5C6370",
+    "table_text": "#ABB2BF",
     "table_border": "rgba(255, 255, 255, 0.06)",
-    "var_name": "#8be9fd",
-    "var_type": "#ffb86c",
-    "var_str": "#f1fa8c",
+    "var_name": "#E06C75",
+    "var_type": "#D19A66",
+    "var_str": "#41B883",
 
     # Sleek Rounded Glass Scrollbar
     "scrollbar_track": "transparent",
     "scrollbar_handle": "rgba(255, 255, 255, 0.18)",
     "scrollbar_handle_hover": "rgba(255, 255, 255, 0.32)",
     
-    # CodeSandbox Black Iconic Neon Syntax Palette
-    "syntax_keyword": "#ff79c6",
-    "syntax_constant": "#bd93f9",
-    "syntax_builtin": "#50fa7b",
-    "syntax_function": "#50fa7b",
-    "syntax_string": "#f1fa8c",
-    "syntax_number": "#bd93f9",
-    "syntax_comment": "#6272a4",
+    # Official ziadyjo/codesandbox-black-theme Token Colors
+    "syntax_keyword": "#C678DD",
+    "syntax_class": "#E5C07B",
+    "syntax_inherited": "#41B883",
+    "syntax_function": "#61AFEF",
+    "syntax_variable": "#E06C75",
+    "syntax_parameter": "#D19A66",
+    "syntax_constant": "#D19A66",
+    "syntax_number": "#D19A66",
+    "syntax_string": "#41B883",
+    "syntax_comment": "#5C6370",
+    "syntax_operator": "#ABB2BF",
+    "syntax_builtin": "#56B6C2",
 }
 
 LIGHT_THEME = {
@@ -171,12 +176,18 @@ LIGHT_THEME = {
     "scrollbar_handle_hover": "rgba(0, 0, 0, 0.28)",
     
     # Clean Light Syntax Highlighting
-    "syntax_keyword": "#AF00DB",
-    "syntax_constant": "#0000FF",
-    "syntax_builtin": "#795E26",
-    "syntax_string": "#A31515",
-    "syntax_number": "#098658",
-    "syntax_comment": "#008000",
+    "syntax_keyword": "#A626A4",
+    "syntax_class": "#C18401",
+    "syntax_inherited": "#50A14F",
+    "syntax_function": "#4078F2",
+    "syntax_variable": "#E45649",
+    "syntax_parameter": "#986801",
+    "syntax_constant": "#986801",
+    "syntax_number": "#986801",
+    "syntax_string": "#50A14F",
+    "syntax_comment": "#A0A1A7",
+    "syntax_operator": "#383A42",
+    "syntax_builtin": "#0184BC",
 }
 
 
