@@ -143,10 +143,11 @@ class SqlPlaygroundWidget(QWidget):
         # 1. Top SQL Toolbar
         # ---------------------------------------------------------------------
         self.toolbar = QWidget(self)
-        self.toolbar.setFixedHeight(52)
+        self.toolbar.setObjectName("sqlToolbar")
+        self.toolbar.setFixedHeight(50)
         toolbar_layout = QHBoxLayout(self.toolbar)
-        toolbar_layout.setContentsMargins(16, 8, 16, 8)
-        toolbar_layout.setSpacing(12)
+        toolbar_layout.setContentsMargins(14, 6, 14, 6)
+        toolbar_layout.setSpacing(10)
 
         # Schema Selection Dropdown
         schema_label = QLabel("Schema:", self.toolbar)
@@ -828,7 +829,8 @@ ORDER BY total_products DESC;
                 QFrame {{
                     background-color: {card_bg};
                     border: 1px solid {card_border};
-                    border-radius: 8px;
+                    border-top: 1px solid {'rgba(255, 255, 255, 0.14)' if not is_light else 'rgba(0, 0, 0, 0.10)'};
+                    border-radius: 12px;
                 }}
             """)
             c_layout = QVBoxLayout(card)
@@ -931,8 +933,9 @@ ORDER BY total_products DESC;
                 QFrame {{
                     background-color: {card_bg};
                     border: 1px solid {card_border};
-                    border-left: 4px solid #F59E0B;
-                    border-radius: 6px;
+                    border-top: 1px solid {'rgba(255, 255, 255, 0.14)' if not is_light else 'rgba(0, 0, 0, 0.10)'};
+                    border-left: 3px solid #F59E0B;
+                    border-radius: 12px;
                 }}
             """)
             c_layout = QVBoxLayout(card)
@@ -997,11 +1000,13 @@ ORDER BY total_products DESC;
         selected_tab_bg = "rgba(255, 255, 255, 0.08)" if is_dark else "#FFFFFF"
         selected_tab_border = glass_highlight if is_dark else "rgba(0, 0, 0, 0.10)"
 
-        # Style toolbar (Liquid Glass Pill Toolbar)
+        # Style toolbar (Apple Liquid Glass Floating Island Toolbar)
         self.toolbar.setStyleSheet(f"""
-            QWidget {{
-                background-color: transparent;
-                border-bottom: 1px solid {glass_border};
+            QWidget#sqlToolbar {{
+                background-color: {theme['surface_glass']};
+                border: 1px solid {glass_border};
+                border-top: 1px solid {glass_highlight};
+                border-radius: 20px;
             }}
             QLabel {{
                 color: {theme['editor_text']};
@@ -1010,6 +1015,7 @@ ORDER BY total_products DESC;
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['editor_text']};
                 border: 1px solid {theme['btn_clear_border']};
+                border-top: 1px solid {glass_highlight};
                 border-radius: 16px;
                 padding: 4px 14px;
                 font-size: 12.5px;
@@ -1022,51 +1028,44 @@ ORDER BY total_products DESC;
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
+                border-top: 1px solid {glass_highlight};
                 border-radius: 16px;
                 padding: 6px 16px;
                 font-size: 12.5px;
                 font-weight: 500;
             }}
             QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
+                background-color: {glass_hover};
                 border: 1px solid {glass_highlight};
-                color: #FFFFFF;
+                color: {theme['brand_color']};
+            }}
+            QPushButton:pressed {{
+                background-color: {theme['surface_glass_active']};
             }}
         """)
 
-        # Style Run Query button with luminous amber glass capsule
-        if is_dark:
-            self.run_btn.setStyleSheet("""
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.22), stop:1 rgba(217, 119, 6, 0.35));
-                    color: #FCD34D;
-                    border: 1px solid rgba(251, 191, 36, 0.45);
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.36), stop:1 rgba(217, 119, 6, 0.50));
-                    border: 1px solid rgba(252, 211, 77, 0.70);
-                    color: #FFFFFF;
-                }
-            """)
-        else:
-            self.run_btn.setStyleSheet("""
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
-                    color: #FFFFFF;
-                    border: 1px solid #B45309;
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: #B45309;
-                }
-            """)
+        # Style Run Query button with quiet Liquid Glass pill & amber SF Symbol
+        self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=13, color="#FCD34D" if is_dark else "#D97706"))
+        self.run_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-top: 1px solid {glass_highlight};
+                border-radius: 16px;
+                padding: 6px 18px;
+                font-weight: 500;
+                font-size: 12.5px;
+            }}
+            QPushButton:hover {{
+                background-color: {'rgba(245, 158, 11, 0.14)' if is_dark else '#fffbeb'};
+                border: 1px solid {'rgba(251, 191, 36, 0.40)' if is_dark else '#fde68a'};
+                color: {theme['brand_color']};
+            }}
+            QPushButton:pressed {{
+                background-color: {'rgba(245, 158, 11, 0.24)' if is_dark else '#fef3c7'};
+            }}
+        """)
 
         # Style Sidebar Tabs & Trees (Floating Glass Tabs)
         self.sidebar_tabs.setStyleSheet(f"""

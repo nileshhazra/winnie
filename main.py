@@ -1114,13 +1114,15 @@ class WinnieIDE(QMainWindow):
         self.editor.set_debug_line(line_num)
 
     def create_action_bar(self):
-        """Creates a modern top bar with sleek monochromatic icons."""
+        """Creates a floating Apple Liquid Glass action bar with sleek monochromatic controls."""
         bar = TopActionBar(self)
-        bar.setFixedHeight(44)
+        bar.setObjectName("topActionBar")
+        bar.setFixedHeight(50)
         bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout = QHBoxLayout(bar)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(12)
+        layout.setContentsMargins(14, 6, 14, 6)
+        layout.setSpacing(10)
+        self.top_bar = bar
 
         # 1. Clean Minimal Brand Name
         self.brand = QLabel("Winnie")
@@ -1333,6 +1335,8 @@ class WinnieIDE(QMainWindow):
         glass_hover = theme.get("surface_glass_hover", "rgba(255, 255, 255, 0.09)" if is_dark else "#F0F0F2")
         glass_active = theme.get("surface_glass_active", "rgba(255, 255, 255, 0.13)" if is_dark else "#E8E8EA")
         accent_honey = theme.get("accent_honey", "#F59E0B" if is_dark else "#D97706")
+        selected_tab_bg = "rgba(255, 255, 255, 0.12)" if is_dark else "#FFFFFF"
+        selected_tab_border = glass_highlight if is_dark else "rgba(0, 0, 0, 0.10)"
 
         self.setStyleSheet(f"""
             QMainWindow {{
@@ -1353,167 +1357,129 @@ class WinnieIDE(QMainWindow):
         # Brand styling
         self.brand.setStyleSheet(f"color: {theme['brand_color']}; margin-right: 10px; letter-spacing: -0.3px;")
 
-        # 1. Liquid Glass Action Buttons (Run, Step, Stop)
-        if is_dark:
-            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=12, color="#6EE7B7"))
-            self.run_btn.setStyleSheet("""
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.22), stop:1 rgba(5, 150, 105, 0.35));
-                    color: #6EE7B7;
-                    border: 1px solid rgba(52, 211, 153, 0.40);
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.38), stop:1 rgba(5, 150, 105, 0.52));
-                    border: 1px solid rgba(110, 231, 183, 0.70);
-                    color: #FFFFFF;
-                }
-                QPushButton:pressed {
-                    background: rgba(4, 120, 87, 0.6);
-                }
-                QPushButton:disabled {
-                    background-color: rgba(255, 255, 255, 0.03);
-                    color: #52525B;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                }
+        # Floating Apple Liquid Glass Top Bar
+        if hasattr(self, "top_bar") and self.top_bar:
+            self.top_bar.setStyleSheet(f"""
+                QWidget#topActionBar {{
+                    background-color: {theme['surface_glass']};
+                    border: 1px solid {glass_border};
+                    border-top: 1px solid {glass_highlight};
+                    border-radius: 20px;
+                }}
             """)
 
-            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=13, color="#FCD34D"))
-            self.step_btn.setStyleSheet("""
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.20), stop:1 rgba(217, 119, 6, 0.32));
-                    color: #FCD34D;
-                    border: 1px solid rgba(251, 191, 36, 0.40);
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.36), stop:1 rgba(217, 119, 6, 0.50));
-                    border: 1px solid rgba(252, 211, 77, 0.70);
-                    color: #FFFFFF;
-                }
-                QPushButton:pressed {
-                    background: rgba(180, 83, 9, 0.6);
-                }
-                QPushButton:disabled {
-                    background-color: rgba(255, 255, 255, 0.03);
-                    color: #52525B;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                }
-            """)
-
-            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=12, color="#FCA5A5"))
-            self.stop_btn.setStyleSheet("""
-                QPushButton {
-                    background: rgba(239, 68, 68, 0.16);
-                    color: #FCA5A5;
-                    border: 1px solid rgba(248, 113, 113, 0.30);
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: rgba(239, 68, 68, 0.32);
-                    border: 1px solid rgba(252, 165, 165, 0.60);
-                    color: #FFFFFF;
-                }
-                QPushButton:pressed {
-                    background: rgba(185, 28, 28, 0.6);
-                }
-                QPushButton:disabled {
-                    background-color: rgba(255, 255, 255, 0.03);
-                    color: #52525B;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                }
-            """)
-        else:
-            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=12, color="#FFFFFF"))
-            self.run_btn.setStyleSheet("""
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #10B981, stop:1 #059669);
-                    color: #FFFFFF;
-                    border: 1px solid #047857;
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: #047857;
-                }
-                QPushButton:disabled {
-                    background-color: #E4E4E7;
-                    color: #A1A1AA;
-                    border: 1px solid #D4D4D8;
-                }
-            """)
-
-            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=13, color="#FFFFFF"))
-            self.step_btn.setStyleSheet("""
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
-                    color: #FFFFFF;
-                    border: 1px solid #B45309;
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: #B45309;
-                }
-                QPushButton:disabled {
-                    background-color: #E4E4E7;
-                    color: #A1A1AA;
-                    border: 1px solid #D4D4D8;
-                }
-            """)
-
-            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=12, color="#FFFFFF"))
-            self.stop_btn.setStyleSheet("""
-                QPushButton {
-                    background: #EF4444;
-                    color: #FFFFFF;
-                    border: 1px solid #DC2626;
-                    border-radius: 16px;
-                    padding: 6px 18px;
-                    font-weight: 600;
-                    font-size: 12.5px;
-                }
-                QPushButton:hover {
-                    background: #DC2626;
-                }
-                QPushButton:disabled {
-                    background-color: #E4E4E7;
-                    color: #A1A1AA;
-                    border: 1px solid #D4D4D8;
-                }
-            """)
-
-        # Liquid Glass Secondary Pill Buttons (Clear, Packages, Problems, SQL, Theme, Info)
+        # Apple Liquid Glass Unified Pill Controls (Visually quiet by default per Apple HIG)
         pill_style = f"""
             QPushButton {{
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
+                border-top: 1px solid {glass_highlight};
                 border-radius: 16px;
-                padding: 6px 15px;
+                padding: 6px 16px;
                 font-size: 12.5px;
                 font-weight: 500;
             }}
             QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
+                background-color: {glass_hover};
                 border: 1px solid {glass_highlight};
-                color: #FFFFFF;
+                color: {theme['brand_color']};
+            }}
+            QPushButton:pressed {{
+                background-color: {theme['surface_glass_active']};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                color: {'#4b4c53' if is_dark else '#d4d4d8'};
+                border: 1px solid {'rgba(255, 255, 255, 0.04)' if is_dark else 'rgba(0, 0, 0, 0.04)'};
             }}
         """
 
+        # 1. ▶ Run Button (Quiet Liquid Glass Pill with Apple Emerald SF Symbol)
+        run_icon_color = "#34D399" if is_dark else "#059669"
+        self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=12, color=run_icon_color))
+        self.run_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-top: 1px solid {glass_highlight};
+                border-radius: 16px;
+                padding: 6px 16px;
+                font-size: 12.5px;
+                font-weight: 500;
+            }}
+            QPushButton:hover {{
+                background-color: {'rgba(16, 185, 129, 0.14)' if is_dark else '#ecfdf5'};
+                border: 1px solid {'rgba(52, 211, 153, 0.40)' if is_dark else '#a7f3d0'};
+                color: {theme['brand_color']};
+            }}
+            QPushButton:pressed {{
+                background-color: {'rgba(16, 185, 129, 0.24)' if is_dark else '#d1fae5'};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                color: {'#4b4c53' if is_dark else '#d4d4d8'};
+                border: 1px solid {'rgba(255, 255, 255, 0.04)' if is_dark else 'rgba(0, 0, 0, 0.04)'};
+            }}
+        """)
+
+        # 2. 🐾 Step Button (Quiet Liquid Glass Pill with Warm Amber SF Symbol)
+        step_icon_color = "#FCD34D" if is_dark else "#D97706"
+        self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=13, color=step_icon_color))
+        self.step_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {theme['btn_clear_bg']};
+                color: {theme['btn_clear_text']};
+                border: 1px solid {theme['btn_clear_border']};
+                border-top: 1px solid {glass_highlight};
+                border-radius: 16px;
+                padding: 6px 16px;
+                font-size: 12.5px;
+                font-weight: 500;
+            }}
+            QPushButton:hover {{
+                background-color: {'rgba(245, 158, 11, 0.14)' if is_dark else '#fffbeb'};
+                border: 1px solid {'rgba(251, 191, 36, 0.40)' if is_dark else '#fde68a'};
+                color: {theme['brand_color']};
+            }}
+            QPushButton:pressed {{
+                background-color: {'rgba(245, 158, 11, 0.24)' if is_dark else '#fef3c7'};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                color: {'#4b4c53' if is_dark else '#d4d4d8'};
+                border: 1px solid {'rgba(255, 255, 255, 0.04)' if is_dark else 'rgba(0, 0, 0, 0.04)'};
+            }}
+        """)
+
+        # 3. ⏹ Stop Button (Subdued when idle, vibrant crimson glass when running)
+        stop_icon_color = "#FCA5A5" if is_dark else "#DC2626"
+        self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=12, color=stop_icon_color))
+        self.stop_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {'rgba(239, 68, 68, 0.18)' if is_dark else '#fef2f2'};
+                color: {'#FCA5A5' if is_dark else '#DC2626'};
+                border: 1px solid {'rgba(248, 113, 113, 0.38)' if is_dark else '#fecaca'};
+                border-top: 1px solid {glass_highlight};
+                border-radius: 16px;
+                padding: 6px 16px;
+                font-size: 12.5px;
+                font-weight: 500;
+            }}
+            QPushButton:hover {{
+                background-color: {'rgba(239, 68, 68, 0.30)' if is_dark else '#fee2e2'};
+                border: 1px solid {'rgba(252, 165, 165, 0.60)' if is_dark else '#fca5a5'};
+                color: {theme['brand_color']};
+            }}
+            QPushButton:disabled {{
+                background-color: transparent;
+                color: {'#4b4c53' if is_dark else '#d4d4d8'};
+                border: 1px solid {'rgba(255, 255, 255, 0.04)' if is_dark else 'rgba(0, 0, 0, 0.04)'};
+            }}
+        """)
+
+        # Secondary Pill Buttons (Clear, Packages, Problems)
         self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=13, color=theme["btn_clear_text"]))
         self.clear_btn.setStyleSheet(pill_style)
 
@@ -1523,42 +1489,25 @@ class WinnieIDE(QMainWindow):
         self.problems_btn.setIcon(render_svg_icon(PROBLEMS_SVG, size=13, color=theme["btn_clear_text"]))
         self.problems_btn.setStyleSheet(pill_style)
 
-        # SQL Button (Luminous Amber Capsule when Active)
+        # SQL Button (Luminous Glass Capsule when Active)
         is_sql_active = getattr(self, "is_sql_mode", False)
         if is_sql_active:
-            if is_dark:
-                sql_style = """
-                    QPushButton {
-                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.28), stop:1 rgba(217, 119, 6, 0.40));
-                        color: #FCD34D;
-                        border: 1px solid rgba(251, 191, 36, 0.55);
-                        border-radius: 14px;
-                        padding: 5px 13px;
-                        font-size: 12px;
-                        font-weight: 600;
-                    }
-                    QPushButton:hover {
-                        background: rgba(245, 158, 11, 0.45);
-                        color: #FFFFFF;
-                    }
-                """
-                sql_icon_color = "#FCD34D"
-            else:
-                sql_style = """
-                    QPushButton {
-                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
-                        color: #FFFFFF;
-                        border: 1px solid #B45309;
-                        border-radius: 14px;
-                        padding: 5px 13px;
-                        font-size: 12px;
-                        font-weight: 600;
-                    }
-                    QPushButton:hover {
-                        background: #B45309;
-                    }
-                """
-                sql_icon_color = "#FFFFFF"
+            sql_style = f"""
+                QPushButton {{
+                    background-color: {selected_tab_bg};
+                    color: {theme['brand_color']};
+                    border: 1px solid {selected_tab_border};
+                    border-top: 1px solid {glass_highlight};
+                    border-radius: 16px;
+                    padding: 6px 16px;
+                    font-size: 12.5px;
+                    font-weight: 600;
+                }}
+                QPushButton:hover {{
+                    background-color: {glass_hover};
+                }}
+            """
+            sql_icon_color = "#FCD34D" if is_dark else "#D97706"
         else:
             sql_style = pill_style
             sql_icon_color = theme["btn_clear_text"]

@@ -1,4 +1,20 @@
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QColor
+import re
+
+def safe_qcolor(color_val, fallback="#1E2026") -> QColor:
+    """Safely converts color strings (including rgba(...)) to a valid QColor without black fallback."""
+    if isinstance(color_val, QColor):
+        return color_val
+    if isinstance(color_val, str):
+        if color_val.startswith("rgba"):
+            m = re.match(r"rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)", color_val)
+            if m:
+                r, g, b, a = m.groups()
+                return QColor(int(r), int(g), int(b), int(float(a) * 255))
+        c = QColor(color_val)
+        if c.isValid() and (c != QColor(0, 0, 0, 255) or color_val.lower() in ("#000000", "#000", "black")):
+            return c
+    return QColor(fallback)
 
 DARK_THEME = {
     "name": "dark",
