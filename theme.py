@@ -18,14 +18,14 @@ def safe_qcolor(color_val, fallback="#1E2026") -> QColor:
 
 DARK_THEME = {
     "name": "dark",
-    # macOS Liquid Glass Smoke Obsidian Canvas
-    "window_bg": "#121316",
+    # CodeSandbox Black - Deep Pitch Black Obsidian Canvas
+    "window_bg": "#0a0a0c",
     "surface_glass": "rgba(255, 255, 255, 0.05)",
     "surface_glass_hover": "rgba(255, 255, 255, 0.09)",
-    "surface_glass_active": "rgba(255, 255, 255, 0.13)",
+    "surface_glass_active": "rgba(255, 255, 255, 0.14)",
     "border_color": "rgba(255, 255, 255, 0.08)",
     "border_glass": "rgba(255, 255, 255, 0.08)",
-    "border_glass_highlight": "rgba(255, 255, 255, 0.16)",
+    "border_glass_highlight": "rgba(255, 255, 255, 0.18)",
     "brand_color": "#ffffff",
     
     # Liquid Glass Pill Buttons
@@ -35,66 +35,67 @@ DARK_THEME = {
     "btn_clear_border": "rgba(255, 255, 255, 0.09)",
     
     # Accent Glass Highlights
-    "accent_emerald": "#10b981",
-    "accent_emerald_glass": "rgba(16, 185, 129, 0.18)",
-    "accent_emerald_border": "rgba(52, 211, 153, 0.40)",
-    "accent_emerald_text": "#6ee7b7",
+    "accent_emerald": "#50fa7b",
+    "accent_emerald_glass": "rgba(80, 250, 123, 0.18)",
+    "accent_emerald_border": "rgba(80, 250, 123, 0.40)",
+    "accent_emerald_text": "#50fa7b",
 
-    "accent_amber": "#f59e0b",
-    "accent_honey": "#f59e0b",
-    "accent_amber_glass": "rgba(245, 158, 11, 0.18)",
-    "accent_amber_border": "rgba(251, 191, 36, 0.40)",
-    "accent_amber_text": "#fcd34d",
+    "accent_amber": "#ffb86c",
+    "accent_honey": "#ffb86c",
+    "accent_amber_glass": "rgba(255, 184, 108, 0.18)",
+    "accent_amber_border": "rgba(255, 184, 108, 0.40)",
+    "accent_amber_text": "#ffb86c",
 
-    "accent_rose": "#ef4444",
-    "accent_rose_glass": "rgba(239, 68, 68, 0.16)",
-    "accent_rose_border": "rgba(248, 113, 113, 0.35)",
-    "accent_rose_text": "#fca5a5",
+    "accent_rose": "#ff5555",
+    "accent_rose_glass": "rgba(255, 85, 85, 0.18)",
+    "accent_rose_border": "rgba(255, 85, 85, 0.40)",
+    "accent_rose_text": "#ff6e6e",
 
-    "accent_violet": "#a855f7",
-    "accent_violet_glass": "rgba(168, 85, 247, 0.18)",
-    "accent_violet_border": "rgba(192, 132, 252, 0.40)",
-    "accent_violet_text": "#d8b4fe",
+    "accent_violet": "#bd93f9",
+    "accent_violet_glass": "rgba(189, 147, 249, 0.18)",
+    "accent_violet_border": "rgba(189, 147, 249, 0.40)",
+    "accent_violet_text": "#bd93f9",
 
-    # Floating Editor Glass Panel
-    "editor_bg": "#16171b",
-    "editor_text": "#f4f4f5",
-    "editor_selection": "#28344e",
-    "gutter_bg": "#141518",
-    "gutter_border": "#23252b",
-    "gutter_text": "#636366",
+    # CodeSandbox Black - Pure Pitch Black Editor
+    "editor_bg": "#000000",
+    "editor_text": "#f8f8f2",
+    "editor_selection": "#282a36",
+    "gutter_bg": "#000000",
+    "gutter_border": "#1a1a1f",
+    "gutter_text": "#6272a4",
     
-    # Active Line (Soft subtle highlight, NEVER pitch black)
-    "current_line": "#1e2026",
-    "debug_line_bg": "#3d2b00",
+    # Active Line (Subtle slate highlight against pitch black)
+    "current_line": "#141418",
+    "debug_line_bg": "#2d2006",
 
-    # Floating Terminal / Console Glass Panel
-    "console_bg": "#0e0f12",
-    "console_text": "#f4f4f5",
-    "console_border": "rgba(255, 255, 255, 0.07)",
+    # Pure Black Terminal / Console
+    "console_bg": "#000000",
+    "console_text": "#f8f8f2",
+    "console_border": "rgba(255, 255, 255, 0.08)",
 
-    # Variables & Data Inspector Glass Panel
-    "table_bg": "#141518",
+    # Variables & Data Inspector Panel
+    "table_bg": "#08080a",
     "table_header_bg": "rgba(255, 255, 255, 0.03)",
-    "table_header_text": "#8e8e93",
-    "table_text": "#f4f4f5",
+    "table_header_text": "#6272a4",
+    "table_text": "#f8f8f2",
     "table_border": "rgba(255, 255, 255, 0.06)",
-    "var_name": "#38bdf8",
-    "var_type": "#fbbf24",
-    "var_str": "#34d399",
+    "var_name": "#8be9fd",
+    "var_type": "#ffb86c",
+    "var_str": "#f1fa8c",
 
     # Sleek Rounded Glass Scrollbar
     "scrollbar_track": "transparent",
     "scrollbar_handle": "rgba(255, 255, 255, 0.18)",
     "scrollbar_handle_hover": "rgba(255, 255, 255, 0.32)",
     
-    # Modern VS Code / Tokyo Night Syntax Palette
-    "syntax_keyword": "#C586C0",
-    "syntax_constant": "#569CD6",
-    "syntax_builtin": "#DCDCAA",
-    "syntax_string": "#CE9178",
-    "syntax_number": "#B5CEA8",
-    "syntax_comment": "#6A9955",
+    # CodeSandbox Black Iconic Neon Syntax Palette
+    "syntax_keyword": "#ff79c6",
+    "syntax_constant": "#bd93f9",
+    "syntax_builtin": "#50fa7b",
+    "syntax_function": "#50fa7b",
+    "syntax_string": "#f1fa8c",
+    "syntax_number": "#bd93f9",
+    "syntax_comment": "#6272a4",
 }
 
 LIGHT_THEME = {
@@ -249,12 +250,23 @@ def configure_no_ligatures(font: QFont) -> QFont:
     return font
 
 
-def get_code_font(size: int = 13, bold: bool = False, family: str = "SF Mono") -> QFont:
-    """Returns a programming font with ligatures explicitly disabled and native fallbacks."""
+def get_code_font(size: int = 13, bold: bool = False, family: str = "Dank Mono") -> QFont:
+    """Returns a character-rich programming font (Dank Mono) with native fallbacks and ligatures disabled."""
     font = QFont(family, size)
     if bold:
         font.setBold(True)
     font.setStyleHint(QFont.StyleHint.Monospace)
-    font.setFamilies([family, "SF Mono", "Menlo", "Monaco", "Courier New", "monospace"])
+    font.setFamilies([family, "Dank Mono", "JetBrains Mono", "Fira Code", "SF Mono", "Menlo", "Monaco", "Courier New", "monospace"])
     configure_no_ligatures(font)
+    return font
+
+
+def get_ui_font(size: int = 12, weight = QFont.Weight.Normal, bold: bool = False) -> QFont:
+    """Returns a distinctive, modern UI font (Inter / Avenir Next) with clean fallbacks."""
+    font = QFont("Inter", size)
+    if bold or weight == QFont.Weight.Bold:
+        font.setBold(True)
+    else:
+        font.setWeight(weight)
+    font.setFamilies(["Inter", "Avenir Next", "SF Pro Text", "-apple-system", "Helvetica Neue", "sans-serif"])
     return font

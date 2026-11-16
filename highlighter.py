@@ -14,7 +14,14 @@ class PythonHighlighter(QSyntaxHighlighter):
     def apply_theme(self, theme):
         self.rules = []
 
-        # 1. Keywords
+        # 1. Function Calls & Definitions: foo() -> CodeSandbox electric green
+        func_format = QTextCharFormat()
+        func_color = theme.get("syntax_function", theme.get("syntax_builtin", "#50fa7b"))
+        func_format.setForeground(QColor(func_color))
+        self.rules.append((re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()"), func_format))
+        self.rules.append((re.compile(r"(?<=\bdef\s)[A-Za-z_][A-Za-z0-9_]*"), func_format))
+
+        # 2. Keywords (CodeSandbox neon pink)
         keyword_format = QTextCharFormat()
         keyword_format.setForeground(QColor(theme["syntax_keyword"]))
         keyword_format.setFontWeight(QFont.Weight.Bold)

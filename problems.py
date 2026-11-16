@@ -10484,60 +10484,7 @@ class ProblemSolutionWidget(QWidget):
         header_layout.addWidget(self.copy_btn)
         layout.addLayout(header_layout)
 
-        # 2. Complexity Banner: Monotone Vector Pills & Big-O Chart Button
-        self.complexity_bar = QFrame()
-        self.complexity_bar.setObjectName("complexityBar")
-        comp_layout = QHBoxLayout(self.complexity_bar)
-        comp_layout.setContentsMargins(0, 2, 0, 2)
-        comp_layout.setSpacing(8)
-
-        # Time Pill (Monotone SVG icon + Text)
-        self.time_pill = QFrame()
-        self.time_pill.setObjectName("timePill")
-        time_pill_layout = QHBoxLayout(self.time_pill)
-        time_pill_layout.setContentsMargins(10, 5, 12, 5)
-        time_pill_layout.setSpacing(7)
-
-        self.time_icon = QLabel()
-        self.time_icon.setFixedSize(14, 14)
-        self.time_icon.setScaledContents(True)
-        time_pill_layout.addWidget(self.time_icon)
-
-        self.time_label = QLabel("Time: O(n)")
-        self.time_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        time_pill_layout.addWidget(self.time_label)
-        comp_layout.addWidget(self.time_pill)
-
-        # Space Pill (Monotone SVG icon + Text)
-        self.space_pill = QFrame()
-        self.space_pill.setObjectName("spacePill")
-        space_pill_layout = QHBoxLayout(self.space_pill)
-        space_pill_layout.setContentsMargins(10, 5, 12, 5)
-        space_pill_layout.setSpacing(7)
-
-        self.space_icon = QLabel()
-        self.space_icon.setFixedSize(14, 14)
-        self.space_icon.setScaledContents(True)
-        space_pill_layout.addWidget(self.space_icon)
-
-        self.space_label = QLabel("Space: O(1)")
-        self.space_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        space_pill_layout.addWidget(self.space_label)
-        comp_layout.addWidget(self.space_pill)
-
-        comp_layout.addStretch()
-
-        # Big-O Chart Button
-        self.complexity_btn = QPushButton("? Big-O Chart")
-        self.complexity_btn.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
-        self.complexity_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.complexity_btn.setToolTip("Click to view Big-O Complexity Graph comparison")
-        self.complexity_btn.clicked.connect(self.open_complexity_dialog)
-        comp_layout.addWidget(self.complexity_btn)
-
-        layout.addWidget(self.complexity_bar)
-
-        # 3. Code View
+        # 2. Code View
         self.solution_view = QPlainTextEdit()
         sol_font = get_code_font(size=13)
         self.solution_view.setFont(sol_font)
@@ -10553,12 +10500,6 @@ class ProblemSolutionWidget(QWidget):
         self.current_solution = problem.get("solution_code", "")
         self.solution_view.setPlainText(self.current_solution)
 
-        # Update Complexity labels
-        t_comp = problem.get("time_complexity", "O(n)")
-        s_comp = problem.get("space_complexity", "O(1)")
-        self.time_label.setText(f"Time: {t_comp}")
-        self.space_label.setText(f"Space: {s_comp}")
-
     def apply_font_size(self, size: int):
         sol_font = self.solution_view.font()
         sol_font.setPointSize(size)
@@ -10569,15 +10510,6 @@ class ProblemSolutionWidget(QWidget):
     def on_copy_clicked(self):
         if self.current_solution:
             self.copy_to_editor_requested.emit(self.current_solution)
-
-    def open_complexity_dialog(self):
-        """Opens the Big-O Complexity vector comparison dialog."""
-        dlg = BigOComplexityDialog(
-            parent=self.window(),
-            problem=self.current_problem,
-            theme=self.current_theme
-        )
-        dlg.exec()
 
     def apply_theme(self, theme):
         self.current_theme = theme
@@ -10591,52 +10523,6 @@ class ProblemSolutionWidget(QWidget):
         """)
         self.header_label.setStyleSheet(f"color: {theme['brand_color']}; background: transparent;")
         self.highlighter.apply_theme(theme)
-
-        # High quality monotone SVG icons
-        icon_color = theme.get("btn_clear_text", "#d4d4d8")
-        self.time_icon.setPixmap(render_svg_pixmap(TIME_SVG, size=14, color=icon_color))
-        self.space_icon.setPixmap(render_svg_pixmap(SPACE_SVG, size=14, color=icon_color))
-
-        # Complexity Bar styling
-        self.complexity_bar.setStyleSheet("""
-            QFrame#complexityBar {
-                background-color: transparent;
-                border: none;
-            }
-        """)
-        self.time_pill.setStyleSheet(f"""
-            QFrame#timePill {{
-                background-color: {theme['btn_clear_bg']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 12px;
-                padding: 2px 6px;
-            }}
-        """)
-        self.space_pill.setStyleSheet(f"""
-            QFrame#spacePill {{
-                background-color: {theme['btn_clear_bg']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 12px;
-                padding: 2px 6px;
-            }}
-        """)
-        self.time_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600; background: transparent;")
-        self.space_label.setStyleSheet(f"color: {theme['brand_color']}; font-weight: 600; background: transparent;")
-
-        self.complexity_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {theme['btn_clear_bg']};
-                color: {theme['btn_clear_text']};
-                border: 1px solid {theme['btn_clear_border']};
-                border-radius: 12px;
-                padding: 5px 12px;
-                font-size: 11px;
-            }}
-            QPushButton:hover {{
-                background-color: {theme['btn_clear_hover']};
-                color: {theme['brand_color']};
-            }}
-        """)
 
         self.copy_btn.setStyleSheet(f"""
             QPushButton {{

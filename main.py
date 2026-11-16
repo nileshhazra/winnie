@@ -29,8 +29,14 @@ from assistant import AssistantView, parse_traceback
 from package_manager import PackageManagerDialog
 from problems import ProblemsListDialog, ProblemDescriptionWidget, ProblemSolutionWidget
 from about_dialog import AboutDialog
-from sql_view import SqlPlaygroundWidget
-from theme import DARK_THEME, LIGHT_THEME, get_scrollbar_stylesheet, get_code_font, configure_no_ligatures
+from theme import (
+    DARK_THEME,
+    LIGHT_THEME,
+    get_scrollbar_stylesheet,
+    get_code_font,
+    get_ui_font,
+    configure_no_ligatures,
+)
 from icons import (
     render_svg_icon,
     RUN_SVG,
@@ -38,7 +44,6 @@ from icons import (
     STEP_SVG,
     PACKAGE_SVG,
     PROBLEMS_SVG,
-    DATABASE_SVG,
     CLEAR_SVG,
     MOON_SVG,
     SUN_SVG,
@@ -286,19 +291,7 @@ class WinnieIDE(QMainWindow):
         self.main_splitter.setStretchFactor(0, 7)
         self.main_splitter.setStretchFactor(1, 3)
         self.main_splitter.setSizes([720, 340])
-
-        # 5. SQL Practice Playground State & Stacked Workspace
-        self.is_sql_mode = False
-        self.sql_playground = SqlPlaygroundWidget(self, theme=self.current_theme)
-        self.sql_playground.exit_requested.connect(self.exit_sql_mode)
-        self.sql_playground.zoom_in_requested.connect(self.zoom_in)
-        self.sql_playground.zoom_out_requested.connect(self.zoom_out)
-        self.sql_playground.reset_zoom_requested.connect(self.reset_zoom)
-
-        self.content_stack = QStackedWidget(self)
-        self.content_stack.addWidget(self.main_splitter)      # Index 0: Python IDE
-        self.content_stack.addWidget(self.sql_playground)     # Index 1: SQL Playground
-        main_layout.addWidget(self.content_stack, 1)  # Takes 100% of remaining vertical space!
+        main_layout.addWidget(self.main_splitter, 1)  # Takes 100% of remaining vertical space!
 
         # Initial demo tab
         self.untitled_counter += 1
@@ -762,10 +755,6 @@ class WinnieIDE(QMainWindow):
         problems_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
         problems_action.triggered.connect(self.open_problems_dialog)
 
-        sql_action = tools_menu.addAction("SQL Playground...")
-        sql_action.setShortcut(QKeySequence("Ctrl+Shift+Q"))
-        sql_action.triggered.connect(self.toggle_sql_playground)
-
         # Help Menu
         help_menu = menubar.addMenu("Help")
         about_action = help_menu.addAction("About Winnie...")
@@ -787,27 +776,6 @@ class WinnieIDE(QMainWindow):
         dlg = ProblemsListDialog(self, theme=self.current_theme)
         dlg.problem_selected.connect(self.load_problem)
         dlg.exec()
-
-    def toggle_sql_playground(self):
-        """Toggles between Python IDE mode and SQL Practice Playground mode."""
-        if getattr(self, "is_sql_mode", False):
-            self.exit_sql_mode()
-        else:
-            self.enter_sql_mode()
-
-    def enter_sql_mode(self):
-        """Switches Winnie's central workspace to SQL Playground mode."""
-        self.is_sql_mode = True
-        self.content_stack.setCurrentIndex(1)
-        self.apply_theme(self.current_theme)
-        self.setWindowTitle("Winnie — SQL Practice Playground")
-
-    def exit_sql_mode(self):
-        """Switches Winnie's central workspace back to Python IDE mode."""
-        self.is_sql_mode = False
-        self.content_stack.setCurrentIndex(0)
-        self.apply_theme(self.current_theme)
-        self.update_window_title()
 
     def load_problem(self, problem: dict):
         """Loads a practice problem into its own dedicated tab."""
@@ -1081,10 +1049,6 @@ class WinnieIDE(QMainWindow):
         self.problem_sol_widget.apply_font_size(size)
         self.problem_desc_widget.apply_font_size(size)
 
-        # 5. Update SQL Playground font if present
-        if hasattr(self, "sql_playground") and self.sql_playground:
-            self.sql_playground.apply_font_size(size)
-
     def toggle_terminal(self):
         """Toggles the bottom terminal / console visibility (Cmd + J)."""
         if self.console.isVisible():
@@ -1244,15 +1208,6 @@ class WinnieIDE(QMainWindow):
         self.problems_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.problems_btn.clicked.connect(self.open_problems_dialog)
         layout.addWidget(self.problems_btn)
-
-        # 8. SQL Playground Button (Practice SQL & Query Execution Plans)
-        self.sql_btn = QPushButton(" SQL")
-        self.sql_btn.setToolTip("Open SQL Practice Playground & Query Plan (⌘⇧Q)")
-        self.sql_btn.setFont(QFont("SF Pro Text", 12))
-        self.sql_btn.setIconSize(QSize(14, 14))
-        self.sql_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.sql_btn.clicked.connect(self.toggle_sql_playground)
-        layout.addWidget(self.sql_btn)
 
         layout.addStretch()  # Spacer
 
@@ -1489,31 +1444,6 @@ class WinnieIDE(QMainWindow):
         self.problems_btn.setIcon(render_svg_icon(PROBLEMS_SVG, size=13, color=theme["btn_clear_text"]))
         self.problems_btn.setStyleSheet(pill_style)
 
-        # SQL Button (Luminous Glass Capsule when Active)
-        is_sql_active = getattr(self, "is_sql_mode", False)
-        if is_sql_active:
-            sql_style = f"""
-                QPushButton {{
-                    background-color: {selected_tab_bg};
-                    color: {theme['brand_color']};
-                    border: 1px solid {selected_tab_border};
-                    border-top: 1px solid {glass_highlight};
-                    border-radius: 16px;
-                    padding: 6px 16px;
-                    font-size: 12.5px;
-                    font-weight: 600;
-                }}
-                QPushButton:hover {{
-                    background-color: {glass_hover};
-                }}
-            """
-            sql_icon_color = "#FCD34D" if is_dark else "#D97706"
-        else:
-            sql_style = pill_style
-            sql_icon_color = theme["btn_clear_text"]
-
-        self.sql_btn.setIcon(render_svg_icon(DATABASE_SVG, size=13, color=sql_icon_color))
-        self.sql_btn.setStyleSheet(sql_style)
 
         # Tab corner controls (Toggle Variables / Problem + Exit button)
         self.tab_toggle_btn.setStyleSheet(f"""
@@ -1676,8 +1606,6 @@ class WinnieIDE(QMainWindow):
         self.assistant_view.apply_theme(theme)
         self.problem_desc_widget.apply_theme(theme)
         self.problem_sol_widget.apply_theme(theme)
-        if hasattr(self, "sql_playground") and self.sql_playground:
-            self.sql_playground.apply_theme(theme)
 
     def clear_all(self):
         self.console.clear()
