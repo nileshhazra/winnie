@@ -237,6 +237,8 @@ header.site-header .nav-container {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--text-primary);
+  margin-right: 1.5rem;
+  flex-shrink: 0;
 }
 
 .brand-logo img {
@@ -260,7 +262,7 @@ header.site-header .nav-container {
 nav.nav-links {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
 nav.nav-links a {
