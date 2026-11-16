@@ -41,7 +41,7 @@ def get_resource_path(relative_path: str) -> str:
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
 
 
-class SocialLinkButton(QPushButton):
+class SocialLinkButton(QFrame):
     """A clean monochromatic social link card with title, handle, and external link indicator."""
 
     def __init__(self, icon_svg: str, title: str, handle: str, target_url: str, theme: dict, parent=None):
@@ -95,22 +95,25 @@ class SocialLinkButton(QPushButton):
 
         # Interactive Card Styling
         self.setStyleSheet(f"""
-            QPushButton {{
+            QFrame {{
                 background-color: {theme['btn_clear_bg']};
                 border: 1px solid {theme.get('border_glass', theme['border_color'])};
                 border-radius: 12px;
-                text-align: left;
             }}
-            QPushButton:hover {{
+            QFrame:hover {{
                 background-color: {theme['btn_clear_hover']};
                 border-color: {theme['btn_clear_border']};
             }}
-            QPushButton:pressed {{
-                background-color: {theme['border_color']};
-            }}
         """)
 
-        self.clicked.connect(self.open_url)
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            event.accept()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and self.rect().contains(event.position().toPoint()):
+            self.open_url()
+            event.accept()
 
     def open_url(self):
         QDesktopServices.openUrl(QUrl(self.target_url))
@@ -123,7 +126,7 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self.theme = theme
         self.setWindowTitle("About Winnie")
-        self.setFixedSize(380, 520)
+        self.setFixedSize(380, 530)
         self.setModal(True)
 
         # macOS standard dialog hints
@@ -199,7 +202,7 @@ class AboutDialog(QDialog):
 
         # 6. Monochromatic Social Links
         socials_layout = QVBoxLayout()
-        socials_layout.setSpacing(8)
+        socials_layout.setSpacing(10)
 
         github_btn = SocialLinkButton(
             icon_svg=GITHUB_SVG,
