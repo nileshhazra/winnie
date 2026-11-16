@@ -4,7 +4,7 @@
   <p><strong>A lightweight, beginner-friendly Python Integrated Development Environment (IDE) for macOS</strong></p>
 
   <p>
-    <img src="assets/badges.png" width="650" alt="macOS Native • Python 3.10+ • PySide6 / Qt • v1.4.0 • MIT License" />
+    <img src="assets/badges.png" width="650" alt="macOS Native • Python 3.10+ • PySide6 / Qt • v1.5.0 • MIT License" />
   </p>
 </div>
 
