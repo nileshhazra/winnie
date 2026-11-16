@@ -33,6 +33,7 @@ class VariablesView(QWidget):
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
         self.table.verticalHeader().setVisible(False)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table.verticalHeader().setDefaultSectionSize(30)
         
         font = get_code_font(size=12)
         self.table.setFont(font)
@@ -53,9 +54,12 @@ class VariablesView(QWidget):
             QTableWidget {{
                 background-color: {theme['table_bg']};
                 color: {theme['table_text']};
-                gridline-color: {theme['table_border']};
+                gridline-color: transparent;
                 border: 1px solid {glass_border};
-                border-radius: 8px;
+                border-radius: 12px;
+            }}
+            QTableWidget::item {{
+                padding: 6px 12px;
             }}
             QHeaderView::section {{
                 background-color: {theme['table_header_bg']};
@@ -64,7 +68,7 @@ class VariablesView(QWidget):
                 font-weight: bold;
                 border: none;
                 border-bottom: 1px solid {glass_border};
-                padding: 6px;
+                padding: 8px 12px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)

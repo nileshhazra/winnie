@@ -2,8 +2,8 @@ from PySide6.QtGui import QFont
 
 DARK_THEME = {
     "name": "dark",
-    # macOS Liquid Glass Canvas & Surfaces
-    "window_bg": "#0e0f12",
+    # macOS Liquid Glass Smoke Obsidian Canvas
+    "window_bg": "#121316",
     "surface_glass": "rgba(255, 255, 255, 0.05)",
     "surface_glass_hover": "rgba(255, 255, 255, 0.09)",
     "surface_glass_active": "rgba(255, 255, 255, 0.13)",
@@ -20,43 +20,45 @@ DARK_THEME = {
     
     # Accent Glass Highlights
     "accent_emerald": "#10b981",
-    "accent_emerald_glass": "rgba(16, 185, 129, 0.22)",
-    "accent_emerald_border": "rgba(52, 211, 153, 0.45)",
+    "accent_emerald_glass": "rgba(16, 185, 129, 0.18)",
+    "accent_emerald_border": "rgba(52, 211, 153, 0.40)",
     "accent_emerald_text": "#6ee7b7",
 
     "accent_amber": "#f59e0b",
     "accent_honey": "#f59e0b",
-    "accent_amber_glass": "rgba(245, 158, 11, 0.20)",
-    "accent_amber_border": "rgba(251, 191, 36, 0.45)",
+    "accent_amber_glass": "rgba(245, 158, 11, 0.18)",
+    "accent_amber_border": "rgba(251, 191, 36, 0.40)",
     "accent_amber_text": "#fcd34d",
 
     "accent_rose": "#ef4444",
-    "accent_rose_glass": "rgba(239, 68, 68, 0.20)",
-    "accent_rose_border": "rgba(248, 113, 113, 0.45)",
+    "accent_rose_glass": "rgba(239, 68, 68, 0.16)",
+    "accent_rose_border": "rgba(248, 113, 113, 0.35)",
     "accent_rose_text": "#fca5a5",
 
     "accent_violet": "#a855f7",
-    "accent_violet_glass": "rgba(168, 85, 247, 0.20)",
-    "accent_violet_border": "rgba(192, 132, 252, 0.45)",
+    "accent_violet_glass": "rgba(168, 85, 247, 0.18)",
+    "accent_violet_border": "rgba(192, 132, 252, 0.40)",
     "accent_violet_text": "#d8b4fe",
 
     # Floating Editor Glass Panel
-    "editor_bg": "#141518",
+    "editor_bg": "#16171b",
     "editor_text": "#f4f4f5",
     "editor_selection": "#28344e",
     "gutter_bg": "#141518",
-    "gutter_border": "rgba(255, 255, 255, 0.06)",
-    "gutter_text": "#52525b",
-    "current_line": "rgba(255, 255, 255, 0.04)",
-    "debug_line_bg": "rgba(245, 158, 11, 0.22)",
+    "gutter_border": "#23252b",
+    "gutter_text": "#636366",
+    
+    # Active Line (Soft subtle highlight, NEVER pitch black)
+    "current_line": "#1e2026",
+    "debug_line_bg": "#3d2b00",
 
     # Floating Terminal / Console Glass Panel
-    "console_bg": "#0c0d10",
+    "console_bg": "#0e0f12",
     "console_text": "#f4f4f5",
     "console_border": "rgba(255, 255, 255, 0.07)",
 
     # Variables & Data Inspector Glass Panel
-    "table_bg": "#121316",
+    "table_bg": "#141518",
     "table_header_bg": "rgba(255, 255, 255, 0.03)",
     "table_header_text": "#8e8e93",
     "table_text": "#f4f4f5",
@@ -124,9 +126,11 @@ LIGHT_THEME = {
     "editor_text": "#18181b",
     "editor_selection": "#cfe2ff",
     "gutter_bg": "#fcfcfd",
-    "gutter_border": "rgba(0, 0, 0, 0.06)",
+    "gutter_border": "#e5e5ea",
     "gutter_text": "#a1a1aa",
-    "current_line": "rgba(0, 0, 0, 0.03)",
+    
+    # Active Line in Light Mode
+    "current_line": "#ededf2",
     "debug_line_bg": "#fef08a",
 
     # Floating Terminal / Console Glass Panel

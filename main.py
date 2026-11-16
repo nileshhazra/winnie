@@ -181,7 +181,7 @@ class WinnieIDE(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Winnie — Python IDE")
-        self.resize(1100, 700)
+        self.resize(1180, 750)
 
         # Set Window / Application Icon
         icon_path = get_resource_path("Winnie.png")
@@ -197,8 +197,8 @@ class WinnieIDE(QMainWindow):
         central_widget.setObjectName("centralWidget")
         main_layout = QVBoxLayout(central_widget)
         top_margin = 8 if sys.platform == "darwin" else 8
-        main_layout.setContentsMargins(12, top_margin, 12, 12)
-        main_layout.setSpacing(8)
+        main_layout.setContentsMargins(18, 14, 18, 18)
+        main_layout.setSpacing(14)
         self.setCentralWidget(central_widget)
 
         # 1. Custom Top Action Bar with Modern Buttons
@@ -1120,7 +1120,7 @@ class WinnieIDE(QMainWindow):
         bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout = QHBoxLayout(bar)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(10)
+        layout.setSpacing(12)
 
         # 1. Clean Minimal Brand Name
         self.brand = QLabel("Winnie")
@@ -1355,19 +1355,19 @@ class WinnieIDE(QMainWindow):
 
         # 1. Liquid Glass Action Buttons (Run, Step, Stop)
         if is_dark:
-            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=11, color="#6EE7B7"))
+            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=12, color="#6EE7B7"))
             self.run_btn.setStyleSheet("""
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.28), stop:1 rgba(5, 150, 105, 0.40));
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.22), stop:1 rgba(5, 150, 105, 0.35));
                     color: #6EE7B7;
-                    border: 1px solid rgba(52, 211, 153, 0.45);
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border: 1px solid rgba(52, 211, 153, 0.40);
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.45), stop:1 rgba(5, 150, 105, 0.60));
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(16, 185, 129, 0.38), stop:1 rgba(5, 150, 105, 0.52));
                     border: 1px solid rgba(110, 231, 183, 0.70);
                     color: #FFFFFF;
                 }
@@ -1375,25 +1375,25 @@ class WinnieIDE(QMainWindow):
                     background: rgba(4, 120, 87, 0.6);
                 }
                 QPushButton:disabled {
-                    background-color: rgba(255, 255, 255, 0.04);
+                    background-color: rgba(255, 255, 255, 0.03);
                     color: #52525B;
                     border: 1px solid rgba(255, 255, 255, 0.05);
                 }
             """)
 
-            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=12, color="#FCD34D"))
+            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=13, color="#FCD34D"))
             self.step_btn.setStyleSheet("""
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.24), stop:1 rgba(217, 119, 6, 0.36));
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.20), stop:1 rgba(217, 119, 6, 0.32));
                     color: #FCD34D;
-                    border: 1px solid rgba(251, 191, 36, 0.45);
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border: 1px solid rgba(251, 191, 36, 0.40);
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.40), stop:1 rgba(217, 119, 6, 0.55));
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.36), stop:1 rgba(217, 119, 6, 0.50));
                     border: 1px solid rgba(252, 211, 77, 0.70);
                     color: #FFFFFF;
                 }
@@ -1401,48 +1401,48 @@ class WinnieIDE(QMainWindow):
                     background: rgba(180, 83, 9, 0.6);
                 }
                 QPushButton:disabled {
-                    background-color: rgba(255, 255, 255, 0.04);
+                    background-color: rgba(255, 255, 255, 0.03);
                     color: #52525B;
                     border: 1px solid rgba(255, 255, 255, 0.05);
                 }
             """)
 
-            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=11, color="#FCA5A5"))
+            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=12, color="#FCA5A5"))
             self.stop_btn.setStyleSheet("""
                 QPushButton {
-                    background: rgba(239, 68, 68, 0.20);
+                    background: rgba(239, 68, 68, 0.16);
                     color: #FCA5A5;
-                    border: 1px solid rgba(248, 113, 113, 0.35);
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border: 1px solid rgba(248, 113, 113, 0.30);
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
-                    background: rgba(239, 68, 68, 0.38);
-                    border: 1px solid rgba(252, 165, 165, 0.65);
+                    background: rgba(239, 68, 68, 0.32);
+                    border: 1px solid rgba(252, 165, 165, 0.60);
                     color: #FFFFFF;
                 }
                 QPushButton:pressed {
                     background: rgba(185, 28, 28, 0.6);
                 }
                 QPushButton:disabled {
-                    background-color: rgba(255, 255, 255, 0.04);
+                    background-color: rgba(255, 255, 255, 0.03);
                     color: #52525B;
                     border: 1px solid rgba(255, 255, 255, 0.05);
                 }
             """)
         else:
-            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=11, color="#FFFFFF"))
+            self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=12, color="#FFFFFF"))
             self.run_btn.setStyleSheet("""
                 QPushButton {
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #10B981, stop:1 #059669);
                     color: #FFFFFF;
                     border: 1px solid #047857;
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
                     background: #047857;
@@ -1454,16 +1454,16 @@ class WinnieIDE(QMainWindow):
                 }
             """)
 
-            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=12, color="#FFFFFF"))
+            self.step_btn.setIcon(render_svg_icon(STEP_SVG, size=13, color="#FFFFFF"))
             self.step_btn.setStyleSheet("""
                 QPushButton {
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
                     color: #FFFFFF;
                     border: 1px solid #B45309;
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
                     background: #B45309;
@@ -1475,16 +1475,16 @@ class WinnieIDE(QMainWindow):
                 }
             """)
 
-            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=11, color="#FFFFFF"))
+            self.stop_btn.setIcon(render_svg_icon(STOP_SVG, size=12, color="#FFFFFF"))
             self.stop_btn.setStyleSheet("""
                 QPushButton {
                     background: #EF4444;
                     color: #FFFFFF;
                     border: 1px solid #DC2626;
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
                     background: #DC2626;
@@ -1502,14 +1502,15 @@ class WinnieIDE(QMainWindow):
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 14px;
-                padding: 5px 13px;
-                font-size: 12px;
+                border-radius: 16px;
+                padding: 6px 15px;
+                font-size: 12.5px;
                 font-weight: 500;
             }}
             QPushButton:hover {{
                 background-color: {theme['btn_clear_hover']};
                 border: 1px solid {glass_highlight};
+                color: #FFFFFF;
             }}
         """
 
@@ -1611,28 +1612,28 @@ class WinnieIDE(QMainWindow):
         self.info_btn.setIcon(render_svg_icon(INFO_SVG, size=14, color=theme["btn_clear_text"]))
         self.info_btn.setStyleSheet(pill_style)
 
-        # Floating Liquid Glass Editor Tabs (Inspired by macOS Finder & Developer Tools)
+        # Floating Liquid Glass Editor Tabs (Inspired by modern macOS Finder tabs)
         selected_tab_bg = "rgba(255, 255, 255, 0.08)" if is_dark else "#FFFFFF"
         selected_tab_border = glass_highlight if is_dark else "rgba(0, 0, 0, 0.10)"
         self.editor_tabs.setStyleSheet(f"""
             QTabWidget#editorTabs::pane {{
                 border: 1px solid {glass_border};
                 background-color: {theme['editor_bg']};
-                border-radius: 10px;
+                border-radius: 12px;
             }}
             QTabWidget#editorTabs QTabBar {{
                 qproperty-drawBase: 0;
                 background-color: transparent;
-                margin-bottom: 3px;
+                margin-bottom: 6px;
             }}
             QTabWidget#editorTabs QTabBar::tab {{
                 background-color: transparent;
                 color: {theme['table_header_text']};
-                padding: 5px 12px;
-                margin-right: 3px;
+                padding: 6px 16px;
+                margin-right: 6px;
                 border: 1px solid transparent;
-                border-radius: 7px;
-                font-size: 11px;
+                border-radius: 9px;
+                font-size: 12px;
                 font-weight: 500;
             }}
             QTabWidget#editorTabs QTabBar::tab:hover {{
@@ -1683,26 +1684,26 @@ class WinnieIDE(QMainWindow):
             QTabWidget::pane {{
                 border: 1px solid {glass_border};
                 background-color: {theme['table_bg']};
-                border-radius: 10px;
+                border-radius: 12px;
             }}
             QTabWidget > QStackedWidget, QTabWidget > QStackedWidget > QWidget {{
                 background-color: {theme['table_bg']};
-                border-radius: 10px;
+                border-radius: 12px;
             }}
             QTabBar {{
                 qproperty-drawBase: 0;
                 background-color: transparent;
-                margin-bottom: 3px;
+                margin-bottom: 6px;
             }}
             QTabBar::tab {{
                 background-color: transparent;
                 color: {theme['table_header_text']};
-                padding: 5px 12px;
-                margin-right: 3px;
-                font-size: 11px;
+                padding: 6px 16px;
+                margin-right: 6px;
+                font-size: 12px;
                 font-weight: 600;
                 border: 1px solid transparent;
-                border-radius: 7px;
+                border-radius: 9px;
             }}
             QTabBar::tab:hover {{
                 background-color: {glass_hover};

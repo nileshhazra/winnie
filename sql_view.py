@@ -96,7 +96,7 @@ class SqlCodeEditor(CodeEditor):
                 color: {theme['editor_text']};
                 border: none;
                 selection-background-color: {theme['editor_selection']};
-                padding: 8px;
+                padding: 10px 14px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
@@ -143,39 +143,39 @@ class SqlPlaygroundWidget(QWidget):
         # 1. Top SQL Toolbar
         # ---------------------------------------------------------------------
         self.toolbar = QWidget(self)
-        self.toolbar.setFixedHeight(46)
+        self.toolbar.setFixedHeight(52)
         toolbar_layout = QHBoxLayout(self.toolbar)
-        toolbar_layout.setContentsMargins(12, 6, 12, 6)
-        toolbar_layout.setSpacing(10)
+        toolbar_layout.setContentsMargins(16, 8, 16, 8)
+        toolbar_layout.setSpacing(12)
 
         # Schema Selection Dropdown
         schema_label = QLabel("Schema:", self.toolbar)
-        schema_label.setFont(QFont("-apple-system", 11, QFont.Weight.Bold))
+        schema_label.setFont(QFont("SF Pro Text", 12, QFont.Weight.DemiBold))
         toolbar_layout.addWidget(schema_label)
 
         self.schema_combo = QComboBox(self.toolbar)
-        self.schema_combo.setFixedHeight(28)
-        self.schema_combo.setFont(QFont("-apple-system", 11))
+        self.schema_combo.setFixedHeight(32)
+        self.schema_combo.setFont(QFont("SF Pro Text", 12))
         for key, info in SqlEngine.SCHEMAS.items():
             self.schema_combo.addItem(render_svg_icon(DATABASE_SVG, size=13, color="#F59E0B"), info["name"], key)
         self.schema_combo.currentIndexChanged.connect(self._on_schema_changed)
         toolbar_layout.addWidget(self.schema_combo)
 
-        toolbar_layout.addSpacing(10)
+        toolbar_layout.addSpacing(6)
 
         # Run Query Button (Primary Action)
         self.run_btn = QPushButton(" Run Query", self.toolbar)
-        self.run_btn.setFixedHeight(28)
-        self.run_btn.setFont(QFont("-apple-system", 11, QFont.Weight.Bold))
-        self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=14, color="#FFFFFF"))
+        self.run_btn.setFixedHeight(32)
+        self.run_btn.setFont(QFont("SF Pro Text", 12, QFont.Weight.Bold))
+        self.run_btn.setIcon(render_svg_icon(RUN_SVG, size=13, color="#FFFFFF"))
         self.run_btn.setToolTip("Execute SQL query (Cmd+Enter / Ctrl+Enter)")
         self.run_btn.clicked.connect(self.run_current_query)
         toolbar_layout.addWidget(self.run_btn)
 
         # Explain Plan Button
         self.explain_btn = QPushButton(" Explain Plan", self.toolbar)
-        self.explain_btn.setFixedHeight(28)
-        self.explain_btn.setFont(QFont("-apple-system", 11))
+        self.explain_btn.setFixedHeight(32)
+        self.explain_btn.setFont(QFont("SF Pro Text", 12, QFont.Weight.Medium))
         self.explain_btn.setIcon(render_svg_icon(LIGHTNING_SVG, size=13, color="#F59E0B"))
         self.explain_btn.setToolTip("Inspect Physical Plan & Execution Order (Cmd+E)")
         self.explain_btn.clicked.connect(self.explain_current_query)
@@ -183,16 +183,16 @@ class SqlPlaygroundWidget(QWidget):
 
         # Reset Database Button
         self.reset_btn = QPushButton("Reset DB", self.toolbar)
-        self.reset_btn.setFixedHeight(28)
-        self.reset_btn.setFont(QFont("-apple-system", 11))
+        self.reset_btn.setFixedHeight(32)
+        self.reset_btn.setFont(QFont("SF Pro Text", 12, QFont.Weight.Medium))
         self.reset_btn.setToolTip("Restore pristine seed database data")
         self.reset_btn.clicked.connect(self.reset_database)
         toolbar_layout.addWidget(self.reset_btn)
 
         # Clear Query Button
         self.clear_btn = QPushButton(" Clear", self.toolbar)
-        self.clear_btn.setFixedHeight(28)
-        self.clear_btn.setFont(QFont("-apple-system", 11))
+        self.clear_btn.setFixedHeight(32)
+        self.clear_btn.setFont(QFont("SF Pro Text", 12, QFont.Weight.Medium))
         self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=13, color="#9CA3AF"))
         self.clear_btn.clicked.connect(lambda: self.editor.clear())
         toolbar_layout.addWidget(self.clear_btn)
@@ -201,8 +201,8 @@ class SqlPlaygroundWidget(QWidget):
 
         # Switch back to Python IDE Button
         self.exit_btn = QPushButton(" Back to Python IDE", self.toolbar)
-        self.exit_btn.setFixedHeight(28)
-        self.exit_btn.setFont(QFont("-apple-system", 11))
+        self.exit_btn.setFixedHeight(32)
+        self.exit_btn.setFont(QFont("SF Pro Text", 12, QFont.Weight.Medium))
         self.exit_btn.clicked.connect(self.exit_requested.emit)
         toolbar_layout.addWidget(self.exit_btn)
 
@@ -407,6 +407,8 @@ ORDER BY total_products DESC;
         self.results_table.setAlternatingRowColors(True)
         self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         self.results_table.horizontalHeader().setStretchLastSection(True)
+        self.results_table.verticalHeader().setDefaultSectionSize(30)
+        self.results_table.verticalHeader().setVisible(False)
         results_layout.addWidget(self.results_table)
 
         self.bottom_tabs.addTab(results_widget, "Results")
@@ -1008,9 +1010,9 @@ ORDER BY total_products DESC;
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['editor_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 14px;
-                padding: 4px 12px;
-                font-size: 12px;
+                border-radius: 16px;
+                padding: 4px 14px;
+                font-size: 12.5px;
                 font-weight: 500;
             }}
             QComboBox::drop-down {{
@@ -1020,14 +1022,15 @@ ORDER BY total_products DESC;
                 background-color: {theme['btn_clear_bg']};
                 color: {theme['btn_clear_text']};
                 border: 1px solid {theme['btn_clear_border']};
-                border-radius: 14px;
-                padding: 5px 13px;
-                font-size: 12px;
+                border-radius: 16px;
+                padding: 6px 16px;
+                font-size: 12.5px;
                 font-weight: 500;
             }}
             QPushButton:hover {{
                 background-color: {theme['btn_clear_hover']};
                 border: 1px solid {glass_highlight};
+                color: #FFFFFF;
             }}
         """)
 
@@ -1035,16 +1038,17 @@ ORDER BY total_products DESC;
         if is_dark:
             self.run_btn.setStyleSheet("""
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.30), stop:1 rgba(217, 119, 6, 0.42));
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.22), stop:1 rgba(217, 119, 6, 0.35));
                     color: #FCD34D;
-                    border: 1px solid rgba(251, 191, 36, 0.55);
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border: 1px solid rgba(251, 191, 36, 0.45);
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
-                    background: rgba(245, 158, 11, 0.50);
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(245, 158, 11, 0.36), stop:1 rgba(217, 119, 6, 0.50));
+                    border: 1px solid rgba(252, 211, 77, 0.70);
                     color: #FFFFFF;
                 }
             """)
@@ -1054,10 +1058,10 @@ ORDER BY total_products DESC;
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F59E0B, stop:1 #D97706);
                     color: #FFFFFF;
                     border: 1px solid #B45309;
-                    border-radius: 14px;
-                    padding: 5px 16px;
+                    border-radius: 16px;
+                    padding: 6px 18px;
                     font-weight: 600;
-                    font-size: 12px;
+                    font-size: 12.5px;
                 }
                 QPushButton:hover {
                     background: #B45309;
@@ -1069,22 +1073,22 @@ ORDER BY total_products DESC;
             QTabWidget::pane {{
                 border: 1px solid {glass_border};
                 background-color: {theme['editor_bg']};
-                border-radius: 10px;
+                border-radius: 12px;
             }}
             QTabBar {{
                 qproperty-drawBase: 0;
                 background-color: transparent;
-                margin-bottom: 3px;
+                margin-bottom: 6px;
             }}
             QTabBar::tab {{
                 background: transparent;
                 color: {theme['table_header_text']};
-                padding: 5px 12px;
-                margin-right: 3px;
+                padding: 6px 16px;
+                margin-right: 6px;
                 border: 1px solid transparent;
-                border-radius: 7px;
+                border-radius: 9px;
                 font-weight: 500;
-                font-size: 11px;
+                font-size: 12px;
             }}
             QTabBar::tab:hover {{
                 background-color: {glass_hover};
@@ -1100,15 +1104,30 @@ ORDER BY total_products DESC;
                 background-color: {theme['table_bg']};
                 color: {theme['editor_text']};
                 border: 1px solid {glass_border};
-                border-radius: 8px;
-                padding: 4px;
+                border-radius: 10px;
+                padding: 6px;
+            }}
+            QTreeWidget::item {{
+                min-height: 28px;
+                padding: 4px 8px;
+                margin: 2px 2px;
+                border-radius: 6px;
+            }}
+            QTreeWidget::item:hover {{
+                background-color: rgba(255, 255, 255, 0.05);
+            }}
+            QTreeWidget::item:selected {{
+                background-color: rgba(255, 255, 255, 0.10);
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                color: #FFFFFF;
             }}
             QLineEdit {{
                 background-color: {theme['console_bg']};
                 color: {theme['editor_text']};
                 border: 1px solid {glass_border};
-                border-radius: 8px;
-                padding: 5px 10px;
+                border-radius: 14px;
+                padding: 6px 14px;
+                font-size: 12px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
@@ -1118,22 +1137,22 @@ ORDER BY total_products DESC;
             QTabWidget::pane {{
                 border: 1px solid {glass_border};
                 background-color: {theme['editor_bg']};
-                border-radius: 10px;
+                border-radius: 12px;
             }}
             QTabBar {{
                 qproperty-drawBase: 0;
                 background-color: transparent;
-                margin-bottom: 3px;
+                margin-bottom: 6px;
             }}
             QTabBar::tab {{
                 background: transparent;
                 color: {theme['table_header_text']};
-                padding: 5px 12px;
-                margin-right: 3px;
+                padding: 6px 16px;
+                margin-right: 6px;
                 border: 1px solid transparent;
-                border-radius: 7px;
+                border-radius: 9px;
                 font-weight: 500;
-                font-size: 11px;
+                font-size: 12px;
             }}
             QTabBar::tab:hover {{
                 background-color: {glass_hover};
@@ -1148,14 +1167,17 @@ ORDER BY total_products DESC;
             QTableWidget {{
                 background-color: {theme['table_bg']};
                 color: {theme['editor_text']};
-                gridline-color: {glass_border};
+                gridline-color: transparent;
                 border: 1px solid {glass_border};
-                border-radius: 8px;
+                border-radius: 10px;
+            }}
+            QTableWidget::item {{
+                padding: 6px 10px;
             }}
             QHeaderView::section {{
                 background-color: {theme['table_header_bg']};
                 color: {theme['table_header_text']};
-                padding: 5px;
+                padding: 8px 10px;
                 border: none;
                 border-bottom: 1px solid {glass_border};
                 font-weight: 600;
@@ -1165,8 +1187,8 @@ ORDER BY total_products DESC;
                 background-color: {theme['table_bg']};
                 color: {theme['editor_text']};
                 border: 1px solid {glass_border};
-                border-radius: 8px;
-                padding: 6px;
+                border-radius: 10px;
+                padding: 8px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)

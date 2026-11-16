@@ -4,6 +4,22 @@ from PySide6.QtCore import Qt, QRect, QSize
 from highlighter import PythonHighlighter
 from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
 
+def safe_qcolor(color_val, fallback="#1E2026") -> QColor:
+    if isinstance(color_val, QColor):
+        return color_val
+    if isinstance(color_val, str):
+        if color_val.startswith("rgba"):
+            import re
+            m = re.match(r"rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)", color_val)
+            if m:
+                r, g, b, a = m.groups()
+                return QColor(int(r), int(g), int(b), int(float(a) * 255))
+        c = QColor(color_val)
+        if c.isValid() and (c != QColor(0, 0, 0, 255) or color_val in ("#000000", "black")):
+            return c
+    return QColor(fallback)
+
+
 
 class LineNumberArea(QWidget):
     def __init__(self, editor):
@@ -54,7 +70,7 @@ class CodeEditor(QPlainTextEdit):
                 color: {theme['editor_text']};
                 border: none;
                 selection-background-color: {theme['editor_selection']};
-                padding: 6px;
+                padding: 10px 14px;
             }}
             {get_scrollbar_stylesheet(theme)}
         """)
@@ -64,8 +80,8 @@ class CodeEditor(QPlainTextEdit):
 
     def line_number_area_width(self):
         digits = max(1, len(str(self.blockCount())))
-        # Dedicated indicator space (24px) + digit width + right padding (12px)
-        space = 36 + self.fontMetrics().horizontalAdvance('9') * digits
+        # Dedicated indicator space + digit width + right padding for breathing room
+        space = 40 + self.fontMetrics().horizontalAdvance('9') * digits
         return space
 
     def update_line_number_area_width(self, _):
@@ -92,7 +108,8 @@ class CodeEditor(QPlainTextEdit):
             block = self.document().findBlockByNumber(self.debug_line - 1)
             if block.isValid():
                 debug_sel = QTextEdit.ExtraSelection()
-                debug_sel.format.setBackground(QColor(self.current_theme["debug_line_bg"]))
+                debug_color = safe_qcolor(self.current_theme.get("debug_line_bg", "#3D2B00"), "#3D2B00")
+                debug_sel.format.setBackground(debug_color)
                 debug_sel.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
                 debug_cursor = self.textCursor()
                 debug_cursor.setPosition(block.position())
@@ -100,10 +117,12 @@ class CodeEditor(QPlainTextEdit):
                 debug_sel.cursor = debug_cursor
                 extra_selections.append(debug_sel)
 
-        # 2. Normal cursor line highlight
+        # 2. Normal cursor line highlight (clean, subtle highlight, never pitch black)
         if not self.isReadOnly() and self.debug_line is None:
             selection = QTextEdit.ExtraSelection()
-            selection.format.setBackground(QColor(self.current_theme["current_line"]))
+            default_line = "#1E2026" if self.current_theme.get("name") == "dark" else "#EDEDF2"
+            line_color = safe_qcolor(self.current_theme.get("current_line", default_line), default_line)
+            selection.format.setBackground(line_color)
             selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
@@ -176,10 +195,15 @@ class CodeEditor(QPlainTextEdit):
     def line_number_area_paint_event(self, event):
         painter = QPainter(self.line_number_area)
         painter.setFont(self.font())
-        painter.fillRect(event.rect(), QColor(self.current_theme["gutter_bg"]))
+        is_dark = self.current_theme.get("name") == "dark"
+        gutter_bg = safe_qcolor(self.current_theme.get("gutter_bg", "#141518"), "#141518" if is_dark else "#fcfcfd")
+        gutter_border = safe_qcolor(self.current_theme.get("gutter_border", "#23252b"), "#23252b" if is_dark else "#e5e5ea")
+        gutter_text = safe_qcolor(self.current_theme.get("gutter_text", "#636366"), "#636366" if is_dark else "#a1a1aa")
+
+        painter.fillRect(event.rect(), gutter_bg)
 
         # Subtle vertical separator line
-        painter.setPen(QColor(self.current_theme["gutter_border"]))
+        painter.setPen(gutter_border)
         painter.drawLine(self.line_number_area.width() - 1, event.rect().top(),
                          self.line_number_area.width() - 1, event.rect().bottom())
 
@@ -215,12 +239,12 @@ class CodeEditor(QPlainTextEdit):
                     # Highlight the active line number in matching amber
                     painter.setPen(QColor("#fbbf24"))
                 else:
-                    painter.setPen(QColor(self.current_theme["gutter_text"]))
+                    painter.setPen(gutter_text)
 
                 painter.drawText(
-                    0, top, self.line_number_area.width() - 10,
-                    font_h,
-                    Qt.AlignmentFlag.AlignRight, number
+                    0, top, self.line_number_area.width() - 12,
+                    font_h, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
+                    number
                 )
 
             block = block.next()
