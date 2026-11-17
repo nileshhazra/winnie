@@ -583,6 +583,10 @@ class MyFilesTreeWidget(QTreeWidget):
             target_path = target_item.data(0, Qt.ItemDataRole.UserRole)
             if is_folder and target_path:
                 target_dir = target_path
+            elif not is_folder and target_path:
+                parent_dir = os.path.dirname(target_path)
+                if os.path.isdir(parent_dir):
+                    target_dir = parent_dir
 
         filename = os.path.basename(src_path)
         dest_path = os.path.join(target_dir, filename)
@@ -647,6 +651,7 @@ class FileRowWidget(QWidget):
 
         # Icon
         self.icon_lbl = QLabel()
+        self.icon_lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         if is_folder:
             self.icon_lbl.setPixmap(render_svg_pixmap(FOLDER_SVG, size=14, color=current_theme.get("accent_amber", "#F59E0B")))
         else:
@@ -655,12 +660,14 @@ class FileRowWidget(QWidget):
 
         # Name label
         self.name_lbl = QLabel(name)
+        self.name_lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.name_lbl.setFont(get_ui_font(size=12, bold=is_folder))
         self.name_lbl.setStyleSheet(f"color: {current_theme['table_text']};")
         layout.addWidget(self.name_lbl)
 
         if is_folder and count > 0:
             count_lbl = QLabel(f"({count})")
+            count_lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
             count_lbl.setFont(get_ui_font(size=10))
             count_lbl.setStyleSheet("color: #71717a;")
             layout.addWidget(count_lbl)
@@ -710,17 +717,20 @@ class FileRowWidget(QWidget):
                 mime.setData("application/x-winnie-file", QByteArray(self.path.encode("utf-8")))
                 drag.setMimeData(mime)
 
-                pixmap = QPixmap(self.size())
-                pixmap.fill(Qt.GlobalColor.transparent)
-                painter = QPainter(pixmap)
-                self.render(painter)
-                painter.end()
+                pixmap = self.grab()
                 drag.setPixmap(pixmap)
                 drag.setHotSpot(event.position().toPoint())
+                if hasattr(self, "drag_start_pos"):
+                    del self.drag_start_pos
                 drag.exec(Qt.DropAction.MoveAction)
                 return
 
         super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if hasattr(self, "drag_start_pos"):
+            del self.drag_start_pos
+        super().mouseReleaseEvent(event)
 
     def mouseDoubleClickEvent(self, event):
         if not self.is_folder:
