@@ -60,6 +60,16 @@ from file_manager import (
 )
 
 
+def setup_qt_logging_filter():
+    """Silences benign internal Qt/macOS platform stub warnings and font alias populating."""
+    from PySide6.QtCore import qInstallMessageHandler
+    def handler(msg_type, context, message):
+        if "Unimplemented code." in message or "Populating font family aliases" in message:
+            return
+        sys.stderr.write(message + "\n")
+    qInstallMessageHandler(handler)
+
+
 def setup_macos_app_identity():
     """Sets the macOS process name, bundle display name, and dock title to 'Winnie'."""
     if sys.platform != "darwin":
@@ -1195,7 +1205,7 @@ class WinnieIDE(QMainWindow):
 
         # 1. Clean Minimal Brand Name
         self.brand = QLabel("Winnie")
-        self.brand.setFont(QFont("SF Pro Display", 17, QFont.Weight.Bold))
+        self.brand.setFont(get_ui_font(size=17, bold=True))
         self.brand.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         layout.addWidget(self.brand)
 
@@ -1910,6 +1920,7 @@ class WinnieIDE(QMainWindow):
 
 if __name__ == "__main__":
     setup_macos_app_identity()
+    setup_qt_logging_filter()
     app = QApplication(sys.argv)
     app.setApplicationName("Winnie")
     app.setApplicationDisplayName("Winnie")

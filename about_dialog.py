@@ -18,7 +18,7 @@ from PySide6.QtGui import (
     QDesktopServices,
 )
 from PySide6.QtCore import Qt, QUrl, QSize
-from theme import DARK_THEME
+from theme import DARK_THEME, get_ui_font
 from icons import (
     render_svg_icon,
     GITHUB_SVG,
@@ -168,12 +168,12 @@ class AboutDialog(QDialog):
         name_badge_layout.setSpacing(8)
 
         title_label = QLabel("Winnie")
-        title_label.setFont(QFont("SF Pro Display", 20, QFont.Weight.Bold))
+        title_label.setFont(get_ui_font(size=20, bold=True))
         title_label.setStyleSheet(f"color: {theme['brand_color']};")
         name_badge_layout.addWidget(title_label)
 
         version_badge = QLabel("v1.5.0")
-        version_badge.setFont(QFont("SF Pro Text", 10, QFont.Weight.Bold))
+        version_badge.setFont(get_ui_font(size=10, bold=True))
         version_badge.setStyleSheet(f"""
             background-color: {theme['btn_clear_bg']};
             color: {theme['btn_clear_text']};

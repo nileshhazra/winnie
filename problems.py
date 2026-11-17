@@ -10176,7 +10176,7 @@ class BigOComplexityDialog(QDialog):
         title_row.setSpacing(10)
         prob_name = self.problem.get("title", "Practice Problem")
         self.title_label = QLabel(f"Complexity Analysis • {prob_name}")
-        self.title_label.setFont(QFont("SF Pro Display", 13, QFont.Weight.Bold))
+        self.title_label.setFont(get_ui_font(size=13, bold=True))
         title_row.addWidget(self.title_label)
         title_row.addStretch()
 
@@ -10197,7 +10197,7 @@ class BigOComplexityDialog(QDialog):
         time_pill_l.addWidget(self.time_icon)
 
         self.time_label = QLabel(f"Time: {t_comp}")
-        self.time_label.setFont(QFont("SF Pro Text", 11, QFont.Weight.Bold))
+        self.time_label.setFont(get_ui_font(size=11, bold=True))
         time_pill_l.addWidget(self.time_label)
         title_row.addWidget(self.time_pill)
 
@@ -10359,7 +10359,7 @@ class ProblemDescriptionWidget(QWidget):
 
         # Title
         self.title_label = QLabel()
-        self.title_label.setFont(QFont("SF Pro Display", 15, QFont.Weight.Bold))
+        self.title_label.setFont(get_ui_font(size=15, bold=True))
         self.title_label.setWordWrap(True)
         self.container_layout.addWidget(self.title_label)
 
@@ -10381,13 +10381,13 @@ class ProblemDescriptionWidget(QWidget):
 
         # Description
         self.desc_label = QLabel()
-        self.desc_label.setFont(QFont("SF Pro Text", 12))
+        self.desc_label.setFont(get_ui_font(size=12))
         self.desc_label.setWordWrap(True)
         self.container_layout.addWidget(self.desc_label)
 
         # Examples Header
         self.examples_header = QLabel("Example Test Cases")
-        self.examples_header.setFont(QFont("SF Pro Display", 12, QFont.Weight.Bold))
+        self.examples_header.setFont(get_ui_font(size=12, bold=True))
         self.container_layout.addWidget(self.examples_header)
 
         # Examples Box (Syntax-highlighted code block)
@@ -10486,12 +10486,12 @@ class ProblemSolutionWidget(QWidget):
         # 1. Top Header Row: "Solution Code" + "Copy to Editor"
         header_layout = QHBoxLayout()
         self.header_label = QLabel("Solution Code")
-        self.header_label.setFont(QFont("SF Pro Display", 13, QFont.Weight.Bold))
+        self.header_label.setFont(get_ui_font(size=13, bold=True))
         header_layout.addWidget(self.header_label)
         header_layout.addStretch()
 
         self.copy_btn = QPushButton("Copy to Editor")
-        self.copy_btn.setFont(QFont("SF Pro Text", 11))
+        self.copy_btn.setFont(get_ui_font(size=11))
         self.copy_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.copy_btn.clicked.connect(self.on_copy_clicked)
         header_layout.addWidget(self.copy_btn)
@@ -10578,19 +10578,19 @@ class ProblemsListDialog(QDialog):
         layout.setSpacing(10)
 
         self.header_label = QLabel("Choose a Problem")
-        self.header_label.setFont(QFont("SF Pro Display", 14, QFont.Weight.Bold))
+        self.header_label.setFont(get_ui_font(size=14, bold=True))
         layout.addWidget(self.header_label)
 
         # Search filter
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("Filter problems...")
-        self.search_input.setFont(QFont("SF Pro Text", 12))
+        self.search_input.setFont(get_ui_font(size=12))
         self.search_input.textChanged.connect(self.filter_problems)
         layout.addWidget(self.search_input)
 
         # List of problems (with categorized sections)
         self.list_widget = QListWidget()
-        self.list_widget.setFont(QFont("SF Pro Text", 13))
+        self.list_widget.setFont(get_ui_font(size=13))
         self.list_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
         layout.addWidget(self.list_widget)
 

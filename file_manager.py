@@ -94,7 +94,7 @@ class QuickSaveDialog(QDialog):
         title_col = QVBoxLayout()
         title_col.setSpacing(2)
         title_lbl = QLabel("Save to Winnie Files")
-        title_lbl.setFont(QFont("SF Pro Display", 15, QFont.Weight.Bold))
+        title_lbl.setFont(get_ui_font(size=15, bold=True))
         title_lbl.setStyleSheet(f"color: {current_theme['brand_color']};")
         title_col.addWidget(title_lbl)
 
@@ -305,7 +305,7 @@ class DeleteConfirmDialog(QDialog):
         txt_col = QVBoxLayout()
         txt_col.setSpacing(4)
         t_lbl = QLabel(f"Delete {'folder' if is_folder else 'file'}?")
-        t_lbl.setFont(QFont("SF Pro Display", 14, QFont.Weight.Bold))
+        t_lbl.setFont(get_ui_font(size=14, bold=True))
         t_lbl.setStyleSheet(f"color: {current_theme['brand_color']};")
         txt_col.addWidget(t_lbl)
 
@@ -387,7 +387,7 @@ class NewFolderDialog(QDialog):
         layout.setSpacing(12)
 
         title = QLabel("Create New Folder")
-        title.setFont(QFont("SF Pro Display", 14, QFont.Weight.Bold))
+        title.setFont(get_ui_font(size=14, bold=True))
         title.setStyleSheet(f"color: {current_theme['brand_color']};")
         layout.addWidget(title)
 
@@ -517,18 +517,34 @@ class MyFilesTreeWidget(QTreeWidget):
                 border: none;
                 color: {theme['table_text']};
                 outline: none;
+                selection-background-color: transparent;
+                selection-color: inherit;
+                show-decoration-selected: 0;
             }}
             QTreeWidget::item {{
                 height: 32px;
-                padding: 2px 4px;
-                border-radius: 6px;
+                padding: 0px;
+                margin: 0px;
+                background: transparent;
+                border: none;
+                outline: none;
             }}
-            QTreeWidget::item:hover {{
-                background-color: {theme.get('surface_glass_hover', 'rgba(255, 255, 255, 0.08)')};
+            QTreeWidget::item:hover,
+            QTreeWidget::item:selected,
+            QTreeWidget::item:selected:active,
+            QTreeWidget::item:selected:!active {{
+                background: transparent;
+                border: none;
+                outline: none;
             }}
-            QTreeWidget::item:selected {{
-                background-color: {theme.get('surface_glass_active', 'rgba(255, 255, 255, 0.12)')};
-                color: {theme['brand_color']};
+            QTreeWidget::branch,
+            QTreeWidget::branch:hover,
+            QTreeWidget::branch:selected,
+            QTreeWidget::branch:active,
+            QTreeWidget::branch:!active {{
+                background: transparent;
+                border: none;
+                outline: none;
             }}
             QTreeWidget::branch:has-children:!has-siblings:closed,
             QTreeWidget::branch:closed:has-children:has-siblings {{
@@ -643,6 +659,7 @@ class FileRowWidget(QWidget):
         self.path = path
         self.is_folder = is_folder
         self.current_theme = current_theme
+        self.setObjectName("fileRow")
         self.setMouseTracking(True)
 
         layout = QHBoxLayout(self)
@@ -694,6 +711,29 @@ class FileRowWidget(QWidget):
         """)
         self.del_btn.clicked.connect(self.on_delete)
         layout.addWidget(self.del_btn)
+
+        self.apply_theme(current_theme)
+
+    def apply_theme(self, theme: dict):
+        self.current_theme = theme
+        is_dark = theme.get("name") == "dark"
+        hover_bg = theme.get("surface_glass_hover", "rgba(255, 255, 255, 0.08)" if is_dark else "rgba(0, 0, 0, 0.05)")
+        self.setStyleSheet(f"""
+            QWidget#fileRow {{
+                background-color: transparent;
+                border-radius: 6px;
+            }}
+            QWidget#fileRow:hover {{
+                background-color: {hover_bg};
+            }}
+        """)
+        if hasattr(self, "icon_lbl"):
+            if self.is_folder:
+                self.icon_lbl.setPixmap(render_svg_pixmap(FOLDER_SVG, size=14, color=theme.get("accent_amber", "#F59E0B")))
+            else:
+                self.icon_lbl.setPixmap(render_svg_pixmap(FILE_SVG, size=13, color=theme.get("syntax_keyword", "#C678DD")))
+        if hasattr(self, "name_lbl"):
+            self.name_lbl.setStyleSheet(f"color: {theme['table_text']};")
 
     def on_delete(self):
         self.delete_clicked.emit(self.path, self.is_folder)
@@ -795,7 +835,7 @@ class MyFilesOverlayDrawer(QFrame):
         header.addWidget(self.icon_lbl)
 
         self.title_lbl = QLabel("My Files")
-        self.title_lbl.setFont(QFont("SF Pro Display", 14, QFont.Weight.Bold))
+        self.title_lbl.setFont(get_ui_font(size=14, bold=True))
         self.title_lbl.setStyleSheet(f"color: {current_theme['brand_color']};")
         header.addWidget(self.title_lbl)
 

@@ -268,7 +268,7 @@ class AssistantView(QWidget):
 
         # 2. Plain English Title
         title = QLabel(kb_entry["title"])
-        title.setFont(QFont("SF Pro Display", 13, QFont.Weight.Bold))
+        title.setFont(get_ui_font(size=13, bold=True))
         title.setWordWrap(True)
         title.setStyleSheet(f"color: {self.current_theme['brand_color']};")
         self.container_layout.addWidget(title)

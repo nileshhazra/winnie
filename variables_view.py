@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 from PySide6.QtGui import QFont, QColor
-from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font, get_ui_font
 
 
 class VariablesView(QWidget):
@@ -22,7 +22,7 @@ class VariablesView(QWidget):
 
         # Header Title
         self.title = QLabel("✦ VARIABLES")
-        self.title.setFont(QFont("SF Pro Display", 11, QFont.Weight.Bold))
+        self.title.setFont(get_ui_font(size=11, bold=True))
         layout.addWidget(self.title)
 
         # Variables Table

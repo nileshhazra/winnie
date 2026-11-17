@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt, QProcess
-from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font
+from theme import DARK_THEME, get_scrollbar_stylesheet, get_code_font, get_ui_font
 
 
 class PackageManagerDialog(QDialog):
@@ -74,13 +74,13 @@ class PackageManagerDialog(QDialog):
 
         table_header = QHBoxLayout()
         title = QLabel("Installed Packages")
-        title.setFont(QFont("SF Pro Display", 12, QFont.Weight.Bold))
+        title.setFont(get_ui_font(size=12, bold=True))
         table_header.addWidget(title)
 
         self.filter_input = QLineEdit()
         self.filter_input.setPlaceholderText("Filter installed...")
         self.filter_input.setMaximumWidth(200)
-        self.filter_input.setFont(QFont("SF Pro Text", 11))
+        self.filter_input.setFont(get_ui_font(size=11))
         self.filter_input.textChanged.connect(self.filter_packages)
         table_header.addWidget(self.filter_input)
 

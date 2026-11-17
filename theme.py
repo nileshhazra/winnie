@@ -1,3 +1,4 @@
+import sys
 from PySide6.QtGui import QFont, QColor
 import re
 
@@ -273,11 +274,12 @@ def get_code_font(size: int = 13, bold: bool = False, family: str = "Dank Mono")
 
 
 def get_ui_font(size: int = 12, weight = QFont.Weight.Normal, bold: bool = False) -> QFont:
-    """Returns a distinctive, modern UI font (Inter / Avenir Next) with clean fallbacks."""
-    font = QFont("Inter", size)
+    """Returns a distinctive, modern UI font with clean native fallbacks without font alias cost."""
+    default_fam = ".AppleSystemUIFont" if sys.platform == "darwin" else "Inter"
+    font = QFont(default_fam, size)
     if bold or weight == QFont.Weight.Bold:
         font.setBold(True)
     else:
         font.setWeight(weight)
-    font.setFamilies(["Inter", "Avenir Next", "SF Pro Text", "-apple-system", "Helvetica Neue", "sans-serif"])
+    font.setFamilies([".AppleSystemUIFont", "Helvetica Neue", "Arial"])
     return font
