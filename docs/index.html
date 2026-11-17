@@ -21,6 +21,7 @@
 
       <nav class="nav-links">
         <a href="#features">Features</a>
+        <a href="#files">My Files</a>
         <a href="#inspector">Inspector</a>
         <a href="#problems">Problems</a>
         <a href="docs.html">Docs</a>
@@ -216,8 +217,46 @@
       </div>
     </section>
 
+    <!-- Section: Sliding "My Files" Drawer & Quick-Save (New in v1.6.0) -->
+    <section id="files" class="feature-section" style="background-color: var(--bg-page-alt);">
+      <div class="page-wrap">
+        <div class="lockup">
+          <div class="title-wrap">
+            <div class="hero-badge-pill" style="margin-bottom: 0.75rem; display: inline-flex;">
+              <span>✨ New in v1.6.0</span>
+            </div>
+            <h2 class="text-title1">
+              Your files, <em>always within reach</em>
+            </h2>
+            <p class="text-headline1" style="margin-top: 1rem;">
+              Never hunt through nested OS file pickers again. Press ⌘S for instant quick-saving, slide open the sleek My Files drawer, and organize scripts into folders with seamless drag-and-drop.
+            </p>
+          </div>
+        </div>
+
+        <div class="mac-window">
+          <div class="mac-titlebar">
+            <div class="traffic-lights">
+              <span class="close"></span>
+              <span class="minimize"></span>
+              <span class="zoom"></span>
+            </div>
+            <div class="window-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Winnie — Sliding My Files Drawer &amp; Instant Quick-Save
+            </div>
+          </div>
+          <div class="window-preview-viewport">
+            <img src="assets/winnie-files-showcase.png" alt="Winnie Sliding My Files Drawer and Quick-Save">
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Section 2: Alternating Big Card - Live Memory Inspector -->
-    <section id="inspector" class="feature-section" style="background-color: var(--bg-page-alt);">
+    <section id="inspector" class="feature-section">
       <div class="page-wrap">
         <div class="lockup">
           <div class="title-wrap">
@@ -325,12 +364,11 @@
           <div class="bento-card">
             <div class="bento-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="16 18 22 12 16 6"></polyline>
-                <polyline points="8 6 2 12 8 18"></polyline>
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
               </svg>
             </div>
-            <h4>Ligature-Free Clarity</h4>
-            <p>Disabled font ligatures ensure code operators like <code>!=</code>, <code>==</code>, <code>&lt;=</code>, and <code>&gt;=</code> look exactly like the characters you type, preventing syntax misconceptions.</p>
+            <h4>Sliding "My Files" &amp; ⌘S</h4>
+            <p>Save scripts instantly with streamlined ⌘S naming. Slide out the My Files drawer to browse, create topic folders, and drag-and-drop organize your project files.</p>
           </div>
 
           <!-- Card 4 -->
@@ -464,39 +502,171 @@
           </div>
         </div>
 
-        <div class="install-card">
-          <div class="install-steps">
-            <div class="step-item">
-              <div class="step-num">1</div>
-              <div class="step-content">
-                <h4>Download &amp; Unzip</h4>
-                <p>Download <code>Winnie-macOS.zip</code> from GitHub Releases and extract it to reveal <code>Winnie.app</code>.</p>
+        <div class="install-flow-card">
+          <!-- Left: 3-Step Typography & Instructions -->
+          <div class="install-flow-left">
+            <div>
+              <div class="install-flow-brand">
+                <img src="assets/Winnie.png" width="36" height="36" alt="Winnie App Icon">
+                <span class="install-flow-brand-name">Winnie</span>
               </div>
-            </div>
 
-            <div class="step-item">
-              <div class="step-num">2</div>
-              <div class="step-content">
-                <h4>Drag to Applications</h4>
-                <p>Move <code>Winnie.app</code> into your macOS <code>/Applications</code> folder.</p>
+              <h3 class="install-flow-title">
+                Open Winnie<br>in 3 steps:
+              </h3>
+
+              <ol class="install-flow-steps">
+                <li>
+                  <span class="step-num-pill">1</span>
+                  <div>
+                    <strong>Open your Downloads</strong>
+                    <p>Locate the downloaded <code>Winnie-macOS.zip</code> release archive.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-num-pill">2</span>
+                  <div>
+                    <strong>Drag Winnie to Applications</strong>
+                    <p>Double-click to unzip, then drag <code>Winnie.app</code> into <code>/Applications</code>.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="step-num-pill">3</span>
+                  <div>
+                    <strong>Launch Winnie &amp; start coding</strong>
+                    <p>Open Winnie from Applications or Spotlight to trace Python code.</p>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="install-flow-help">
+                <p>Not working? <a href="https://github.com/nileshhazra/winnie/releases/latest/download/Winnie-macOS.zip" class="install-direct-link">Download directly</a></p>
               </div>
-            </div>
 
-            <div class="step-item">
-              <div class="step-num">3</div>
-              <div class="step-content">
-                <h4>Clear Gatekeeper Quarantine</h4>
-                <p>Because Winnie is self-signed, run this single terminal command once to authorize the app:</p>
+              <!-- Gatekeeper Tip Box -->
+              <div class="gatekeeper-callout">
+                <div class="gatekeeper-header">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <span>First launch? Clear Gatekeeper quarantine:</span>
+                </div>
                 <div class="command-box">
                   <code>xattr -cr /Applications/Winnie.app</code>
                   <button id="copy-cmd-btn" class="copy-btn">Copy</button>
                 </div>
               </div>
             </div>
+
+            <div class="install-compat-tag">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.87-.9.04-1.99.6-2.63 1.35-.58.67-1.09 1.74-.95 2.78 1 .08 2.04-.51 2.66-1.26z"/>
+              </svg>
+              <span>Universal macOS 12+ (Apple Silicon M1-M4 &amp; Intel)</span>
+            </div>
           </div>
 
-          <div style="text-align: center;">
-            <img src="assets/installation-guide.png" alt="macOS Drag to Applications and Gatekeeper authorization" style="border-radius: 1rem; border: 1px solid var(--border-card); box-shadow: var(--shadow-md);">
+          <!-- Right: Visual Animated macOS Guide (matching reference screenshot) -->
+          <div class="install-flow-right">
+            <!-- Simulated Browser Download Bar & Popover -->
+            <div class="mockup-browser-header">
+              <div class="mockup-browser-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="mockup-browser-url">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>github.com/nileshhazra/winnie</span>
+              </div>
+              <div class="mockup-browser-download-pill">
+                <div class="dl-badge-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                  </svg>
+                </div>
+                <!-- Download Popover Dropdown -->
+                <div class="download-popover">
+                  <div class="dl-file-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                  </div>
+                  <div class="dl-file-meta">
+                    <div class="dl-file-name">Winnie-macOS.zip</div>
+                    <div class="dl-file-status">✓ Complete • 39.4 MB</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulated macOS Finder Drag Window -->
+            <div class="finder-window">
+              <div class="finder-titlebar">
+                <div class="traffic-lights">
+                  <span class="close"></span>
+                  <span class="minimize"></span>
+                  <span class="zoom"></span>
+                </div>
+                <div class="finder-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  </svg>
+                  Winnie
+                </div>
+              </div>
+
+              <div class="finder-body">
+                <!-- Left Source: Winnie App Icon -->
+                <div class="finder-app-slot">
+                  <div class="app-icon-ghost"></div>
+                  <div class="animated-drag-item">
+                    <img src="assets/Winnie.png" width="68" height="68" alt="Winnie App Icon" class="finder-app-icon">
+                    <div class="app-drag-hand">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff" stroke="#111111" stroke-width="1.5">
+                        <path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v3M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8l-2.4-2.4a2 2 0 0 0-2.8 2.8L6.4 20A6 6 0 0 0 10.6 22H16a6 6 0 0 0 6-6v-3a2 2 0 0 0-2-2h-2z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="finder-item-label">Winnie</span>
+                </div>
+
+                <!-- Animated connecting dashed curve/arrow -->
+                <div class="drag-guide-arrow">
+                  <svg width="100" height="40" viewBox="0 0 100 40" fill="none">
+                    <path d="M10 25 C 35 5, 65 5, 90 25" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" class="animated-dash-path"/>
+                    <polygon points="88,20 95,27 86,28" fill="#94a3b8" />
+                  </svg>
+                </div>
+
+                <!-- Right Destination: Applications Folder -->
+                <div class="finder-target-slot">
+                  <div class="applications-folder-icon">
+                    <svg width="68" height="68" viewBox="0 0 72 72" fill="none">
+                      <defs>
+                        <linearGradient id="folderBlue" x1="36" y1="12" x2="36" y2="62" gradientUnits="userSpaceOnUse">
+                          <stop offset="0%" stop-color="#42A5F5"/>
+                          <stop offset="100%" stop-color="#1976D2"/>
+                        </linearGradient>
+                      </defs>
+                      <path d="M10 18C10 14.6863 12.6863 12 16 12H28C30.5 12 32.5 14 34.5 16.5L37 19.5C38.5 21.5 40.5 22.5 43 22.5H56C59.3137 22.5 62 25.1863 62 28.5V56C62 59.3137 59.3137 62 56 62H16C12.6863 62 10 59.3137 10 56V18Z" fill="#1565C0"/>
+                      <rect x="8" y="22" width="56" height="40" rx="7" fill="url(#folderBlue)"/>
+                      <path d="M36 29L26 51H31L33 46H39L41 51H46L36 29ZM36 36.5L38 41.5H34L36 36.5Z" fill="white" fill-opacity="0.95"/>
+                    </svg>
+                  </div>
+                  <span class="finder-item-label">Applications</span>
+                </div>
+              </div>
+
+              <!-- Finder Window Footer / Status Bar -->
+              <div class="finder-statusbar">
+                <span>Drag Winnie to Applications to complete install</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

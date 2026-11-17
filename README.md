@@ -14,6 +14,10 @@ Winnie implements a dual-process execution model inspired by educational environ
 Statement-by-statement runtime execution tracking with real-time instruction pointer highlights and dynamic variable inspection table.
 ![Visual Step Debugger](assets/winnie-dark-showcase.png)
 
+### Sliding "My Files" Drawer & Instant Quick-Save
+Quick-save scripts directly with ⌘S, slide open the overlay drawer, create topic folders, and organize files via drag-and-drop.
+![Sliding My Files Drawer](assets/winnie-files-showcase.png)
+
 ### 160+ Curated Practice Problems & Big-O Complexity Curves
 Interactive data structure challenges (Graphs, Trees, Linked Lists, Recursion, Sliding Window) with animated Big-O curves and reference solutions.
 ![Winnie Practice Problems](assets/winnie-problems-showcase.png)
@@ -30,12 +34,12 @@ Search, install, inspect, and remove PyPI packages directly without touching the
 
 ## Installation Guide (macOS)
 
-Follow these 4 simple steps to run Winnie natively on your Mac:
+Follow these simple steps to run Winnie natively on your Mac:
 
 ![Quick macOS Installation](assets/installation-guide.png)
 
 ### 1. Download Release
-Head to **[GitHub Releases](https://github.com/nileshhazra/winnie/releases/latest)** and download `Winnie.zip` under the **Assets** section.
+Head to **[GitHub Releases](https://github.com/nileshhazra/winnie/releases/latest)** and download `Winnie-macOS.zip` under the **Assets** section.
 
 ### 2. Extract Archive
 Double-click `Winnie.zip` in Finder to extract the `Winnie.app` application bundle.
