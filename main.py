@@ -50,6 +50,13 @@ from icons import (
     PLUS_SVG,
     CLOSE_SVG,
     INFO_SVG,
+    FOLDER_SVG,
+)
+from file_manager import (
+    QuickSaveDialog,
+    MyFilesOverlayDrawer,
+    MyFilesBackdrop,
+    DEFAULT_FILES_DIR,
 )
 
 
@@ -381,6 +388,21 @@ class WinnieIDE(QMainWindow):
         self.shortcut_theme1.activated.connect(self.toggle_theme)
         self.shortcut_theme2 = QShortcut(QKeySequence("Ctrl+T"), self)
         self.shortcut_theme2.activated.connect(self.toggle_theme)
+
+        # Cmd + Shift + F / Cmd + B: Toggle My Files Drawer
+        self.shortcut_files1 = QShortcut(QKeySequence("Ctrl+Shift+F"), self)
+        self.shortcut_files1.activated.connect(self.toggle_my_files_drawer)
+        self.shortcut_files2 = QShortcut(QKeySequence("Ctrl+B"), self)
+        self.shortcut_files2.activated.connect(self.toggle_my_files_drawer)
+
+        # My Files Overlay Drawer & Scrim Backdrop
+        self.files_backdrop = MyFilesBackdrop(parent=central_widget)
+        self.files_backdrop.clicked.connect(self.close_my_files_drawer)
+
+        self.files_drawer = MyFilesOverlayDrawer(parent=central_widget, current_theme=self.current_theme)
+        self.files_drawer.file_selected.connect(self.on_drawer_file_selected)
+        self.files_drawer.file_deleted.connect(self.on_drawer_file_deleted)
+        self.files_drawer.file_moved.connect(self.on_drawer_file_moved)
 
         # Native macOS Menu Bar
         self.create_menu_bar()
@@ -740,6 +762,12 @@ class WinnieIDE(QMainWindow):
         save_as_action.setShortcut(QKeySequence("Ctrl+Shift+S"))
         save_as_action.triggered.connect(self.save_file_as)
 
+        file_menu.addSeparator()
+
+        files_action = file_menu.addAction("My Files...")
+        files_action.setShortcut(QKeySequence("Ctrl+Shift+F"))
+        files_action.triggered.connect(self.toggle_my_files_drawer)
+
         # Tab navigation keyboard shortcuts
         self.shortcut_next_tab = QShortcut(QKeySequence("Ctrl+Tab"), self)
         self.shortcut_next_tab.activated.connect(self.next_tab)
@@ -969,29 +997,40 @@ class WinnieIDE(QMainWindow):
             ed.is_modified = False
             self.update_tab_title(ed)
             self.update_window_title()
+            if hasattr(self, "files_drawer"):
+                self.files_drawer.refresh_files()
             return True
         except Exception as e:
             QMessageBox.critical(self, "Error Saving File", f"Could not save file:\n{e}")
             return False
 
     def save_file_as(self) -> bool:
-        """Prompts for a filename and saves current active tab (Cmd + Shift + S)."""
+        """Prompts for a filename and saves current active tab to Winnie Files (Cmd + Shift + S)."""
         ed = self.editor
         if not ed:
             return False
         suggested = ""
+        default_folder = None
         if getattr(ed, "file_path", None):
-            suggested = ed.file_path
+            suggested = os.path.basename(ed.file_path)
+            parent_dir = os.path.dirname(ed.file_path)
+            if parent_dir.startswith(DEFAULT_FILES_DIR):
+                rel = os.path.relpath(parent_dir, DEFAULT_FILES_DIR)
+                if rel != ".":
+                    default_folder = rel
         elif getattr(ed, "problem_data", None):
             suggested = f"{ed.problem_data.get('id', 'solution')}.py"
 
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Save Python File", suggested, "Python Files (*.py);;All Files (*)"
+        dlg = QuickSaveDialog(
+            parent=self,
+            suggested_name=suggested,
+            current_theme=self.current_theme,
+            default_folder=default_folder,
         )
-        if not path:
+        if dlg.exec() != QuickSaveDialog.DialogCode.Accepted or not dlg.saved_path:
             return False
-        if not path.endswith(".py"):
-            path += ".py"
+
+        path = dlg.saved_path
         ed.file_path = path
         ed.problem_data = None  # once saved as file, it's a regular file
         return self.save_file()
@@ -1002,6 +1041,71 @@ class WinnieIDE(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape and hasattr(self, "files_drawer") and self.files_drawer.is_open:
+            self.close_my_files_drawer()
+            event.accept()
+            return
+        super().keyPressEvent(event)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "files_drawer") and self.files_drawer.is_open:
+            cw = self.centralWidget()
+            top_offset = self.top_bar.y() + self.top_bar.height() + 10
+            h = max(200, cw.height() - top_offset - 18)
+            self.files_backdrop.setGeometry(0, top_offset, cw.width(), cw.height() - top_offset)
+            self.files_drawer.setGeometry(18, top_offset, self.files_drawer.drawer_width, h)
+
+    def toggle_my_files_drawer(self):
+        """Toggles the sliding My Files overlay drawer."""
+        if hasattr(self, "files_drawer") and self.files_drawer.is_open:
+            self.close_my_files_drawer()
+        else:
+            self.open_my_files_drawer()
+
+    def open_my_files_drawer(self):
+        """Opens the sliding My Files overlay drawer."""
+        cw = self.centralWidget()
+        top_offset = self.top_bar.y() + self.top_bar.height() + 10
+        h = max(200, cw.height() - top_offset - 18)
+        self.files_backdrop.setGeometry(0, top_offset, cw.width(), cw.height() - top_offset)
+        self.files_backdrop.show()
+        self.files_backdrop.raise_()
+        self.files_drawer.raise_()
+        self.files_drawer.open_drawer(top_offset=top_offset, height=h)
+
+    def close_my_files_drawer(self):
+        """Closes the sliding My Files overlay drawer."""
+        if hasattr(self, "files_backdrop"):
+            self.files_backdrop.hide()
+        if hasattr(self, "files_drawer"):
+            self.files_drawer.close_drawer()
+
+    def on_drawer_file_selected(self, path: str):
+        """Opens selected file into an editor tab and closes drawer."""
+        self.open_file_path(path)
+        self.close_my_files_drawer()
+
+    def on_drawer_file_deleted(self, deleted_path: str):
+        """Handles when a file is deleted from within the drawer."""
+        for i in range(self.editor_tabs.count()):
+            ed = self.editor_tabs.widget(i)
+            if getattr(ed, "file_path", None) == deleted_path:
+                ed.file_path = None
+                ed.is_modified = True
+                self.update_tab_title(ed)
+        self.update_window_title()
+
+    def on_drawer_file_moved(self, old_path: str, new_path: str):
+        """Handles when a file is moved (drag-and-drop) to a folder."""
+        for i in range(self.editor_tabs.count()):
+            ed = self.editor_tabs.widget(i)
+            if getattr(ed, "file_path", None) == old_path:
+                ed.file_path = new_path
+                self.update_tab_title(ed)
+        self.update_window_title()
 
     def zoom_in(self):
         """Increases font size for editor, console, and variables (Cmd + +)."""
@@ -1192,7 +1296,16 @@ class WinnieIDE(QMainWindow):
         self.clear_btn.clicked.connect(self.clear_all)
         layout.addWidget(self.clear_btn)
 
-        # 6. Packages Button (Manage pip packages)
+        # 6. Files Button (Browse saved files & folders)
+        self.files_btn = QPushButton(" Files")
+        self.files_btn.setToolTip("My Files (⌘⇧F or ⌘B)")
+        self.files_btn.setFont(QFont("SF Pro Text", 12))
+        self.files_btn.setIconSize(QSize(14, 14))
+        self.files_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.files_btn.clicked.connect(self.toggle_my_files_drawer)
+        layout.addWidget(self.files_btn)
+
+        # 7. Packages Button (Manage pip packages)
         self.packages_btn = QPushButton(" Packages")
         self.packages_btn.setToolTip("Manage Python Packages (⌘⇧P)")
         self.packages_btn.setFont(QFont("SF Pro Text", 12))
@@ -1431,9 +1544,13 @@ class WinnieIDE(QMainWindow):
             }}
         """)
 
-        # Secondary Pill Buttons (Clear, Packages, Problems)
+        # Secondary Pill Buttons (Clear, Files, Packages, Problems)
         self.clear_btn.setIcon(render_svg_icon(CLEAR_SVG, size=13, color=theme["btn_clear_text"]))
         self.clear_btn.setStyleSheet(pill_style)
+
+        if hasattr(self, "files_btn"):
+            self.files_btn.setIcon(render_svg_icon(FOLDER_SVG, size=13, color=theme["btn_clear_text"]))
+            self.files_btn.setStyleSheet(pill_style)
 
         self.packages_btn.setIcon(render_svg_icon(PACKAGE_SVG, size=13, color=theme["btn_clear_text"]))
         self.packages_btn.setStyleSheet(pill_style)
@@ -1606,6 +1723,8 @@ class WinnieIDE(QMainWindow):
         self.assistant_view.apply_theme(theme)
         self.problem_desc_widget.apply_theme(theme)
         self.problem_sol_widget.apply_theme(theme)
+        if hasattr(self, "files_drawer"):
+            self.files_drawer.apply_theme(theme)
 
     def clear_all(self):
         self.console.clear()

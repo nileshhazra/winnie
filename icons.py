@@ -272,6 +272,29 @@ SETTINGS_SVG = """
 </svg>
 """
 
+# 32. Folder with Plus Icon
+FOLDER_PLUS_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+  <line x1="12" y1="11" x2="12" y2="17"/>
+  <line x1="9" y1="14" x2="15" y2="14"/>
+</svg>
+"""
+
+# 33. Chevron Right Icon
+CHEVRON_RIGHT_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <polyline points="9 18 15 12 9 6"/>
+</svg>
+"""
+
+# 34. Chevron Down Icon
+CHEVRON_DOWN_SVG = """
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <polyline points="6 9 12 15 18 9"/>
+</svg>
+"""
+
 
 def render_svg_icon(svg_str: str, size: int = 18, color: str = "#ffffff") -> QIcon:
     """Renders an SVG string into a crisp, color-tinted QIcon with Retina support."""
