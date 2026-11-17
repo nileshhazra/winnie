@@ -172,7 +172,7 @@ class AboutDialog(QDialog):
         title_label.setStyleSheet(f"color: {theme['brand_color']};")
         name_badge_layout.addWidget(title_label)
 
-        version_badge = QLabel("v1.5.0")
+        version_badge = QLabel("v1.6.0")
         version_badge.setFont(get_ui_font(size=10, bold=True))
         version_badge.setStyleSheet(f"""
             background-color: {theme['btn_clear_bg']};
