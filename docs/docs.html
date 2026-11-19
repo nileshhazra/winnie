@@ -35,11 +35,12 @@
             </svg>
           </span>
         </button>
-        <a href="https://github.com/nileshhazra/winnie/releases/latest/download/Winnie-macOS.zip" class="button-brand" title="Download Winnie for macOS">
+        <a href="https://github.com/nileshhazra/winnie/releases/latest/download/Winnie-macOS.zip" class="button-brand nav-download-btn" title="Download Winnie for macOS">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.87-.9.04-1.99.6-2.63 1.35-.58.67-1.09 1.74-.95 2.78 1 .08 2.04-.51 2.66-1.26z"/>
           </svg>
-          Download for Mac
+          <span class="nav-btn-text-full">Download for Mac</span>
+          <span class="nav-btn-text-short">Download</span>
         </a>
       </div>
     </div>
@@ -129,14 +130,22 @@
         <!-- Section 1: Getting Started -->
         <section id="getting-started" class="docs-section">
           <h2>
-            <span>🚀 Getting Started with Python in Winnie</span>
+            <span>Getting Started with Python in Winnie</span>
           </h2>
           <p class="docs-lead">
             Winnie is a native macOS Python Integrated Development Environment (IDE) engineered from the ground up for <strong>visual clarity</strong> and <strong>zero-friction learning</strong>. Unlike heavyweight industrial editors that demand complex launch configs, virtual environment toggles, and terminal gymnastics, Winnie is ready to run your Python code immediately after launch.
           </p>
 
           <div class="callout callout-tip">
-            <div class="callout-icon">💡</div>
+            <div class="callout-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v2"></path><path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path><path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+                <circle cx="12" cy="12" r="5"></circle>
+              </svg>
+            </div>
             <div class="callout-body">
               <strong>Zero Configuration Needed</strong>
               Winnie automatically detects your macOS Python 3 installation, Homebrew Python, or project virtual environment. Launch Winnie, type code, and hit Run.
@@ -220,7 +229,7 @@
             To run this script:
           </p>
           <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
-            <li>Click the green <strong>▶ Run</strong> button in the top action bar, or press <kbd>Cmd</kbd> + <kbd>R</kbd> (or <kbd>F5</kbd>).</li>
+            <li>Click the green <strong>Run</strong> button in the top action bar, or press <kbd>Cmd</kbd> + <kbd>R</kbd> (or <kbd>F5</kbd>).</li>
             <li>Observe the formatted results stream instantly into the <strong>Console</strong> panel at the bottom.</li>
           </ul>
         </section>
@@ -251,35 +260,42 @@
             Click the <strong>Variables</strong> tab in the right panel while stepping. As you advance through your program line-by-line, Winnie continuously updates an intuitive tabular view of your runtime memory:
           </p>
 
-          <table class="shortcut-table">
-            <thead>
-              <tr>
-                <th>Column</th>
-                <th>Description</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Name</strong></td>
-                <td>Identifier of the local or global variable</td>
-                <td><code>average</code>, <code>scores</code>, <code>students</code></td>
-              </tr>
-              <tr>
-                <td><strong>Type</strong></td>
-                <td>Python data type pill with distinct color badges</td>
-                <td><code>int</code>, <code>float</code>, <code>str</code>, <code>list</code>, <code>dict</code></td>
-              </tr>
-              <tr>
-                <td><strong>Value</strong></td>
-                <td>Human-readable snapshot of the variable's current state</td>
-                <td><code>94.3</code>, <code>['High Honors']</code></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-container">
+            <table class="shortcut-table">
+              <thead>
+                <tr>
+                  <th>Column</th>
+                  <th>Description</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Name</strong></td>
+                  <td>Identifier of the local or global variable</td>
+                  <td><code>average</code>, <code>scores</code>, <code>students</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Type</strong></td>
+                  <td>Python data type pill with distinct color badges</td>
+                  <td><code>int</code>, <code>float</code>, <code>str</code>, <code>list</code>, <code>dict</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Value</strong></td>
+                  <td>Human-readable snapshot of the variable's current state</td>
+                  <td><code>94.3</code>, <code>['High Honors']</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="callout callout-info">
-            <div class="callout-icon">🔍</div>
+            <div class="callout-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
             <div class="callout-body">
               <strong>No Print-Statement Debugging Needed</strong>
               You don't need to litter your code with temporary <code>print()</code> calls just to check if a variable changed. Winnie tracks the exact value of every variable at each point in time.
@@ -311,14 +327,18 @@
         <!-- Section 2: Package Manager -->
         <section id="package-manager" class="docs-section">
           <h2>
-            <span>📦 Managing Python Packages with pip in Winnie</span>
+            <span>Managing Python Packages with pip in Winnie</span>
           </h2>
           <p class="docs-lead">
             Python's real strength lies in its vast global ecosystem of packages published on the Python Package Index (PyPI). Whether you want to build data science pipelines with <code>pandas</code>, train neural networks with <code>torch</code>, plot graphs with <code>matplotlib</code>, or query APIs with <code>requests</code>, Winnie provides a fully native <strong>Graphical Package Manager</strong>.
           </p>
 
           <div class="callout callout-warning">
-            <div class="callout-icon">⚡</div>
+            <div class="callout-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
             <div class="callout-body">
               <strong>No Terminal or pip Commands Required</strong>
               You do not need to open Terminal.app, run <code>pip3 install</code>, or navigate path environments. Everything is managed through a clean visual window inside Winnie.
@@ -330,7 +350,7 @@
             To open the Package Manager:
           </p>
           <ol style="margin-left: 1.25rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: 1.5rem;">
-            <li>Click the <strong>📦 Packages</strong> button in the top action bar (or press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>).</li>
+            <li>Click the <strong>Packages</strong> button in the top action bar (or press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>).</li>
             <li>A window titled <strong>Manage Python Packages (pip)</strong> opens up.</li>
             <li>At the top, Winnie displays the currently active <strong>Python Environment</strong> path (such as your project's virtualenv or macOS interpreter).</li>
           </ol>
@@ -368,7 +388,7 @@
         <!-- Section 3: Learning Pandas -->
         <section id="pandas-tutorial" class="docs-section">
           <h2>
-            <span>🐼 Hands-On Guide: Learning Pandas in Winnie</span>
+            <span>Hands-On Guide: Learning Pandas in Winnie</span>
           </h2>
           <p class="docs-lead">
             <strong>Pandas</strong> is the industry-standard Python library for working with structured, tabular data (like spreadsheets, CSV files, and SQL tables). If you want to get into data analytics, machine learning, or scientific computing, Pandas is the foundational tool to master.
@@ -580,63 +600,65 @@
         <!-- Section 4: Keyboard Shortcuts & Reference -->
         <section id="shortcuts" class="docs-section">
           <h2>
-            <span>💡 Keyboard Shortcuts &amp; Reference</span>
+            <span>Keyboard Shortcuts &amp; Reference</span>
           </h2>
           <p class="docs-lead">
             Speed up your daily workflow with these macOS native shortcuts built right into Winnie:
           </p>
 
-          <table class="shortcut-table">
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Shortcut</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Run Program</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>R</kbd> &nbsp;or&nbsp; <kbd>F5</kbd></td>
-                <td>Executes the active script from beginning to end</td>
-              </tr>
-              <tr>
-                <td><strong>Step Next Statement</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>E</kbd> &nbsp;or&nbsp; <kbd>F6</kbd></td>
-                <td>Advances execution by one statement and updates Variables</td>
-              </tr>
-              <tr>
-                <td><strong>Stop Execution</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>.</kbd> &nbsp;or&nbsp; <kbd>F8</kbd></td>
-                <td>Terminates the running process or exits stepper mode</td>
-              </tr>
-              <tr>
-                <td><strong>Clear Console</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>K</kbd></td>
-                <td>Clears all output text from the execution console</td>
-              </tr>
-              <tr>
-                <td><strong>New Tab</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>T</kbd></td>
-                <td>Opens a new blank editor tab with default filename</td>
-              </tr>
-              <tr>
-                <td><strong>Close Tab</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>W</kbd></td>
-                <td>Closes the currently active editor tab</td>
-              </tr>
-              <tr>
-                <td><strong>Package Manager</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd></td>
-                <td>Opens the graphical pip package installer dialog</td>
-              </tr>
-              <tr>
-                <td><strong>Toggle Theme</strong></td>
-                <td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd></td>
-                <td>Instantly switches between Honey Dark and Honey Light themes</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-container">
+            <table class="shortcut-table">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Shortcut</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Run Program</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>R</kbd> &nbsp;or&nbsp; <kbd>F5</kbd></td>
+                  <td>Executes the active script from beginning to end</td>
+                </tr>
+                <tr>
+                  <td><strong>Step Next Statement</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>E</kbd> &nbsp;or&nbsp; <kbd>F6</kbd></td>
+                  <td>Advances execution by one statement and updates Variables</td>
+                </tr>
+                <tr>
+                  <td><strong>Stop Execution</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>.</kbd> &nbsp;or&nbsp; <kbd>F8</kbd></td>
+                  <td>Terminates the running process or exits stepper mode</td>
+                </tr>
+                <tr>
+                  <td><strong>Clear Console</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>K</kbd></td>
+                  <td>Clears all output text from the execution console</td>
+                </tr>
+                <tr>
+                  <td><strong>New Tab</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>T</kbd></td>
+                  <td>Opens a new blank editor tab with default filename</td>
+                </tr>
+                <tr>
+                  <td><strong>Close Tab</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>W</kbd></td>
+                  <td>Closes the currently active editor tab</td>
+                </tr>
+                <tr>
+                  <td><strong>Package Manager</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd></td>
+                  <td>Opens the graphical pip package installer dialog</td>
+                </tr>
+                <tr>
+                  <td><strong>Toggle Theme</strong></td>
+                  <td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd></td>
+                  <td>Instantly switches between Honey Dark and Honey Light themes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <h3 id="next-libraries">Recommended Packages to Explore Next</h3>
           <p class="docs-paragraph">
@@ -645,22 +667,22 @@
 
           <div class="step-cards-grid">
             <div class="step-card">
-              <div class="step-card-num">📈</div>
+              <div class="step-card-num">01</div>
               <h4>matplotlib</h4>
               <p>The standard 2D data plotting library. Generate line charts, bar graphs, histograms, and scatter plots from your Pandas DataFrames.</p>
             </div>
             <div class="step-card">
-              <div class="step-card-num">🌐</div>
+              <div class="step-card-num">02</div>
               <h4>requests</h4>
               <p>Simple, human-friendly HTTP library for fetching live data from web APIs (e.g. weather, GitHub repos, currency rates).</p>
             </div>
             <div class="step-card">
-              <div class="step-card-num">📊</div>
+              <div class="step-card-num">03</div>
               <h4>seaborn</h4>
               <p>Statistical data visualization built on top of Matplotlib with elegant default themes and color palettes for heatmaps and pair plots.</p>
             </div>
             <div class="step-card">
-              <div class="step-card-num">📁</div>
+              <div class="step-card-num">04</div>
               <h4>openpyxl</h4>
               <p>Enables reading and writing Excel (<code>.xlsx</code>) spreadsheets directly in Pandas via <code>pd.read_excel()</code>.</p>
             </div>

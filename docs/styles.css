@@ -69,6 +69,8 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -79,6 +81,8 @@ body {
   background-color: var(--bg-page);
   transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
 a {
@@ -103,22 +107,26 @@ button {
 /* Typography matching Blip.net */
 .text-big-title {
   font-family: var(--font-family-brand);
-  font-size: clamp(2.5rem, 5.2vw, 4.25rem);
+  font-size: clamp(2rem, 6vw, 4.25rem);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.035em;
   text-wrap: balance;
   color: var(--text-primary);
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .text-title1 {
   font-family: var(--font-family-brand);
-  font-size: clamp(1.85rem, 3.8vw, 3rem);
+  font-size: clamp(1.65rem, 4.5vw, 3rem);
   font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.025em;
   text-wrap: balance;
   color: var(--text-primary);
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .text-headline1 {
@@ -333,6 +341,10 @@ nav.nav-links a:hover {
 
 .button-brand:active {
   transform: translateY(0);
+}
+
+.nav-btn-text-short {
+  display: none;
 }
 
 .button-brand-large {
@@ -679,7 +691,7 @@ section.feature-section {
 /* Bento Grid ("Also included") */
 .bento-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
 }
 
@@ -733,7 +745,7 @@ section.feature-section {
 /* Reviews / Social Proof */
 .reviews-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
 }
 
@@ -1379,6 +1391,255 @@ section.feature-section {
   }
 }
 
+@media (max-width: 640px) {
+  .install-flow-card {
+    border-radius: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .install-flow-left {
+    padding: 2rem 1.25rem;
+  }
+
+  .install-flow-brand {
+    margin-bottom: 1.25rem;
+  }
+
+  .install-flow-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.25rem);
+    margin-bottom: 1.5rem;
+    line-height: 1.15;
+  }
+
+  .install-flow-steps {
+    gap: 1.15rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .install-flow-steps li {
+    font-size: 0.875rem;
+  }
+
+  .step-num-pill {
+    width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
+  }
+
+  .gatekeeper-callout {
+    padding: 0.85rem 1rem;
+  }
+
+  .gatekeeper-callout .command-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .gatekeeper-callout .command-box code {
+    white-space: normal;
+    word-break: break-all;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .gatekeeper-callout .copy-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.45rem;
+    font-size: 0.75rem;
+  }
+
+  .install-flow-right {
+    padding: 2.25rem 1rem;
+    gap: 1.5rem;
+    min-height: auto;
+  }
+
+  .mockup-browser-header {
+    max-width: 100%;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .mockup-browser-url {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.7rem;
+  }
+
+  .download-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    min-width: 0;
+    padding: 0.65rem 0.75rem;
+    gap: 0.65rem;
+  }
+
+  .dl-file-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .dl-file-name {
+    font-size: 0.8rem;
+  }
+
+  .dl-file-status {
+    font-size: 0.7rem;
+  }
+
+  .finder-window {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .finder-titlebar {
+    height: 34px;
+    padding: 0 0.75rem;
+  }
+
+  .finder-title {
+    font-size: 0.75rem;
+  }
+
+  .finder-body {
+    padding: 1.75rem 0.75rem 1.25rem;
+    min-height: 150px;
+  }
+
+  .finder-app-slot,
+  .finder-target-slot {
+    width: 65px;
+    gap: 0.45rem;
+  }
+
+  .finder-item-label {
+    font-size: 0.75rem;
+  }
+
+  .app-icon-ghost {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+  }
+
+  .animated-drag-item {
+    width: 52px;
+    height: 52px;
+    animation: macDragAndDropMobile 5s infinite cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .finder-app-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+  }
+
+  .app-drag-hand {
+    bottom: -6px;
+    right: -8px;
+    animation: handMotionMobile 5s infinite cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .app-drag-hand svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .drag-guide-arrow svg {
+    width: 60px;
+    height: 30px;
+  }
+
+  .applications-folder-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .applications-folder-icon svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .finder-statusbar {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.7rem;
+  }
+}
+
+@keyframes macDragAndDropMobile {
+  0%, 8% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+  }
+  16% {
+    transform: translate(0, -6px) scale(1.06);
+    opacity: 1;
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.35));
+  }
+  50% {
+    transform: translate(118px, -6px) scale(1.06);
+    opacity: 1;
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.35));
+  }
+  58% {
+    transform: translate(118px, 0px) scale(1.02);
+    opacity: 1;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
+  }
+  66% {
+    transform: translate(118px, 6px) scale(0.85);
+    opacity: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  92% {
+    transform: translate(0, 0) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+  }
+}
+
+@keyframes handMotionMobile {
+  0%, 6% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.95;
+  }
+  14% {
+    transform: translate(-2px, -2px) scale(0.92);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-2px, -2px) scale(0.92);
+    opacity: 1;
+  }
+  58% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  68% {
+    transform: translate(0, -6px) scale(1.05);
+    opacity: 0.7;
+  }
+  78%, 94% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.95;
+  }
+}
+
 .install-steps {
   display: flex;
   flex-direction: column;
@@ -1852,6 +2113,20 @@ footer.site-footer {
   color: var(--color-brand);
 }
 
+/* Inline Code */
+code {
+  font-family: var(--font-family-mono);
+  font-size: 0.875em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.docs-code-body pre code {
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: pre;
+}
+
 /* Code Blocks with CodeSandbox Black theme colors */
 .docs-code-container {
   margin: 1.5rem 0;
@@ -1935,7 +2210,7 @@ footer.site-footer {
 /* Feature Step Cards */
 .step-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 1.25rem;
   margin: 1.5rem 0;
 }
@@ -2073,7 +2348,7 @@ footer.site-footer {
   max-width: 600px;
 }
 
-/* Responsive adjustments for Docs */
+/* Responsive adjustments for Docs & Global Mobile */
 @media (max-width: 960px) {
   .docs-sidebar {
     position: static;
@@ -2083,4 +2358,270 @@ footer.site-footer {
     border-bottom: 1px solid var(--border-card);
     padding-bottom: 1.5rem;
   }
+}
+
+@media (max-width: 640px) {
+  /* Header & Navigation */
+  header.site-header {
+    height: 3.75rem;
+  }
+
+  header.site-header .nav-container {
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
+
+  .brand-logo {
+    gap: 0.5rem;
+    font-size: 1.15rem;
+  }
+
+  .brand-logo img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-badge {
+    display: none;
+  }
+
+  .nav-actions {
+    gap: 0.45rem;
+  }
+
+  .theme-toggle-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .button-brand.nav-download-btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8125rem;
+    gap: 0.35rem;
+  }
+
+  .nav-btn-text-full {
+    display: none;
+  }
+
+  .nav-btn-text-short {
+    display: inline;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding-top: 5rem;
+  }
+
+  .hero-badge-pill {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    line-height: 1.35;
+    max-width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .hero-buttons .button-brand,
+  .hero-buttons .button-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+
+  .hero-subnotes {
+    font-size: 0.75rem;
+    gap: 0.35rem;
+  }
+
+  .hero-subnotes span.dot {
+    display: none;
+  }
+
+  .hero-subnotes span {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .showcase-window-container {
+    margin-top: 2rem;
+  }
+
+  .window-title {
+    display: none;
+  }
+
+  .page-wrap,
+  .text-wrap {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .lockup {
+    margin-bottom: 2.25rem;
+  }
+
+  .feature-section {
+    padding: 3.5rem 0;
+  }
+
+  .bento-grid,
+  .reviews-grid,
+  .step-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .bento-card,
+  .review-card,
+  .step-card {
+    padding: 1.35rem 1.15rem;
+  }
+
+  .cta-banner {
+    padding: 2.5rem 1.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .cta-banner p {
+    font-size: 1rem;
+  }
+
+  .footer-grid {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .footer-columns {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Stepper on mobile */
+  .stepper-header {
+    padding: 0 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .stepper-controls {
+    gap: 0.35rem;
+  }
+
+  .stepper-btn {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .code-line {
+    padding: 0 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .line-num {
+    width: 1.75rem;
+  }
+
+  /* Docs Page Mobile */
+  .docs-hero {
+    padding: 5.5rem 0 2rem;
+  }
+
+  .docs-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.25rem);
+    word-break: break-word;
+  }
+
+  .docs-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .docs-layout-wrap {
+    padding: 1.5rem 0 4rem;
+  }
+
+  .docs-section h2 {
+    font-size: clamp(1.4rem, 5vw, 1.75rem);
+    word-break: break-word;
+  }
+
+  .docs-code-container {
+    border-radius: 10px;
+    margin: 1.25rem 0;
+  }
+
+  .docs-code-header {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+  }
+
+  .docs-code-body {
+    padding: 1rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .callout {
+    padding: 1rem;
+    border-radius: 10px;
+    gap: 0.75rem;
+  }
+
+  .walkthrough-box {
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+  }
+
+  .docs-cta-banner {
+    padding: 1.75rem 1.25rem;
+    border-radius: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .docs-cta-banner .button-brand {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Ensure code bodies, tables, and grid items shrink safely */
+.docs-layout-wrap,
+.docs-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.docs-code-body {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.5rem 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-card);
+}
+
+.table-container .shortcut-table {
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.shortcut-table th,
+.shortcut-table td {
+  white-space: nowrap;
 }
